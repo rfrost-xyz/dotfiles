@@ -1,3 +1,13 @@
+" Check for and install Coc definitions
+let g:coc_global_extensions = [
+\ 'coc-json',
+\ 'coc-html',
+\ 'coc-css',
+\ 'coc-highlight',
+\ 'coc-xml',
+\ 'coc-prettier'
+\ ]
+
 call plug#begin('~/.config/nvim/plugged')
 
 " Theme

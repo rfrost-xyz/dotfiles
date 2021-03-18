@@ -1,3 +1,4 @@
+" mappings
 source ~/.config/nvim/plugconfig/plugins.vim
 source ~/.config/nvim/plugconfig/coc.vim
 source ~/.config/nvim/plugconfig/markdown-preview.vim
@@ -42,6 +43,9 @@ set background=dark
 
 " mappings
 let mapleader = ","
+" buffer
+nmap <leader>1 : bp<CR>
+nmap <leader>2 : bn<CR>
 " git
 map <leader>c : Git commit -a<CR>
 map <leader>p : Git push<CR>

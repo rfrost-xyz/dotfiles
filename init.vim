@@ -1,5 +1,7 @@
-source ~/.config/nvim/plugconfig/vim-airline.vim
+source ~/.config/nvim/plugconfig/plugins.vim
+source ~/.config/nvim/plugconfig/coc.vim
 source ~/.config/nvim/plugconfig/markdown-preview.vim
+source ~/.config/nvim/plugconfig/vim-airline.vim
 source ~/.config/nvim/plugconfig/vimwiki.vim
 
 " colour

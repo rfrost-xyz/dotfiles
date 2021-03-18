@@ -1,0 +1,6 @@
+# ignore folders
+/plugged
+/spell
+
+# history
+.netrwhist

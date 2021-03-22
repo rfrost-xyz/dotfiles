@@ -1,17 +1,18 @@
 " Check for and install Coc definitions
 let g:coc_global_extensions = [
-\ 'coc-json',
+\ 'coc-prettier',
 \ 'coc-html',
 \ 'coc-css',
+\ 'coc-pairs',
 \ 'coc-highlight',
-\ 'coc-xml',
-\ 'coc-prettier'
+\ 'coc-snippets',
+\ 'coc-json',
+\ 'coc-xml'
 \ ]
 
 call plug#begin('~/.config/nvim/plugged')
 
 " Theme
-Plug 'joshdick/onedark.vim'
 Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'

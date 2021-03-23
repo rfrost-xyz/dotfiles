@@ -1,3 +1,1 @@
-# Neovim Config
-
-
+# .Config/Neovim

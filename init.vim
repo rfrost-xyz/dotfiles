@@ -45,8 +45,8 @@ set background=dark
 
 " mappings
 " leader
-"let mapleader = ","
-map <space> <leader>
+let mapleader = ","
+" map <space> <leader>
 " buffer
 nmap <leader>1 : bp<CR>
 nmap <leader>2 : bn<CR>

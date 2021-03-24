@@ -32,7 +32,7 @@ Plug 'vitalk/vim-simple-todo'
 Plug 'markonm/traces.vim'
 
 " VimWiki
-Plug 'vimwiki/vimwiki'
+" Plug 'vimwiki/vimwiki'
 
 " Completion
 Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'} " Coc
@@ -46,4 +46,7 @@ Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': 
 " Git
 Plug 'tpope/vim-fugitive'
 
+" Icons, always load last
+" Plug 'ryanoasis/vim-devicons'
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""                                                           
 call plug#end()

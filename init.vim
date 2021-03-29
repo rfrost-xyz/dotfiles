@@ -52,6 +52,8 @@ let mapleader = ","
 nmap <leader>1 : bp<CR>
 nmap <leader>2 : bn<CR>
 nmap <leader>3 : bd<CR>
+" markdown preview
+nmap <leader>mp : MarkdownPreviewToggle<CR>
 " git
 map <leader>gc : Git commit -a<CR>
 map <leader>gp : Git push<CR>

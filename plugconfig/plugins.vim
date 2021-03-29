@@ -31,9 +31,6 @@ Plug 'vitalk/vim-simple-todo'
 " Highlight
 Plug 'markonm/traces.vim'
 
-" VimWiki
-" Plug 'vimwiki/vimwiki'
-
 " Completion
 Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'} " Coc
 

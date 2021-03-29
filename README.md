@@ -19,3 +19,13 @@ Personal Neovim configuration.
 | tpope/vim-fugitive              | Git wrapper                               |
 
 ## Shortcuts
+
+| Shortcut                                             | Definition              |
+| :--------------------------------------------------- | :---------------------- |
+| <kbd>Leader</kbd> + <kbd>1</kbd> + <kbd>Return</kbd> | Buffer Previous         |
+| <kbd>Leader</kbd> + <kbd>2</kbd> + <kbd>Return</kbd> | Buffer Next             |
+| <kbd>Leader</kbd> + <kbd>3</kbd> + <kbd>Return</kbd> | Buffer Delete           |
+| <kbd>Leader</kbd> + <kbd>m</kbd> + <kbd>p</kbd>      | Markdown Preview toggle |
+| <kbd>Leader</kbd> + <kbd>g</kbd> + <kbd>c</kbd>      | Git Commit              |
+| <kbd>Leader</kbd> + <kbd>g</kbd> + <kbd>p</kbd>      | Git Push                |
+| <kbd>Leader</kbd> + <kbd>w</kbd>                     | Clear whitespace        |

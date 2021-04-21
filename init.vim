@@ -59,5 +59,6 @@ nmap <leader>ss : set spell!<CR>
 " git
 map <leader>gc : Git commit -a<CR>
 map <leader>gp : Git push<CR>
+map <leader>gd : Git diff<CR>
 " whitepsace clear
 map <leader>w : %s/\s\+$//e <CR>

@@ -4,7 +4,7 @@ source ~/.config/nvim/plugconfig/coc.vim
 source ~/.config/nvim/plugconfig/markdown-preview.vim
 source ~/.config/nvim/plugconfig/vim-airline.vim
 source ~/.config/nvim/plugconfig/vim-markdown.vim
-" source ~/.config/nvim/plugconfig/vimwiki.vim
+source ~/.config/nvim/plugconfig/vimwiki.vim
 
 " colour
 syntax on
@@ -54,6 +54,8 @@ nmap <leader>2 : bn<CR>
 nmap <leader>3 : bd<CR>
 " markdown preview
 nmap <leader>mp : MarkdownPreviewToggle<CR>
+" spelling
+nmap <leader>ss : set spell!<CR>
 " git
 map <leader>gc : Git commit -a<CR>
 map <leader>gp : Git push<CR>

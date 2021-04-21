@@ -28,4 +28,6 @@ Personal Neovim configuration.
 | <kbd>Leader</kbd> + <kbd>m</kbd> + <kbd>p</kbd>      | Markdown Preview toggle |
 | <kbd>Leader</kbd> + <kbd>g</kbd> + <kbd>c</kbd>      | Git Commit              |
 | <kbd>Leader</kbd> + <kbd>g</kbd> + <kbd>p</kbd>      | Git Push                |
+| <kbd>Leader</kbd> + <kbd>g</kbd> + <kbd>d</kbd>      | Git Diff                |
+| <kbd>Leader</kbd> + <kbd>s</kbd> + <kbd>s</kbd>      | Set Spell               |
 | <kbd>Leader</kbd> + <kbd>w</kbd>                     | Clear whitespace        |

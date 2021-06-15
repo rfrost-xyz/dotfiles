@@ -1,4 +1,4 @@
-# .Config/Neovim
+# Neovim
 
 Personal Neovim configuration.
 
@@ -17,6 +17,7 @@ Personal Neovim configuration.
 | neoclide/coc.nvim               | load extensions and host language servers |
 | iamcco/markdown-preview.nvim    | Markdown preview support                  |
 | tpope/vim-fugitive              | Git wrapper                               |
+| kyazdani42/nvim-web-devicons    | lua fork of vim-web-devicons for neovim   |
 
 ## Shortcuts
 

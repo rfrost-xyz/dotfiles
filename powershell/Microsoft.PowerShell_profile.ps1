@@ -21,3 +21,7 @@ Invoke-Expression -Command $(gh completion -s powershell | Out-String)
 # Copy current path
 function Copy-Path-Func {(pwd).Path | CLIP}
 Set-Alias Copy-Path Copy-Path-Func
+
+# Create new Guid and copy result
+function New-Guid-Copy-Func {Set-Clipboard $((New-Guid).Guid)}
+Set-Alias New-Guid-Copy New-Guid-Copy-Func

@@ -9,6 +9,10 @@
 - Tide
 - Oh My Posh
 
+## Windows
+- posh-git
+- PSReadLine
+
 ## Neovim
 
 ### Features

@@ -5,6 +5,10 @@
 - `bin` applications
 - VimWImiki
 
+- Fish
+- Tide
+- Oh My Posh
+
 ## Neovim
 
 ### Features

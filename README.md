@@ -1,8 +1,13 @@
-# Neovim
+# Dotfile
 
-Personal Neovim configuration.
+- .gitconfig
+- PIP global installs
+- `bin` applications
+- VimWImiki
 
-## Features
+## Neovim
+
+### Features
 
 | Plugin                          | Description                               |
 | :------------------------------ | :---------------------------------------- |
@@ -19,7 +24,7 @@ Personal Neovim configuration.
 | tpope/vim-fugitive              | Git wrapper                               |
 | kyazdani42/nvim-web-devicons    | lua fork of vim-web-devicons for neovim   |
 
-## Shortcuts
+### Shortcuts
 
 | Shortcut                                             | Definition              |
 | :--------------------------------------------------- | :---------------------- |

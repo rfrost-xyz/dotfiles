@@ -7,10 +7,11 @@ let g:coc_global_extensions = [
 \ 'coc-highlight',
 \ 'coc-snippets',
 \ 'coc-json',
-\ 'coc-xml'
+\ 'coc-xml',
+\ 'coc-pyright'
 \ ]
 
-call plug#begin('~/.config/nvim/plugged')
+call plug#begin('~/AppData/Local/nvim/plugged')
 
 " Theme
 Plug 'dracula/vim', { 'as': 'dracula' }
@@ -23,6 +24,7 @@ Plug 'psliwka/vim-smoothie'
 " Syntax
 Plug 'PProvost/vim-ps1' " Powershell
 Plug 'plasticboy/vim-markdown' " Markdown
+Plug 'mechatroner/rainbow_csv' " Rainbow CSV
 Plug 'bronson/vim-trailing-whitespace' " Highlight whitespace
 
 " Todo
@@ -33,7 +35,7 @@ Plug 'markonm/traces.vim'
 
 " vimwiki/taskwiki
 Plug 'vimwiki/vimwiki'
-Plug 'tools-life/taskwiki'
+"Plug 'tools-life/taskwiki'
 
 " Completion
 Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'} " Coc
@@ -49,5 +51,6 @@ Plug 'tpope/vim-fugitive'
 
 " Icons, always load last
 " Plug 'ryanoasis/vim-devicons'
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""                                                           
+Plug 'kyazdani42/nvim-web-devicons'
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 call plug#end()

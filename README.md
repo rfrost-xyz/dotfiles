@@ -1,4 +1,4 @@
-# Dotfile
+# Dotfiles
 
 - .gitconfig
 - PIP global installs

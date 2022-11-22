@@ -2,6 +2,12 @@
 	name = Name
 	email = email@mailbox.org
 	signingkey = 0000000000000000
+[core]
+	editor = nvim
+	longpaths = true
+	autocrlf = true
+	# windows
+	# sshCommand = C:/Windows/System32/OpenSSH/ssh.exe
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
@@ -13,7 +19,7 @@
 	# linux
 	# @@@
 	# windows
-	# @@@
+    # program = C:\\Program Files (x86)\\GnuPG\\bin\\gpg.exe
 [color]
 	ui = auto
 [credential]
@@ -27,13 +33,10 @@
 	gpgSign = true
 [init]
 	defaultBranch = main
-[core]
-	editor = nvim
-	longpaths = true
 [diff]
 	ignoreSubmodules = dirty
 [push]
-	followTags = true # Push tags
+	followTags = true # push tags
 [alias]
 	s = status
 	a = add --all

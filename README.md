@@ -1,5 +1,19 @@
 # Dotfiles
 
+## Terminal
+
+### Git
+
+| Alias  | Function       |
+| :----- | :------------- |
+| git s  | git status     |
+| git a  | git add        |
+| git aa | git add --all  |
+| git c  | git commit -m  |
+| git ca | git commit -am |
+| git p  | git push       |
+| git co | git checkout   |
+
 ## Neovim
 
 | Shortcut                                    | Definition              |
@@ -26,30 +40,10 @@ Some general Vim shortcuts, useful to remember:
 | <kbd>z</kbd> <kbd>g</kbd> | Add word to dictionary   |
 | <kbd>z</kbd> <kbd>w</kbd> | Mark word incorrect      |
 
-## Git
-
-| Alias  | Function       |
-| :----- | :------------- |
-| git s  | git status     |
-| git a  | git add        |
-| git aa | git add --all  |
-| git c  | git commit -m  |
-| git ca | git commit -am |
-| git p  | git push       |
-| git co | git checkout   |
-
-## PIP
-
-- [ ] Global requirements
-- [ ] Bin attachment
-
-## Linux
+## To-do
 
 - [ ] Fish
 - [ ] Tide
-
-## Windows
-
-- [ ] posh-git
-- [ ] PSReadLine tutorial
+- [ ] PSReadLine (Tutorial)
 - [ ] Oh My Posh
+- [ ] posh-git

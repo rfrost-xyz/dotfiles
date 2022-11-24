@@ -39,7 +39,8 @@
 	followTags = true # push tags
 [alias]
 	s = status
-	a = add --all
+	a = add
+	aa = add --all
 	c = commit -m # + commit message
 	ca = commit -am # all + commit message
 	p = push

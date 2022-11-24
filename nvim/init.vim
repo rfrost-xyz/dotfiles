@@ -39,6 +39,8 @@ autocmd BufRead,BufNewFile *.md setlocal spell " automatic spell check within ma
 let g:netrw_banner = 0
 " open new file to right
 let g:netrw_altv=1
+" default directory list style
+let g:netrw_liststyle= 3
 
 " terminal
 set t_Co=256
@@ -49,15 +51,21 @@ set background=dark
 let mapleader = ","
 " map <space> <leader>
 " buffer
+nmap <leader>bb : buffers<CR>
 nmap <leader>1 : bp<CR>
 nmap <leader>2 : bn<CR>
 nmap <leader>3 : bd<CR>
+" wrapping
+nmap <leader>[ : set wrap<CR>
+nmap <leader>] : set nowrap<CR>
 " markdown preview
 nmap <leader>mp : MarkdownPreviewToggle<CR>
 " spelling
 nmap <leader>ss : set spell!<CR>
 " git
-map <leader>gc : Git commit -a<CR>
+map <leader>gs : Git status<CR>
+map <leader>ga : Git add
+map <leader>gc : Git commit -m ""
 map <leader>gp : Git push<CR>
 map <leader>gd : Git diff<CR>
 " whitepsace clear

@@ -1,2 +1,2 @@
-pip-reviewa
+pip-review
 git-status-checker

@@ -47,26 +47,19 @@ set t_Co=256
 set background=dark
 
 " mappings
-" leader
 let mapleader = ","
 " map <space> <leader>
-" buffer
 nmap <leader>bb : buffers<CR>
 nmap <leader>1 : bp<CR>
 nmap <leader>2 : bn<CR>
 nmap <leader>3 : bd<CR>
-" wrapping
 nmap <leader>[ : set wrap<CR>
 nmap <leader>] : set nowrap<CR>
-" markdown preview
 nmap <leader>mp : MarkdownPreviewToggle<CR>
-" spelling
 nmap <leader>ss : set spell!<CR>
-" git
 map <leader>gs : Git status<CR>
-map <leader>ga : Git add
+map <leader>ga : Git add 
 map <leader>gc : Git commit -m ""
 map <leader>gp : Git push<CR>
 map <leader>gd : Git diff<CR>
-" whitepsace clear
 map <leader>w : %s/\s\+$//e <CR>

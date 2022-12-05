@@ -41,7 +41,11 @@
 	s = status
 	a = add
 	aa = add --all
-	c = commit -m # + commit message
-	ca = commit -am # all + commit message
+	ac = commit -am
+	c = commit -m
+	f = fetch --all
+	u = pull
 	p = push
-	co = checkout
+	o = checkout
+	d = diff
+	l = log

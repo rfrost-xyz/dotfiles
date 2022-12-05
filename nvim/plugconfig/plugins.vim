@@ -50,7 +50,6 @@ Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': 
 Plug 'tpope/vim-fugitive'
 
 " Icons, always load last
-" Plug 'ryanoasis/vim-devicons'
-Plug 'kyazdani42/nvim-web-devicons'
+" nvim-tree lua fork
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 call plug#end()

@@ -2,14 +2,6 @@
 
 Collection of dotfiles.
 
-```
-   ███████╗██╗██╗     ███████╗███████╗
-   ██╔════╝██║██║     ██╔════╝██╔════╝
-   █████╗  ██║██║     █████╗  ███████╗
-   ██╔══╝  ██║██║     ██╔══╝  ╚════██║
-██╗██║     ██║███████╗███████╗███████║
-╚═╝╚═╝     ╚═╝╚══════╝╚══════╝╚══════╝
-```
 
 ## To-do
 
@@ -66,7 +58,7 @@ Collection of dotfiles.
 General Vim shortcuts, and commands:
 
 | Command                                              | Definition                                         |
-| :--------------------------------------------------- | :------------------------------------------------- |
+|:-----------------------------------------------------|:---------------------------------------------------|
 | <kbd>[</kbd> <kbd>s</kbd>                            | Previous misspelled word                           |
 | <kbd>]</kbd> <kbd>s</kbd>                            | Next misspelled word                               |
 | <kbd>z</kbd> <kbd>=</kbd>                            | Spelling suggestions                               |
@@ -74,10 +66,10 @@ General Vim shortcuts, and commands:
 | <kbd>z</kbd> <kbd>w</kbd>                            | Mark word incorrect                                |
 | <kbd>Ctrl</kbd><kbd>w</kbd><kbd>sp</kbd>             | Split pane horizontally                            |
 | <kbd>Ctrl</kbd><kbd>w</kbd><kbd>vsp</kbd>            | Split pane vertically                              |
-| resize [number]                                      | Resize horizontal pane to specified number of rows |
+| :resize [number]                                     | Resize horizontal pane to specified number of rows |
 | <kbd>Ctrl</kbd><kbd>w</kbd> [Number]                 | Increase pane by [Number] lines                    |
-| vertical resize [number]                             | Resize vertical pane to specified number of rows   |
+| :vertical resize [number]                            | Resize vertical pane to specified number of rows   |
 | <kbd>Ctrl</kbd><kbd><</kbd> or <kbd>></kbd> [Number] | Increase vertical pane by [Number] columns         |
 | <kbd>Ctrl</kbd><kbd><</kbd> [Number]                 | Increase vertical pane by [Number] columns         |
-| set wrap                                             | Set text wrap on                                   |
-| set nowrap                                           | Set text wrap off                                  |
+| :set wrap                                            | Set text wrap on                                   |
+| :set nowrap                                          | Set text wrap off                                  |

@@ -31,29 +31,30 @@ Collection of dotfiles.
 
 ## Neovim
 
-| Shortcut                                                 | Definition              |
-| :------------------------------------------------------- | :---------------------- |
-| <kbd>Leader</kbd> <kbd>b</kbd> <kbd>b</kbd>              | Buffers                 |
-| <kbd>Leader</kbd> <kbd>1</kbd>                           | Buffer Previous         |
-| <kbd>Leader</kbd> <kbd>2</kbd>                           | Buffer Next             |
-| <kbd>Leader</kbd> <kbd>3</kbd>                           | Buffer Delete           |
-| <kbd>Leader</kbd><kbd>[</kbd>                            | Set wrap                |
-| <kbd>Leader</kbd><kbd>]</kbd>                            | Set nowrap              |
-| <kbd>Leader</kbd> <kbd>m</kbd> <kbd>p</kbd>              | Markdown Preview toggle |
-| <kbd>Leader</kbd> <kbd>s</kbd> <kbd>s</kbd>              | Set spell               |
-| <kbd>Leader</kbd> <kbd>s</kbd> <kbd>s</kbd>              | Toggle spelling on/off  |
-| <kbd>Leader</kbd> <kbd>w</kbd>                           | Clear white space       |
-| <kbd>Leader</kbd> <kbd>g</kbd> <kbd>s</kbd>              | Git status              |
-| <kbd>Leader</kbd> <kbd>g</kbd> <kbd>a</kbd>              | Git add                 |
-| <kbd>Leader</kbd> <kbd>g</kbd> <kbd>a</kbd> <kbd>a</kbd> | Git add --all           |
-| <kbd>Leader</kbd> <kbd>g</kbd> <kbd>a</kbd> <kbd>c</kbd> | Git commit -a           |
-| <kbd>Leader</kbd> <kbd>g</kbd> <kbd>c</kbd>              | Git commit              |
-| <kbd>Leader</kbd> <kbd>g</kbd> <kbd>f</kbd>              | Git fetch               |
-| <kbd>Leader</kbd> <kbd>g</kbd> <kbd>u</kbd>              | Git pull                |
-| <kbd>Leader</kbd> <kbd>g</kbd> <kbd>p</kbd>              | Git push                |
-| <kbd>Leader</kbd> <kbd>g</kbd> <kbd>o</kbd>              | Git checkout            |
-| <kbd>Leader</kbd> <kbd>g</kbd> <kbd>d</kbd>              | Git diff                |
-| <kbd>Leader</kbd> <kbd>g</kbd> <kbd>l</kbd>              | Git log                 |
+| Shortcut                                                 | Definition               |
+| :------------------------------------------------------- | :----------------------  |
+| <kbd>Leader</kbd> <kbd>b</kbd> <kbd>b</kbd>              | Buffers                  |
+| <kbd>Leader</kbd> <kbd>1</kbd>                           | Buffer Previous          |
+| <kbd>Leader</kbd> <kbd>2</kbd>                           | Buffer Next              |
+| <kbd>Leader</kbd> <kbd>3</kbd>                           | Buffer Delete            |
+| <kbd>Leader</kbd><kbd>[</kbd>                            | Set wrap                 |
+| <kbd>Leader</kbd><kbd>]</kbd>                            | Set nowrap               |
+| <kbd>Leader</kbd> <kbd>m</kbd> <kbd>p</kbd>              | Markdown Preview toggle  |
+| <kbd>Leader</kbd> <kbd>s</kbd> <kbd>s</kbd>              | Set spell                |
+| <kbd>Leader</kbd> <kbd>s</kbd> <kbd>s</kbd>              | Toggle spelling on/off   |
+| <kbd>Leader</kbd> <kbd>w</kbd>                           | Clear white space        |
+| <kbd>Leader</kbd> <kbd>g</kbd> <kbd>s</kbd>              | Git status               |
+| <kbd>Leader</kbd> <kbd>g</kbd> <kbd>a</kbd>              | Git add                  |
+| <kbd>Leader</kbd> <kbd>g</kbd> <kbd>a</kbd> <kbd>a</kbd> | Git add --all            |
+| <kbd>Leader</kbd> <kbd>g</kbd> <kbd>a</kbd> <kbd>c</kbd> | Git commit -a            |
+| <kbd>Leader</kbd> <kbd>g</kbd> <kbd>c</kbd>              | Git commit               |
+| <kbd>Leader</kbd> <kbd>g</kbd> <kbd>f</kbd>              | Git fetch                |
+| <kbd>Leader</kbd> <kbd>g</kbd> <kbd>u</kbd>              | Git pull                 |
+| <kbd>Leader</kbd> <kbd>g</kbd> <kbd>p</kbd>              | Git push                 |
+| <kbd>Leader</kbd> <kbd>g</kbd> <kbd>o</kbd>              | Git checkout             |
+| <kbd>Leader</kbd> <kbd>g</kbd> <kbd>d</kbd>              | Git diff                 |
+| <kbd>Leader</kbd> <kbd>g</kbd> <kbd>l</kbd>              | Git log                  |
+| <kbd>Leader</kbd> <kbd>t</kbd>                           | Vimwiki toggle list item |
 
 General Vim shortcuts, and commands:
 

@@ -63,3 +63,8 @@ map <leader>gc : Git commit -m ""
 map <leader>gp : Git push<CR>
 map <leader>gd : Git diff<CR>
 map <leader>w : %s/\s\+$//e <CR>
+map <leader>t : VimwikiToggleListItem<CR>
+
+" python config windows
+" let g:python_host_prog  = 'C:\Program Files\Python39\python.exe'
+" let g:python3_host_prog = 'C:\Program Files\Python39\python.exe'

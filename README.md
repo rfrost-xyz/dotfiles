@@ -2,7 +2,6 @@
 
 Collection of dotfiles.
 
-
 ## To-do
 
 - [ ] Fish
@@ -32,7 +31,7 @@ Collection of dotfiles.
 ## Neovim
 
 | Shortcut                                                 | Definition               |
-| :------------------------------------------------------- | :----------------------  |
+| :------------------------------------------------------- | :----------------------- |
 | <kbd>Leader</kbd> <kbd>b</kbd> <kbd>b</kbd>              | Buffers                  |
 | <kbd>Leader</kbd> <kbd>1</kbd>                           | Buffer Previous          |
 | <kbd>Leader</kbd> <kbd>2</kbd>                           | Buffer Next              |
@@ -46,8 +45,8 @@ Collection of dotfiles.
 | <kbd>Leader</kbd> <kbd>g</kbd> <kbd>s</kbd>              | Git status               |
 | <kbd>Leader</kbd> <kbd>g</kbd> <kbd>a</kbd>              | Git add                  |
 | <kbd>Leader</kbd> <kbd>g</kbd> <kbd>a</kbd> <kbd>a</kbd> | Git add --all            |
-| <kbd>Leader</kbd> <kbd>g</kbd> <kbd>a</kbd> <kbd>c</kbd> | Git commit -a            |
-| <kbd>Leader</kbd> <kbd>g</kbd> <kbd>c</kbd>              | Git commit               |
+| <kbd>Leader</kbd> <kbd>g</kbd> <kbd>a</kbd> <kbd>c</kbd> | Git commit -am           |
+| <kbd>Leader</kbd> <kbd>g</kbd> <kbd>c</kbd>              | Git commit -m            |
 | <kbd>Leader</kbd> <kbd>g</kbd> <kbd>f</kbd>              | Git fetch                |
 | <kbd>Leader</kbd> <kbd>g</kbd> <kbd>u</kbd>              | Git pull                 |
 | <kbd>Leader</kbd> <kbd>g</kbd> <kbd>p</kbd>              | Git push                 |
@@ -59,7 +58,7 @@ Collection of dotfiles.
 General Vim shortcuts, and commands:
 
 | Command                                              | Definition                                         |
-|:-----------------------------------------------------|:---------------------------------------------------|
+| :--------------------------------------------------- | :------------------------------------------------- |
 | <kbd>[</kbd> <kbd>s</kbd>                            | Previous misspelled word                           |
 | <kbd>]</kbd> <kbd>s</kbd>                            | Next misspelled word                               |
 | <kbd>z</kbd> <kbd>=</kbd>                            | Spelling suggestions                               |

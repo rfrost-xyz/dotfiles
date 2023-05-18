@@ -1,4 +1,4 @@
 # Dotfiles
 
-- Add Lunarvim
-- Add Lazygit
+* NVChad
+* Lazygit

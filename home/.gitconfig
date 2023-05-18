@@ -5,8 +5,7 @@
 [core]
 	editor = nvim
 	longpaths = true
-	autocrlf = true
-	# windows
+	# Windows
 	# sshCommand = C:/Windows/System32/OpenSSH/ssh.exe
 [filter "lfs"]
 	clean = git-lfs clean -- %f
@@ -14,21 +13,15 @@
 	process = git-lfs filter-process
 	required = true
 [gpg]
-	# qubes
+	# Qubes OS
 	# program = qubes-gpg-client-wrapper
-	# linux
-	# @@@
-	# windows
+	# Windows
     # program = C:\\Program Files (x86)\\GnuPG\\bin\\gpg.exe
 [color]
 	ui = auto
 [credential]
-	# qubes
+	# qubes OS helper
 	# helper = cache
-	# linux
-	# @@@
-	# windows
-	# @@@
 [commit]
 	gpgSign = true
 [init]
@@ -37,15 +30,3 @@
 	ignoreSubmodules = dirty
 [push]
 	followTags = true # push tags
-[alias]
-	s = status
-	a = add
-	aa = add --all
-	ac = commit -am
-	c = commit -m
-	f = fetch --all
-	u = pull
-	p = push
-	o = checkout
-	d = diff
-	l = log

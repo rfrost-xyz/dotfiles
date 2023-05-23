@@ -1,4 +1,5 @@
-# environment
+# virtual environment
+.env
 /env
 
 # history

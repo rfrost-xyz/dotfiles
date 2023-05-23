@@ -1,0 +1,9 @@
+# User-specific folders or temporary files that should not be versioned.
+    */Saved/*
+    */Intermediate/*
+    */DerivedDataCache/*
+    */FileOpenOrder/*
+
+# Certain file types that should not be versioned.
+    *.pdb
+    *-Debug.*

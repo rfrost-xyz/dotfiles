@@ -1,34 +1,27 @@
 [user]
-	name = Name
-	email = email@mailbox.org
-	signingkey = 0000000000000000
+	name = Richard Frost
+	email = $EMAIL
+	signingkey = $SIGNINGKEY
 [core]
 	editor = nvim
 	longpaths = true
-	autocrlf = true
 	# windows
-	# sshCommand = C:/Windows/System32/OpenSSH/ssh.exe
+  #sshCommand = C:\\Windows\\System32\\OpenSSH\\ssh.exe
 [filter "lfs"]
-	clean = git-lfs clean -- %f
+  clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
 [gpg]
 	# qubes
 	# program = qubes-gpg-client-wrapper
-	# linux
-	# @@@
-	# windows
-    # program = C:\\Program Files (x86)\\GnuPG\\bin\\gpg.exe
+  #windows
+  #program = C:\\Program Files (x86)\\GnuPG\\bin\\gpg.exe
 [color]
 	ui = auto
 [credential]
 	# qubes
 	# helper = cache
-	# linux
-	# @@@
-	# windows
-	# @@@
 [commit]
 	gpgSign = true
 [init]

@@ -41,4 +41,3 @@ winget install JesseDuffield.lazygit
 ### Powershell 7+
 
 ### Oh My Posh
->>>>>>> 740b3765c237012f785ce23212d914cf5f758dcf

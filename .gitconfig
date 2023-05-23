@@ -1,5 +1,5 @@
 [user]
-	name = Richard Frost
+	name = $NAME
 	email = $EMAIL
 	signingkey = $SIGNINGKEY
 [core]

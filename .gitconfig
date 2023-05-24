@@ -1,34 +1,31 @@
-[user]
-	name = #$NAME
-	email = #$EMAIL
-	signingkey = #$SIGNINGKEY
+[include]
+  path = ~/.gitconfig-local
+#[user]
+#	name = #$NAME
+#	email = #$EMAIL
+#	signingkey = #$SIGNINGKEY
+
+[includeIf "gitdir:/home"]
+  path = ~/.gitconfig-linux
+[includeIf "gitdir:C:"]
+  path = ~/.gitconfig-windows
+
+[init]
+	defaultBranch = main
 [core]
 	editor = nvim
 	longpaths = true
-	# windows
-  #sshCommand = C:/Windows/System32/OpenSSH/ssh.exe
 [filter "lfs"]
   clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
-[gpg]
-  # ssh
-  #format = ssh
-	# qubes
-	#program = qubes-gpg-client-wrapper
-  # windows
-  #program = C:/Program Files (x86)/GnuPG/bin/gpg.exe
 [color]
 	ui = auto
-[credential]
-	helper = cache --timeout=7200
 [commit]
 	gpgSign = true
 [tag]
 	gpgsign = true
-[init]
-	defaultBranch = main
 [diff]
 	ignoreSubmodules = dirty
 [push]

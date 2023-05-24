@@ -1,0 +1,4 @@
+[gpg]
+  program = qubes-gpg-client-wrapper # qubes gpg wrapper
+[credential]
+	helper = cache --timeout=7200

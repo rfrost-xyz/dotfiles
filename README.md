@@ -14,6 +14,8 @@
 
 ### NeoVim
 
+[NVChad](https://nvchad.com/)
+
 ### LazyGit
 
 ## Linux
@@ -43,6 +45,8 @@ Install Meslo LGS Nerd Font script
 winget install oh-my-posh
 winget install JesseDuffield.lazygit
 ```
+
+[PSReadLine](https://dev.to/animo/fish-like-autosuggestion-in-powershell-21ec)
 
 ### Powershell 7+
 

@@ -2,5 +2,8 @@
 .env
 /env
 
+# git configuration
+.gitconfig-local
+
 # history
 .netrwhist

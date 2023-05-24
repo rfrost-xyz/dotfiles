@@ -1,27 +1,28 @@
 [user]
-	name = $NAME
-	email = $EMAIL
-	signingkey = $SIGNINGKEY
+	name = #$NAME
+	email = #$EMAIL
+	signingkey = #$SIGNINGKEY
 [core]
 	editor = nvim
 	longpaths = true
 	# windows
-  #sshCommand = C:\\Windows\\System32\\OpenSSH\\ssh.exe
+  #sshCommand = C:/Windows/System32/OpenSSH/ssh.exe
 [filter "lfs"]
   clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
 [gpg]
+  # ssh
+  #format = ssh
 	# qubes
-	# program = qubes-gpg-client-wrapper
-  #windows
-  #program = C:\\Program Files (x86)\\GnuPG\\bin\\gpg.exe
+	#program = qubes-gpg-client-wrapper
+  # windows
+  #program = C:/Program Files (x86)/GnuPG/bin/gpg.exe
 [color]
 	ui = auto
 [credential]
-	# qubes
-	# helper = cache
+	helper = cache --timeout=7200
 [commit]
 	gpgSign = true
 [init]
@@ -29,7 +30,7 @@
 [diff]
 	ignoreSubmodules = dirty
 [push]
-	followTags = true # push tags
+  followTags = true
 [alias]
 	s = status
 	a = add

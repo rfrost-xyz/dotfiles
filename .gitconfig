@@ -25,6 +25,8 @@
 	helper = cache --timeout=7200
 [commit]
 	gpgSign = true
+[tag]
+	gpgsign = true
 [init]
 	defaultBranch = main
 [diff]

@@ -1,3 +1,4 @@
+```
    ███████╗██╗██╗     ███████╗███████╗
    ██╔════╝██║██║     ██╔════╝██╔════╝
    █████╗  ██║██║     █████╗  ███████╗
@@ -6,9 +7,8 @@
 ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝╚══════╝
 ```
 
-## General
+## Shared
 
-### Home
 
 #### Git
 
@@ -29,7 +29,13 @@ fisher install IlanCosman/tide@v5
 
 #### Tide
 
+## Qubes
+
+#*.gitconfig
+
 ## Windows
+
+* .gitconfig
 
 Install Meslo LGS Nerd Font script
 

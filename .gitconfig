@@ -1,15 +1,23 @@
-[include]
-  path = ~/.gitconfig-local
-#[user]
+# [user]
 #	name = #$NAME
 #	email = #$EMAIL
 #	signingkey = #$SIGNINGKEY
+[include]
+  path = ~/.gitconfig-local
 
-[includeIf "gitdir:/home"]
-  path = ~/.gitconfig-linux
-[includeIf "gitdir:C:"]
-  path = ~/.gitconfig-windows
+# linux
+[gpg]
+  program = qubes-gpg-client-wrapper
+[credential]
+	helper = cache --timeout=7200
 
+# windows
+[core]
+  sshCommand = C:/Windows/System32/OpenSSH/ssh.exe
+[gpg]
+  program = C:/Program Files (x86)/GnuPG/bin/gpg.exe
+
+# shared
 [init]
 	defaultBranch = main
 [core]
@@ -41,4 +49,4 @@
 	p = push
 	o = checkout
 	d = diff
-	l = log
+  l = log

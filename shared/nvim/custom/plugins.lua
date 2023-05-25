@@ -3,6 +3,7 @@ local overrides = require("custom.configs.overrides")
 ---@type NvPluginSpec[]
 local plugins = {
 
+	-- Override plugin definition options
   {
     "neovim/nvim-lspconfig",
     dependencies = {
@@ -28,6 +29,27 @@ local plugins = {
     end,
   },
 
+  -- override plugin configs
+  {
+    "nvim-treesitter/nvim-treesitter",
+    opts = overrides.treesitter,
+  },
+
+  {
+    "williamboman/mason.nvim",
+    opts = overrides.mason
+  },
+
+  {
+    "nvim-tree/nvim-tree.lua",
+    opts = overrides.nvimtree,
+  },
+
+  {
+    "hrsh7th/nvim-cmp",
+    opts = overrides.cmp,
+  },
+
   -- vim table mode
   {
     "dhruvasagar/vim-table-mode",
@@ -39,6 +61,9 @@ local plugins = {
   -- github copilot
   {
     "zbirenbaum/copilot.lua",
+    cmd = "Copilot",
+    event = "InsertEnter",
+    opts = overrides.copilot,
     dependencies = {
       -- github copilot cmp
       {
@@ -48,9 +73,6 @@ local plugins = {
         end
       },
     },
-    cmd = "Copilot",
-    event = "InsertEnter",
-    opts = overrides.copilot,
   },
 
 --  {
@@ -61,7 +83,6 @@ local plugins = {
 --      "nvim-treesitter/nvim-treesitter",
 --      "nvim-tree/nvim-web-devicons"
 --    },
---    lazy = false,
 --    config = function()
 --      require('aerial').setup({
 --        -- optionally use on_attach to set keymaps when aerial has attached to a buffer

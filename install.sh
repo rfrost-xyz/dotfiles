@@ -1,14 +1,15 @@
 #! /bin/bash
 
 # install nerdfont
-cd ~/.local/share/fonts
 wget https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Meslo.zip
 unzip Meslo.zip
-rm Meslo.zip
+sudo cp *.ttf ~/.local/share/fonts
+sudo rm Meslo.zip
 fc-cache
 
 # git configuration
 cp .gitconfig ~/
+touch ~/.gitconfig-local
 
 # lazygit
 sudo dnf copr enable atim/lazygit -y

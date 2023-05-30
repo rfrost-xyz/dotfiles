@@ -12,6 +12,7 @@ M.treesitter = {
 		"json",
     "c",
 		"usd",
+		"dockerfile",
   },
   indent = {
     enable = true,

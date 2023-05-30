@@ -20,7 +20,7 @@ M.treesitter = {
     --   "python"
     -- },
   },
-	parser_install_dir = installation_directory,
+	-- parser_install_dir = "C:/Users/richardf/AppData/Local/Programs/Neovim/lib/nvim/",
 	highlight = { enable = true },
 }
 

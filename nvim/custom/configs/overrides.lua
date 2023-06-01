@@ -37,8 +37,8 @@ M.mason = {
     "clangd",
     "clang-format",
 		"pyright",
-		"dockerfile-language-server", 
-    "docker-compose-language-service", 
+		"dockerfile-language-server",
+    "docker-compose-language-service",
   },
 }
 

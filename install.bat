@@ -1,22 +1,16 @@
 ECHO OFF
 
-:: install nerdfont
-
-:: git configuration
+:: Copy configurations
 copy .gitconfig $HOME/
-
-:: lazygit
-winget install JesseDuffield.lazygit
-
-:: terminal configuration
 copy ./terminal/windows-terminal-settings.json $HOME/Documents/Windows Terminal/
-
-:: PSreadline
-
-:: powershell configuration
-
-:: neovim configuration
 copy ./nvim/custom/ $HOME/AppData/Local/Nvim/custom
 
-:: oh my posh
-winget install JanDeDobbeleer.OhMyPosh
+:: Install packages through Winget
+::winget install JanDeDobbeleer.OhMyPosh
+::winget install JesseDuffield.lazygit
+
+:: install nerdfont
+
+:: PSreadline
+:: powershell configuration
+

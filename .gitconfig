@@ -1,5 +1,9 @@
 [include]
   path = ~/.gitconfig-local
+#[user]
+#	name = Name
+#	email = Email
+#	signingkey = Key
 
 # linux
 [gpg]
@@ -11,7 +15,8 @@
 [core]
   sshCommand = C:/Windows/System32/OpenSSH/ssh.exe
 [gpg]
-  program = C:/Program Files (x86)/GnuPG/bin/gpg.exe
+#  program = C:/Program Files (x86)/GnuPG/bin/gpg.exe
+  program = C:/USER/AppData/Local/Programs/GnuPG/bin/gpg.exe
 
 # shared
 [init]

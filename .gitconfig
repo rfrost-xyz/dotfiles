@@ -1,22 +1,27 @@
+# [user] # .gitconfig-local
+#	name = #$NAME
+#	email = #$EMAIL
+#	signingkey = #$SIGNINGKEY
 [include]
   path = ~/.gitconfig-local
-#[user]
-#	name = Name
-#	email = Email
-#	signingkey = Key
 
 # linux
+[core]
+  sshCommand = /usr/bin/ssh
 [gpg]
-  program = qubes-gpg-client-wrapper
+	program = gpg
 [credential]
-	helper = cache --timeout=7200
+  helper = cache --timeout=7200
+
+# qubes
+#[gpg]
+#  program = qubes-gpg-client-wrapper
 
 # windows
-[core]
-  sshCommand = C:/Windows/System32/OpenSSH/ssh.exe
-[gpg]
+#[core]
+#  sshCommand = C:/Windows/System32/OpenSSH/ssh.exe
+#[gpg]
 #  program = C:/Program Files (x86)/GnuPG/bin/gpg.exe
-  program = C:/USER/AppData/Local/Programs/GnuPG/bin/gpg.exe
 
 # shared
 [init]
@@ -50,4 +55,7 @@
 	p = push
 	o = checkout
 	d = diff
-  l = log
+	l = log
+[credential "https://git.squintopera.com"]
+	provider = generic
+

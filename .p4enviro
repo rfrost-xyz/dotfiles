@@ -1,5 +1,0 @@
-P4CONFIG=.p4config
-P4_ssl:35.176.29.207:1666_CHARSET=none
-P4CLIENT=squint1_Digital_4090_DGCL_DT_05764_v2_DEV
-P4USER=richard.frost
-P4_ssl:p4.goa.locationxr.com:1666_CHARSET=auto

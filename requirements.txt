@@ -1,2 +1,0 @@
-pip-review
-git-status-checker

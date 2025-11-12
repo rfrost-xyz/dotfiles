@@ -1,9 +1,0 @@
-# virtual environment
-.env
-/env
-
-# git configuration
-.gitconfig-local
-
-# history
-.netrwhist

@@ -17,6 +17,7 @@ p4client=""
 root_base=""
 client_root_win=""
 client_root_wsl=""
+p4passwd=""
 
 # --- Functions ---
 
@@ -29,6 +30,7 @@ show_help() {
   echo ""
   echo "Optional:"
   echo "  -p <p4user>  P4USER, default:'$P4USER'."
+  echo "  -P <p4passwd> P4PASSWD, no default, will be omitted from .p4config if not provided."
   echo "  -u <user>    System user, default:'$(whoami)'."
   echo "  -h <host>    System hostname, default:'$(hostname)'."
   echo "  -w <root>    Client base directory for root, default:'$ROOT_BASE'."
@@ -43,9 +45,10 @@ parse_arguments() {
   p4host="$P4HOST"
   root_base="$ROOT_BASE"
 
-  while getopts "p:u:h:s:w:?" opt; do
+  while getopts "p:P:u:h:s:w:?" opt; do
     case $opt in
     p) p4user="$OPTARG" ;;
+    P) p4passwd="$OPTARG" ;;
     u) user="$OPTARG" ;;
     h) p4host="$OPTARG" ;;
     s) p4stream="$OPTARG" ;;
@@ -96,6 +99,11 @@ create_workspace_files() {
   # Create .p4config
   local p4config="$client_root_wsl/.p4config"
   echo "P4CLIENT=$p4client" >"$p4config"
+  echo "P4USER=$p4user" >>"$p4config"
+  echo "P4HOST=$p4host" >>"$p4config"
+  if [ -n "$p4passwd" ]; then
+    echo "P4PASSWD=$p4passwd" >>"$p4config"
+  fi
 
   # Create .p4ignore
   local p4ignore="$client_root_wsl/p4ignore"

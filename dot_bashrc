@@ -1,0 +1,64 @@
+# set Alacritty window title
+function set_win_title() {
+  echo -ne "\033]0; ${PWD/#$HOME/~} \007"
+}
+starship_precmd_user_func="set_win_title"
+
+# paths
+export PATH=$PATH:$HOME/.local/bin
+
+# set starship prompt
+eval "$(starship init bash)"
+export STARSHIP_CONFIG=~/.config/starship/starship.toml
+
+# fzf
+source /usr/share/doc/fzf/examples/key-bindings.bash
+source ~/.local/share/fzf/completion.bash
+source /usr/share/bash-completion/completions/fzf
+
+# environment
+EDITOR=/usr/bin/nvim
+
+# aliases
+alias ssh='ssh.exe'         # Windows 1Password ssh.exe
+alias ssh-add='ssh-add.exe' # Windows 1Password ssh.exe
+alias cat='batcat'
+alias ff='fzf'
+alias ls='eza -l --group-directories-first --icons'
+alias lsa='eza -la --group-directories-first --icons'
+alias cm='chezmoi'
+alias lg='lazygit'
+
+# fzf use rg by default
+export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_CTRL_T_OPTS="--preview 'batcat --color=always --line-range :50 {}'"
+export FZF_ALT_C_COMMAND="fd --type d --hidden --exclude .git"
+
+# set nvm
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+
+# functions
+#
+# nvim with auto conversion of Windows paths
+function n() {
+  if [ -z "$1" ]; then
+    # Open nvim if no path is given
+    nvim
+    return
+  fi
+
+  local file="$1"
+
+  # Check if the path is Windows, otherwise just open
+  if [[ "$file" == *"\\"* ]] || [[ "$file" =~ ^[A-Za-z]: ]]; then
+    nvim "$(wslpath -u "$file")"
+  else
+    nvim "$file"
+  fi
+}
+
+# initialise zoxide
+eval "$(zoxide init --cmd cd bash)"

@@ -33,7 +33,7 @@ show_help() {
   echo "  -P <p4passwd> P4PASSWD, no default, will be omitted from .p4config if not provided."
   echo "  -u <user>    System user, default:'$(whoami)'."
   echo "  -h <host>    System hostname, default:'$(hostname)'."
-  echo "  -w <root>    Client base directory for root, default:'$ROOT_BASE'."
+  echo "  -r <root>    Client base directory for root, default:'$ROOT_BASE'."
   echo "  -?           Show this help message."
   echo ""
 }
@@ -45,14 +45,14 @@ parse_arguments() {
   p4host="$P4HOST"
   root_base="$ROOT_BASE"
 
-  while getopts "p:P:u:h:s:w:?" opt; do
+  while getopts "p:P:u:h:s:r:?" opt; do
     case $opt in
     p) p4user="$OPTARG" ;;
     P) p4passwd="$OPTARG" ;;
     u) user="$OPTARG" ;;
     h) p4host="$OPTARG" ;;
     s) p4stream="$OPTARG" ;;
-    w) root_base="$OPTARG" ;;
+    r) root_base="$OPTARG" ;;
     ?)
       show_help
       exit 0

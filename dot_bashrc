@@ -76,7 +76,7 @@ clip() {
   fi
 
   # Pipe the file content to the Windows clipboard
-  batcat -p "$1" | clip.exe
+  batcat "$1" | clip.exe && echo "Copied '$1' to clipboard"
 }
 
 # initialise zoxide

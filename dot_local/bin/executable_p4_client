@@ -1,0 +1,152 @@
+#!/bin/bash
+
+# A script to create a P4 client for use in WSL and Windows.
+
+# --- Configuration ---
+P4USER="squint1"
+P4HOST=$(hostname)
+ROOT_BASE="D:\\Stage\\"
+
+# --- Globals ---
+# These will be set by argument parsing
+user=""
+p4user=""
+p4host=""
+p4stream=""
+p4client=""
+root_base=""
+client_root_win=""
+client_root_wsl=""
+
+# --- Functions ---
+
+show_help() {
+  echo ""
+  echo "Usage: $0 -s <stream> [options]"
+  echo ""
+  echo "Required:"
+  echo "  -s <stream>  Stream association for client (e.g., //depot/main)."
+  echo ""
+  echo "Optional:"
+  echo "  -p <p4user>  P4USER, default:'$P4USER'."
+  echo "  -u <user>    System user, default:'$(whoami)'."
+  echo "  -h <host>    System hostname, default:'$(hostname)'."
+  echo "  -w <root>    Client base directory for root, default:'$ROOT_BASE'."
+  echo "  -?           Show this help message."
+  echo ""
+}
+
+parse_arguments() {
+  # Set defaults
+  user="$(whoami)"
+  p4user="$P4USER"
+  p4host="$P4HOST"
+  root_base="$ROOT_BASE"
+
+  while getopts "p:u:h:s:w:?" opt; do
+    case $opt in
+    p) p4user="$OPTARG" ;;
+    u) user="$OPTARG" ;;
+    h) p4host="$OPTARG" ;;
+    s) p4stream="$OPTARG" ;;
+    w) root_base="$OPTARG" ;;
+    ?)
+      show_help
+      exit 0
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      show_help
+      exit 1
+      ;;
+    esac
+  done
+}
+
+validate_arguments() {
+  if [ -z "$p4stream" ]; then
+    echo "Error: missing required arguments." >&2
+    show_help
+    exit 1
+  fi
+}
+
+generate_client_details() {
+  # Sanitize stream name for use in client name
+  local stream_sanitized
+  stream_sanitized=$(basename "$p4stream")
+
+  # Construct client name
+  p4client="${p4user}_${user}_${p4host}_${stream_sanitized}"
+
+  # Define client root paths
+  # Note: P4 requires backslashes for Windows paths in the client spec.
+  client_root_win="${root_base%\\}\\${p4client}"
+  client_root_wsl=$(wslpath -u "$client_root_win")
+}
+
+create_workspace_files() {
+  # Create client root directory
+  mkdir -p "$client_root_wsl"
+  if [ $? -ne 0 ]; then
+    echo "Error: Could not create directory '$client_root_wsl'." >&2
+    exit 1
+  fi
+
+  # Create .p4config
+  local p4config="$client_root_wsl/.p4config"
+  echo "P4CLIENT=$p4client" >"$p4config"
+
+  # Create .p4ignore
+  local p4ignore="$client_root_wsl/p4ignore"
+  echo ".p4config" >"$p4ignore"
+}
+
+display_summary() {
+  echo ""
+  echo "Client:   $p4client"
+  echo "Owner:    $p4user"
+  echo "Stream:   $p4stream"
+  echo "Root:     $client_root_win"
+  echo "AltRoot:  $client_root_wsl"
+  echo ""
+}
+
+create_p4_client() {
+  p4 client -i <<EOF
+Client: $p4client
+Owner: $p4user
+Host:
+Description:
+ Created by p4_client.sh on $(date)
+Root: ${client_root_win}
+AltRoots:
+ ${client_root_wsl}
+Options:    clobber rmdir
+SubmitOptions:  revertunchanged
+Stream: $p4stream
+EOF
+
+  if [ $? -eq 0 ]; then
+    echo ""
+    echo "Success: created client '$p4client'."
+  else
+    echo ""
+    echo "Error: failed to create client." >&2
+    exit 1
+  fi
+}
+
+# --- Main Logic ---
+main() {
+  parse_arguments "$@"
+  validate_arguments
+  generate_client_details
+  create_workspace_files
+  display_summary
+  create_p4_client
+}
+
+main "$@"
+
+exit 0

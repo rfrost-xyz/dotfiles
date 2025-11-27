@@ -41,7 +41,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
 
 # functions
-#
+
 # nvim with auto conversion of Windows paths
 function n() {
   if [ -z "$1" ]; then
@@ -58,6 +58,25 @@ function n() {
   else
     nvim "$file"
   fi
+}
+
+# copy to Windows Clipboard
+clip() {
+  # Check if filename was provided
+  if [ -z "$1" ]; then
+    echo "Usage: copy <filename>"
+    return 1
+
+  fi
+
+  # Check if file exists
+  if [ ! -f "$1" ]; then
+    echo "Error: File '$1' not found."
+    return 1
+  fi
+
+  # Pipe the file content to the Windows clipboard
+  batcat -p "$1" | clip.exe
 }
 
 # initialise zoxide

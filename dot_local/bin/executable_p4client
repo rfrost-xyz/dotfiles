@@ -4,7 +4,7 @@
 
 # --- Configuration ---
 P4USER="squint1"
-P4HOST="ssl:35.176.29.207:1666"
+P4PORT="ssl:35.176.29.207:1666"
 HOSTNAME=$(hostname)
 ROOT_BASE="D:\\Stage\\"
 
@@ -13,7 +13,7 @@ ROOT_BASE="D:\\Stage\\"
 user=""
 hostname=""
 p4user=""
-p4host=""
+p4port=""
 p4stream=""
 p4client=""
 p4passwd=""
@@ -32,9 +32,8 @@ show_help() {
   echo ""
   echo "Optional:"
   echo "  -p <p4user>   P4USER, default:'$P4USER'."
-  echo "  -P <p4passwd> P4PASSWD, no default, will be omitted from .p4config if not provided."
   echo "  -u <user>     System user, default:'$(whoami)'."
-  echo "  -d <p4host>   P4HOST, default:'$P4HOST'."
+  echo "  -d <p4port>   P4PORT, default:'$P4PORT'."
   echo "  -n <hostname> System hostname, default:'$HOSTNAME'."
   echo "  -r <root>     Client base directory for root, default:'$ROOT_BASE'."
   echo "  -h            Show this help message."
@@ -45,28 +44,27 @@ parse_arguments() {
   # Set defaults
   user="$(whoami)"
   p4user="$P4USER"
-  p4host="$P4HOST"
+  p4port="$P4PORT"
   hostname="$HOSTNAME"
   root_base="$ROOT_BASE"
 
-  while getopts "p:P:u:d:n:s:r:h" opt; do
+  while getopts "p:u:d:n:s:r:h" opt; do
     case $opt in
     u) user="$OPTARG" ;;
     n) hostname="$OPTARG" ;;
     p) p4user="$OPTARG" ;;
-    P) p4passwd="$OPTARG" ;;
-    d) p4host="$OPTARG" ;;
+    d) p4port="$OPTARG" ;;
     s) p4stream="$OPTARG" ;;
     r) root_base="$OPTARG" ;;
-    h)
+    h) 
       show_help
       exit 0
-      ;;
-    \?)
+      ;; 
+    \?) 
       echo "Invalid option: -$OPTARG" >&2
       show_help
       exit 1
-      ;;
+      ;; 
     esac
   done
 }
@@ -89,7 +87,7 @@ generate_client_details() {
 
   # Define client root paths
   # Note: P4 requires backslashes for Windows paths in the client spec.
-  client_root_win="${root_base%\\}\\${p4client}"
+  client_root_win="${root_base%\\}\\\\\${p4client}"
   client_root_wsl=$(wslpath -u "$client_root_win")
 }
 
@@ -105,10 +103,7 @@ create_workspace_files() {
   local p4config="$client_root_wsl/.p4config"
   echo "P4CLIENT=$p4client" >"$p4config"
   echo "P4USER=$p4user" >>"$p4config"
-  echo "P4HOST=$p4host" >>"$p4config"
-  if [ -n "$p4passwd" ]; then
-    echo "P4PASSWD=$p4passwd" >>"$p4config"
-  fi
+  echo "P4PORT=$p4port" >>"$p4config"
 
   # Create .p4ignore
   local p4ignore="$client_root_wsl/p4ignore"
@@ -125,8 +120,55 @@ display_summary() {
   echo ""
 }
 
+ensure_login() {
+    # 1. Pre-flight check for trust
+    local info_output
+    info_output=$(P4PORT="$p4port" p4 info 2>&1)
+    if echo "$info_output" | grep -q "can't be established"; then
+        echo "Perforce server at '$p4port' is not trusted."
+        read -p "Do you want to trust this server? (y/n) " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            if ! P4PORT="$p4port" p4 trust -y; then
+                echo "Failed to establish trust. Please check your configuration." >&2
+                exit 1
+            fi
+            echo "Trust established."
+        else
+            echo "Aborting without trusting server." >&2
+            exit 1
+        fi
+    fi
+
+    # 2. Check if already logged in
+    if P4PORT="$p4port" P4USER="$p4user" p4 login -s >/dev/null 2>&1; then
+        echo "Already logged in to Perforce."
+        return
+    fi
+
+    # 3. Attempt interactive login
+    echo "Perforce login required for user '$p4user' on host '$p4port'."
+    if P4PORT="$p4port" P4USER="$p4user" p4 login; then
+        echo "Login successful."
+        return
+    fi
+
+    # 4. If login fails, figure out why and exit if it's a permanent error
+    local error_check
+    error_check=$(P4PORT="$p4port" P4USER="$p4user" p4 login -s 2>&1)
+
+    if echo "$error_check" | grep -q "enabled by 'p4 protect'"; then
+        echo "Error: Perforce server access denied for user '$p4user'." >&2
+        echo "Please contact your Perforce administrator to enable access via 'p4 protect'." >&2
+        exit 1
+    fi
+
+    echo "Login was unsuccessful. Aborting." >&2
+    exit 1
+}
+
 create_p4_client() {
-  p4 client -i <<EOF
+  P4PORT="$p4port" P4USER="$p4user" p4 client -i <<EOF
 Client: $p4client
 Owner: $p4user
 Host:
@@ -154,6 +196,7 @@ EOF
 main() {
   parse_arguments "$@"
   validate_arguments
+  ensure_login
   generate_client_details
   create_workspace_files
   display_summary

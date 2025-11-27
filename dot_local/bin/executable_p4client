@@ -4,20 +4,22 @@
 
 # --- Configuration ---
 P4USER="squint1"
-P4HOST=$(hostname)
+P4HOST="ssl:35.176.29.207:1666"
+HOSTNAME=$(hostname)
 ROOT_BASE="D:\\Stage\\"
 
 # --- Globals ---
 # These will be set by argument parsing
 user=""
+hostname=""
 p4user=""
 p4host=""
 p4stream=""
 p4client=""
+p4passwd=""
 root_base=""
 client_root_win=""
 client_root_wsl=""
-p4passwd=""
 
 # --- Functions ---
 
@@ -29,12 +31,13 @@ show_help() {
   echo "  -s <stream>  Stream association for client (e.g., //depot/main)."
   echo ""
   echo "Optional:"
-  echo "  -p <p4user>  P4USER, default:'$P4USER'."
+  echo "  -p <p4user>   P4USER, default:'$P4USER'."
   echo "  -P <p4passwd> P4PASSWD, no default, will be omitted from .p4config if not provided."
-  echo "  -u <user>    System user, default:'$(whoami)'."
-  echo "  -H <host>    System hostname, default:'$(hostname)'."
-  echo "  -r <root>    Client base directory for root, default:'$ROOT_BASE'."
-  echo "  -h           Show this help message."
+  echo "  -u <user>     System user, default:'$(whoami)'."
+  echo "  -d <p4host>   P4HOST, default:'$P4HOST'."
+  echo "  -n <hostname> System hostname, default:'$HOSTNAME'."
+  echo "  -r <root>     Client base directory for root, default:'$ROOT_BASE'."
+  echo "  -h            Show this help message."
   echo ""
 }
 
@@ -43,14 +46,16 @@ parse_arguments() {
   user="$(whoami)"
   p4user="$P4USER"
   p4host="$P4HOST"
+  hostname="$HOSTNAME"
   root_base="$ROOT_BASE"
 
-  while getopts "p:P:u:H:s:r:h" opt; do
+  while getopts "p:P:u:d:n:s:r:h" opt; do
     case $opt in
+    u) user="$OPTARG" ;;
+    n) hostname="$OPTARG" ;;
     p) p4user="$OPTARG" ;;
     P) p4passwd="$OPTARG" ;;
-    u) user="$OPTARG" ;;
-    H) p4host="$OPTARG" ;;
+    d) p4host="$OPTARG" ;;
     s) p4stream="$OPTARG" ;;
     r) root_base="$OPTARG" ;;
     h)
@@ -80,7 +85,7 @@ generate_client_details() {
   stream_sanitized=$(basename "$p4stream")
 
   # Construct client name
-  p4client="${p4user}_${user}_${p4host}_${stream_sanitized}"
+  p4client="${p4user}_${user}_${hostname}_${stream_sanitized}"
 
   # Define client root paths
   # Note: P4 requires backslashes for Windows paths in the client spec.

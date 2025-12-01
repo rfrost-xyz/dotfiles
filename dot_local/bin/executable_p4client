@@ -1,22 +1,20 @@
 #!/bin/bash
 
-# A script to create a P4 client for use in WSL and Windows.
+# A P4 client for use in WSL and Windows.
 
 # --- Configuration ---
-P4USER="squint1"
-P4PORT="ssl:35.176.29.207:1666"
-HOSTNAME=$(hostname)
+# P4USER=""
+# P4PORT=""
+HOSTNAME="$(hostname)"
 ROOT_BASE="D:\\Stage\\"
 
 # --- Globals ---
-# These will be set by argument parsing
 user=""
 hostname=""
 p4user=""
 p4port=""
 p4stream=""
 p4client=""
-p4passwd=""
 root_base=""
 client_root_win=""
 client_root_wsl=""
@@ -56,15 +54,15 @@ parse_arguments() {
     d) p4port="$OPTARG" ;;
     s) p4stream="$OPTARG" ;;
     r) root_base="$OPTARG" ;;
-    h) 
+    h)
       show_help
       exit 0
-      ;; 
-    \?) 
+      ;;
+    \?)
       echo "Invalid option: -$OPTARG" >&2
       show_help
       exit 1
-      ;; 
+      ;;
     esac
   done
 }
@@ -86,8 +84,7 @@ generate_client_details() {
   p4client="${p4user}_${user}_${hostname}_${stream_sanitized}"
 
   # Define client root paths
-  # Note: P4 requires backslashes for Windows paths in the client spec.
-  client_root_win="${root_base%\\}\\\\\${p4client}"
+  client_root_win="${root_base%\\}\\$p4client"
   client_root_wsl=$(wslpath -u "$client_root_win")
 }
 
@@ -121,50 +118,50 @@ display_summary() {
 }
 
 ensure_login() {
-    # 1. Pre-flight check for trust
-    local info_output
-    info_output=$(P4PORT="$p4port" p4 info 2>&1)
-    if echo "$info_output" | grep -q "can't be established"; then
-        echo "Perforce server at '$p4port' is not trusted."
-        read -p "Do you want to trust this server? (y/n) " -n 1 -r
-        echo
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
-            if ! P4PORT="$p4port" p4 trust -y; then
-                echo "Failed to establish trust. Please check your configuration." >&2
-                exit 1
-            fi
-            echo "Trust established."
-        else
-            echo "Aborting without trusting server." >&2
-            exit 1
-        fi
-    fi
-
-    # 2. Check if already logged in
-    if P4PORT="$p4port" P4USER="$p4user" p4 login -s >/dev/null 2>&1; then
-        echo "Already logged in to Perforce."
-        return
-    fi
-
-    # 3. Attempt interactive login
-    echo "Perforce login required for user '$p4user' on host '$p4port'."
-    if P4PORT="$p4port" P4USER="$p4user" p4 login; then
-        echo "Login successful."
-        return
-    fi
-
-    # 4. If login fails, figure out why and exit if it's a permanent error
-    local error_check
-    error_check=$(P4PORT="$p4port" P4USER="$p4user" p4 login -s 2>&1)
-
-    if echo "$error_check" | grep -q "enabled by 'p4 protect'"; then
-        echo "Error: Perforce server access denied for user '$p4user'." >&2
-        echo "Please contact your Perforce administrator to enable access via 'p4 protect'." >&2
+  # Pre-flight check for trust
+  local info_output
+  info_output=$(P4PORT="$p4port" p4 info 2>&1)
+  if echo "$info_output" | grep -q "can't be established"; then
+    echo "Perforce server at '$p4port' is not trusted."
+    read -p "Do you want to trust this server? (y/n) " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+      if ! P4PORT="$p4port" p4 trust -y; then
+        echo "Failed to establish trust. Please check your configuration." >&2
         exit 1
+      fi
+      echo "Trust established."
+    else
+      echo "Aborting without trusting server." >&2
+      exit 1
     fi
+  fi
 
-    echo "Login was unsuccessful. Aborting." >&2
+  # Check if already logged in
+  if P4PORT="$p4port" P4USER="$p4user" p4 login -s >/dev/null 2>&1; then
+    echo "Already logged in to Perforce."
+    return
+  fi
+
+  # Attempt interactive login
+  echo "Perforce login required for user '$p4user' on host '$p4port'."
+  if P4PORT="$p4port" P4USER="$p4user" p4 login; then
+    echo "Login successful."
+    return
+  fi
+
+  # If login fails, figure out why and exit if it's a permanent error
+  local error_check
+  error_check=$(P4PORT="$p4port" P4USER="$p4user" p4 login -s 2>&1)
+
+  if echo "$error_check" | grep -q "enabled by 'p4 protect'"; then
+    echo "Error: Perforce server access denied for user '$p4user'." >&2
+    echo "Please contact your Perforce administrator to enable access via 'p4 protect'." >&2
     exit 1
+  fi
+
+  echo "Login was unsuccessful. Aborting." >&2
+  exit 1
 }
 
 create_p4_client() {

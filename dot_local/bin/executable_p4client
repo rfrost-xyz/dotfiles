@@ -3,8 +3,8 @@
 # A P4 client for use in WSL and Windows.
 
 # --- Configuration ---
-# P4USER=""
-# P4PORT=""
+P4USER="squint1"
+P4PORT="ssl:35.176.29.207:1666"
 HOSTNAME="$(hostname)"
 ROOT_BASE="D:\\Stage\\"
 

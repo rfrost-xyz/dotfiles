@@ -6,6 +6,7 @@ starship_precmd_user_func="set_win_title"
 
 # paths
 export PATH=$PATH:$HOME/.local/bin
+export PATH="$HOME/.cargo/bin:$PATH"
 
 # set starship prompt
 eval "$(starship init bash)"
@@ -81,3 +82,4 @@ clip() {
 
 # initialise zoxide
 eval "$(zoxide init --cmd cd bash)"
+. "$HOME/.cargo/env"

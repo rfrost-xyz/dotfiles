@@ -6,7 +6,8 @@ starship_precmd_user_func="set_win_title"
 
 # paths
 export PATH=$PATH:$HOME/.local/bin
-export PATH="$HOME/.cargo/bin:$PATH"
+export PATH="$HOME/.cargo/bin:$PATH"               #rust
+export PATH=/home/richardfrost/.opencode/bin:$PATH #opencode
 
 # set starship prompt
 eval "$(starship init bash)"
@@ -29,6 +30,7 @@ alias ls='eza -l --group-directories-first --icons'
 alias lsa='eza -la --group-directories-first --icons'
 alias cm='chezmoi'
 alias lg='lazygit'
+alias c='opencode'
 
 # fzf use rg by default
 export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'

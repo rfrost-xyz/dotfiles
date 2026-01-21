@@ -15,8 +15,10 @@ export STARSHIP_CONFIG=~/.config/starship/starship.toml
 
 # fzf
 source /usr/share/doc/fzf/examples/key-bindings.bash
-source ~/.local/share/fzf/completion.bash
+source "$HOME/.local/share/fzf/completion.bash"
 source /usr/share/bash-completion/completions/fzf
+source "$HOME/.turso/env"
+source "$HOME/.cargo/env"
 
 # environment
 EDITOR=/usr/bin/nvim
@@ -42,6 +44,11 @@ export FZF_ALT_C_COMMAND="fd --type d --hidden --exclude .git"
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+
+# pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init - bash)"
 
 # functions
 
@@ -84,4 +91,3 @@ clip() {
 
 # initialise zoxide
 eval "$(zoxide init --cmd cd bash)"
-. "$HOME/.cargo/env"

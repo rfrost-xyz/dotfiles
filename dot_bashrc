@@ -8,6 +8,7 @@ starship_precmd_user_func="set_win_title"
 export PATH=$PATH:$HOME/.local/bin
 export PATH="$HOME/.cargo/bin:$PATH"               #rust
 export PATH=/home/richardfrost/.opencode/bin:$PATH #opencode
+export EDITOR=nvim
 
 # set starship prompt
 eval "$(starship init bash)"
@@ -70,6 +71,15 @@ function n() {
   fi
 }
 
+# yazi
+function y() {
+  local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+  command yazi "$@" --cwd-file="$tmp"
+  IFS= read -r -d '' cwd <"$tmp"
+  [ "$cwd" != "$PWD" ] && [ -d "$cwd" ] && builtin cd -- "$cwd"
+  rm -f -- "$tmp"
+}
+
 # copy to Windows Clipboard
 clip() {
   # Check if filename was provided
@@ -91,3 +101,6 @@ clip() {
 
 # initialise zoxide
 eval "$(zoxide init --cmd cd bash)"
+#
+#
+#

@@ -2,6 +2,7 @@
 name: committer
 description: specialized agent for dissecting diffs and staging semantic commits
 model: google/gemini-3-flash-preview
+mode: subagent
 tools:
   edit: true
   bash: true

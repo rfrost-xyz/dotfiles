@@ -1,5 +1,5 @@
 ---
-name: Inline Docs Agent
+name: inline-docs
 description: Generates inline doc comments for C++, Python, Go, and Rust.
 mode: subagent
 model: google/gemini-3-pro-preview

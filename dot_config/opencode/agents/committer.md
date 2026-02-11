@@ -1,7 +1,7 @@
 ---
 name: committer
 description: specialized agent for dissecting diffs and staging semantic commits
-model: google/gemini-3-flash-preview
+model: openai/gpt-5.1-codex-mini
 mode: subagent
 tools:
   edit: true

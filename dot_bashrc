@@ -6,55 +6,51 @@ starship_precmd_user_func="set_win_title"
 
 # paths
 export PATH=$PATH:$HOME/.local/bin
-export PATH="$HOME/.cargo/bin:$PATH"               #rust
-export PATH=/home/richardfrost/.opencode/bin:$PATH #opencode
-export EDITOR=nvim
+export PATH=/home/richardfrost/.opencode/bin:$PATH # opencode
 
-# set starship prompt
+# --- MISE ---
+eval "$(mise activate bash)"
+
+# --- Starship Prompt ---
 eval "$(starship init bash)"
 export STARSHIP_CONFIG=~/.config/starship/starship.toml
 
-# fzf
+# --- Editors & Environment ---
+export EDITOR=nvim
+
+# --- FZF ---
 source /usr/share/doc/fzf/examples/key-bindings.bash
 source "$HOME/.local/share/fzf/completion.bash"
+
 source /usr/share/bash-completion/completions/fzf
 source "$HOME/.turso/env"
-source "$HOME/.cargo/env"
 
-# environment
-EDITOR=/usr/bin/nvim
+# fzf configuration
 
-# aliases
-alias ssh='ssh.exe'         # Windows 1Password ssh.exe
-alias ssh-add='ssh-add.exe' # Windows 1Password ssh.exe
-alias cat='batcat'
-alias ff='fzf'
-alias ls='eza -l --group-directories-first --icons'
-alias lsa='eza -la --group-directories-first --icons'
-alias cm='chezmoi'
-alias lg='lazygit'
-alias c='opencode'
-
-# fzf use rg by default
 export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_CTRL_T_OPTS="--preview 'batcat --color=always --line-range :50 {}'"
 export FZF_ALT_C_COMMAND="fd --type d --hidden --exclude .git"
 
-# set nvm
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+# --- Aliases ---
+alias ssh='ssh.exe' # Windows 1Password ssh.exe
 
-# pyenv
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init - bash)"
+alias ssh-add='ssh-add.exe' # Windows 1Password ssh.exe
+alias cat='batcat'
+alias ff='fzf'
+alias ls='eza -l --group-directories-first --icons'
 
-# functions
+alias lsa='eza -la --group-directories-first --icons'
+
+alias cm='chezmoi'
+alias lg='lazygit'
+alias c='opencode'
+
+# --- Functions ---
 
 # nvim with auto conversion of Windows paths
 function n() {
+
   if [ -z "$1" ]; then
     # Open nvim if no path is given
     nvim
@@ -68,10 +64,12 @@ function n() {
     nvim "$(wslpath -u "$file")"
   else
     nvim "$file"
+
   fi
 }
 
 # yazi
+
 function y() {
   local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
   command yazi "$@" --cwd-file="$tmp"
@@ -82,15 +80,16 @@ function y() {
 
 # copy to Windows Clipboard
 clip() {
+
   # Check if filename was provided
   if [ -z "$1" ]; then
     echo "Usage: copy <filename>"
     return 1
-
   fi
 
   # Check if file exists
   if [ ! -f "$1" ]; then
+
     echo "Error: File '$1' not found."
     return 1
   fi
@@ -101,6 +100,3 @@ clip() {
 
 # initialise zoxide
 eval "$(zoxide init --cmd cd bash)"
-#
-#
-#

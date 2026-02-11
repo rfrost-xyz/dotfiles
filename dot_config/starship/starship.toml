@@ -1,5 +1,5 @@
 add_newline = false
-format = """$directory$python$character"""
+format = """$directory$mise$character"""
 right_format = """$all"""
 palette = "catppuccin_mocha"
 
@@ -22,6 +22,12 @@ detect_files = []
 # This format wraps the name in parens, e.g., (.venv) or (env)
 format = '[($virtualenv)]($style) '
 style = "yellow"
+
+[mise]
+disabled = false
+format = '[$symbol]($style) '
+symbol = '⬢'
+style = "green"
 
 # palette tables should be last in the config ⚓️
 [palettes.catppuccin_macchiato]

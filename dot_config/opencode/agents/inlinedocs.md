@@ -2,7 +2,7 @@
 name: inline-docs
 description: Generates inline doc comments for C++, Python, Go, and Rust.
 mode: subagent
-model: google/gemini-3-flash-preview
+model: openai/gpt-5.2-codex
 tools:
   edit: true
   bash: true

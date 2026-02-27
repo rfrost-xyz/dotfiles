@@ -51,7 +51,11 @@ check_deps() {
 }
 
 require_fzf() {
-  require_cmd fzf "Install fzf: https://github.com/junegunn/fzf#installation"
+  if has_cmd fzf; then
+    return 0
+  fi
+
+  die "this command needs fzf for interactive selection\n  Install fzf, then retry: https://github.com/junegunn/fzf"
 }
 
 require_glab() {
@@ -72,6 +76,7 @@ ${BOLD}COMMANDS${RESET}
     clean      Clean worktrees whose branch is orphaned
     list       List current worktrees
     cd         Switch worktrees
+    init       Install shell integration
 
 ${BOLD}HELP${RESET}
     git-wt <command> --help
@@ -194,8 +199,11 @@ ${BOLD}OPTIONS${RESET}
     --shell      Emit shell-safe cd command (no directory change)
     -h, --help   Show this help
 
+${BOLD}SETUP (ONCE)${RESET}
+    echo 'eval "\$(git-wt init)"' >> ~/.bashrc
+    source ~/.bashrc
+
 ${BOLD}EXAMPLES${RESET}
-    eval "\$(git-wt init)"
     git-wt cd
     eval "\$(git-wt cd --shell)"
 EOF
@@ -213,6 +221,8 @@ ${BOLD}DESCRIPTION${RESET}
 
 ${BOLD}EXAMPLES${RESET}
     eval "\$(git-wt init)"
+    echo 'eval "\$(git-wt init)"' >> ~/.bashrc
+    source ~/.bashrc
     git-wt cd
 EOF
 }
@@ -459,9 +469,18 @@ create_one_worktree() {
   local create_remote="$5"
   local create_mr="$6"
   local dirname target_for_git worktree_path base_ref
+  local existing_path
 
-  if git -C "$bare_dir" show-ref --verify --quiet "refs/heads/${new_branch}" || git -C "$bare_dir" show-ref --verify --quiet "refs/remotes/${remote}/${new_branch}"; then
-    die "branch '${new_branch}' already exists locally or on ${remote}; use 'git-wt add' without --create"
+  if git -C "$bare_dir" show-ref --verify --quiet "refs/heads/${new_branch}"; then
+    existing_path="$(worktree_path_for_branch "$bare_dir" "$new_branch" || true)"
+    if [[ -n "$existing_path" ]]; then
+      die "branch '${new_branch}' already has a worktree at ${existing_path}; use 'git-wt add --branches ${new_branch}'"
+    fi
+    die "branch '${new_branch}' already exists locally (likely from a removed worktree); use 'git-wt add --branches ${new_branch}' or delete it with: git -C ${bare_dir} branch -D ${new_branch}"
+  fi
+
+  if git -C "$bare_dir" show-ref --verify --quiet "refs/remotes/${remote}/${new_branch}"; then
+    die "branch '${new_branch}' already exists on ${remote}; use 'git-wt add --branches ${new_branch}'"
   fi
 
   base_ref="$(resolve_base_ref "$bare_dir" "$remote" "$base_branch")" || die "base branch '${base_branch}' not found locally or on ${remote}"
@@ -1288,10 +1307,10 @@ cmd_cd() {
       case "$integration_status" in
       10)
         warn "installed shell integration into $(bash_rc_path)"
-        info "run once now: eval \"\$(git-wt init)\""
+        info "run once now: source ~/.bashrc (or eval \"\$(git-wt init)\")"
         ;;
       0)
-        info "run once in this shell: eval \"\$(git-wt init)\""
+        info "run once in this shell: source ~/.bashrc (or eval \"\$(git-wt init)\")"
         ;;
       *)
         warn "could not auto-configure shell integration"

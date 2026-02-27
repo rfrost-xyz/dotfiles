@@ -65,6 +65,7 @@ ${BOLD}COMMANDS${RESET}
     clone      Clone repo as bare + set up worktrees
     add        Add worktrees
     remove     Remove worktrees
+    prune      Clean worktrees whose branch is orphaned
     list       List current worktrees
     cd         Switch worktrees
 
@@ -121,6 +122,28 @@ ${BOLD}OPTIONS${RESET}
 ${BOLD}EXAMPLES${RESET}
     git-wt remove
     git-wt remove --force --branches "feature/auth"
+EOF
+}
+
+usage_prune() {
+  cat <<EOF
+${BOLD}git-wt prune${RESET} — remove stale local worktrees
+
+${BOLD}USAGE${RESET}
+    git-wt prune [options]
+
+${BOLD}OPTIONS${RESET}
+    --apply                                Remove detected stale worktrees (default is preview only)
+    --force                                Force remove dirty worktrees
+    --yes, -y                              Skip confirmation prompt with --apply
+    --remote <name>                        Remote to compare against (default: origin or first remote)
+    --no-fetch                             Do not fetch before checking remote branches
+    -h, --help                             Show this help
+
+${BOLD}EXAMPLES${RESET}
+    git-wt prune
+    git-wt prune --apply
+    git-wt prune --apply --force --yes
 EOF
 }
 
@@ -784,6 +807,117 @@ _interactive_remove() {
   return "$failed"
 }
 
+# Handler for pruning local worktrees missing on remote.
+cmd_prune() {
+  local apply=0
+  local force=0
+  local yes=0
+  local no_fetch=0
+  local remote=""
+  local confirm
+
+  while (($#)); do
+    case "$1" in
+    --help | -h)
+      usage_prune
+      return 0
+      ;;
+    --apply)
+      apply=1
+      ;;
+    --force)
+      force=1
+      ;;
+    --yes | -y)
+      yes=1
+      ;;
+    --remote)
+      [[ $# -lt 2 ]] && die "missing value for --remote"
+      remote="$2"
+      shift
+      ;;
+    --remote=*)
+      remote="${1#*=}"
+      ;;
+    --no-fetch)
+      no_fetch=1
+      ;;
+    *)
+      die "unknown option for prune: $1"
+      ;;
+    esac
+    shift
+  done
+
+  local root
+  root="$(find_project_root)" || die "not inside a git-wt project (no .bare/ found)"
+  cd "$root"
+
+  local bare_dir=".bare"
+  local branch path
+  local -a stale_rows
+  stale_rows=()
+  declare -A remote_set=()
+
+  remote="${remote:-$(default_remote "$bare_dir")}"
+  [[ -z "$remote" ]] && die "no remote found in bare repository"
+  git -C "$bare_dir" remote get-url "$remote" >/dev/null 2>&1 || die "remote '${remote}' does not exist"
+
+  while IFS= read -r branch; do
+    [[ -z "$branch" ]] && continue
+    remote_set["$branch"]=1
+  done < <(remote_branches "$bare_dir" "$remote" "$((1 - no_fetch))")
+
+  while IFS=$'\t' read -r branch path; do
+    [[ -z "$branch" || -z "$path" ]] && continue
+    [[ -n "${remote_set[$branch]:-}" ]] && continue
+    stale_rows+=("${branch}"$'\t'"${path}")
+  done < <(worktree_records "$bare_dir")
+
+  if ((${#stale_rows[@]} == 0)); then
+    ok "No stale worktrees found (all local worktree branches exist on ${remote})."
+    return 0
+  fi
+
+  info "Stale worktrees (branch missing on ${remote}):"
+  local row
+  for row in "${stale_rows[@]}"; do
+    IFS=$'\t' read -r branch path <<<"$row"
+    printf '  %s\t%s\n' "$branch" "$path"
+  done
+
+  if ((apply == 0)); then
+    echo ""
+    info "Preview only. Re-run with --apply to remove these worktrees."
+    return 0
+  fi
+
+  if ((yes == 0)); then
+    echo ""
+    echo -e "${YELLOW}About to prune ${#stale_rows[@]} worktree(s). Continue? [y/N]${RESET}"
+    read -r confirm
+    if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+      info "Aborted."
+      return 0
+    fi
+  fi
+
+  local count=0
+  local failed=0
+  for row in "${stale_rows[@]}"; do
+    IFS=$'\t' read -r branch path <<<"$row"
+    if remove_one_worktree "$bare_dir" "$branch" "$path" "$force"; then
+      count=$((count + 1))
+    else
+      failed=1
+    fi
+  done
+
+  echo ""
+  ok "Pruned ${count} worktree(s)"
+  return "$failed"
+}
+
 # Handler for listing worktrees.
 cmd_list() {
   local include_remote_missing=0
@@ -993,6 +1127,7 @@ main() {
   clone) cmd_clone "$@" ;;
   add | a) cmd_add "$@" ;;
   remove | rm | delete) cmd_remove "$@" ;;
+  prune) cmd_prune "$@" ;;
   list | ls) cmd_list "$@" ;;
   cd) cmd_cd "$@" ;;
   init) cmd_init "$@" ;;

@@ -347,8 +347,7 @@ worktree_path_for_branch() {
 # Encode a branch name into a safe directory name.
 branch_to_dirname() {
   local out="$1"
-  out="${out//%/%25}"
-  out="${out//\//%2F}"
+  out="${out//\//-}"
   printf '%s\n' "$out"
 }
 

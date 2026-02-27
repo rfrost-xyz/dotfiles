@@ -1,0 +1,1006 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+VERSION="1.1.0"
+
+if [[ -t 1 && -z "${NO_COLOR:-}" ]]; then
+  BOLD=$'\033[1m'
+  DIM=$'\033[2m'
+  GREEN=$'\033[0;32m'
+  YELLOW=$'\033[0;33m'
+  RED=$'\033[0;31m'
+  CYAN=$'\033[0;36m'
+  RESET=$'\033[0m'
+else
+  BOLD=''
+  DIM=''
+  GREEN=''
+  YELLOW=''
+  RED=''
+  CYAN=''
+  RESET=''
+fi
+
+# Output helpers with consistent styling.
+die() {
+  echo -e "${RED}error:${RESET} $*" >&2
+  exit 1
+}
+info() { echo -e "${CYAN}::${RESET} $*"; }
+warn() { echo -e "${YELLOW}warn:${RESET} $*"; }
+ok() { echo -e "${GREEN}✓${RESET} $*"; }
+
+has_cmd() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+# Fail fast with an optional install hint.
+require_cmd() {
+  local cmd="$1"
+  local hint="${2:-}"
+  if ! has_cmd "$cmd"; then
+    if [[ -n "$hint" ]]; then
+      die "missing required dependency: ${cmd}\n  ${hint}"
+    fi
+    die "missing required dependency: ${cmd}"
+  fi
+}
+
+check_deps() {
+  require_cmd git
+}
+
+require_fzf() {
+  require_cmd fzf "Install fzf: https://github.com/junegunn/fzf#installation"
+}
+
+usage() {
+  cat <<EOF
+${BOLD}git-wt${RESET} — manage git bare repos & worktrees
+
+${BOLD}USAGE${RESET}
+    git-wt <command> [args]
+
+${BOLD}COMMANDS${RESET}
+    clone      Clone repo as bare + set up worktrees
+    add        Add worktrees
+    remove     Remove worktrees
+    list       List current worktrees
+    cd         Switch worktrees
+
+${BOLD}HELP${RESET}
+    git-wt <command> --help
+EOF
+}
+
+usage_clone() {
+  cat <<EOF
+${BOLD}git-wt clone${RESET} — clone repo as bare + set up worktrees
+
+${BOLD}USAGE${RESET}
+    git-wt clone <repo-url> [directory]
+
+${BOLD}EXAMPLES${RESET}
+    git-wt clone git@github.com:user/repo.git
+    git-wt clone git@github.com:user/repo.git my-project
+EOF
+}
+
+usage_add() {
+  cat <<EOF
+${BOLD}git-wt add${RESET} — add worktrees
+
+${BOLD}USAGE${RESET}
+    git-wt add [options]
+
+${BOLD}OPTIONS${RESET}
+    --remote <name>       Remote to use (default: origin or first remote)
+    --no-fetch            Do not fetch before showing branches
+    --branches "a,b,c"    Non-interactive branch list
+    -h, --help            Show this help
+
+${BOLD}EXAMPLES${RESET}
+    git-wt add
+    git-wt add --remote origin --branches "main,feature/auth"
+EOF
+}
+
+usage_remove() {
+  cat <<EOF
+${BOLD}git-wt remove${RESET} — remove worktrees
+
+${BOLD}USAGE${RESET}
+    git-wt remove [options]
+
+${BOLD}OPTIONS${RESET}
+    --force              Force remove dirty worktrees
+    --yes, -y            Skip confirmation prompt
+    --branches "a,b,c"   Non-interactive branch list
+    -h, --help           Show this help
+
+${BOLD}EXAMPLES${RESET}
+    git-wt remove
+    git-wt remove --force --branches "feature/auth"
+EOF
+}
+
+usage_list() {
+  cat <<EOF
+${BOLD}git-wt list${RESET} — list worktrees
+
+${BOLD}USAGE${RESET}
+    git-wt list [options]
+
+${BOLD}OPTIONS${RESET}
+    --all             Include remote branches without local worktrees
+    --remote <name>   Remote to use with --all (default: origin or first remote)
+    --no-fetch        Do not fetch before listing remote branches
+    -h, --help        Show this help
+
+${BOLD}EXAMPLES${RESET}
+    git-wt list
+    git-wt list --all
+EOF
+}
+
+usage_cd() {
+  cat <<EOF
+${BOLD}git-wt cd${RESET} — switch to another worktree
+
+${BOLD}USAGE${RESET}
+    git-wt cd [--shell]
+
+${BOLD}OPTIONS${RESET}
+    --shell      Emit shell-safe cd command (no directory change)
+    -h, --help   Show this help
+
+${BOLD}EXAMPLES${RESET}
+    eval "\$(git-wt init)"
+    git-wt cd
+    eval "\$(git-wt cd --shell)"
+EOF
+}
+
+usage_init() {
+  cat <<EOF
+${BOLD}git-wt init${RESET} — print shell integration
+
+${BOLD}USAGE${RESET}
+    git-wt init
+
+${BOLD}DESCRIPTION${RESET}
+    Prints a bash function wrapper so 'git-wt cd' can change your current shell directory.
+
+${BOLD}EXAMPLES${RESET}
+    eval "\$(git-wt init)"
+    git-wt cd
+EOF
+}
+
+# Find the nearest git-wt project root (contains .bare/).
+find_project_root() {
+  local dir="$PWD"
+  while [[ "$dir" != "/" ]]; do
+    if [[ -d "$dir/.bare" ]]; then
+      echo "$dir"
+      return 0
+    fi
+    dir="$(dirname "$dir")"
+  done
+  return 1
+}
+
+# Generic string and filesystem helpers.
+is_dir_empty() {
+  local dir="$1"
+  shopt -s nullglob dotglob
+  local entries=("$dir"/*)
+  shopt -u nullglob dotglob
+  ((${#entries[@]} == 0))
+}
+
+trim() {
+  local s="$1"
+  s="${s#"${s%%[![:space:]]*}"}"
+  s="${s%"${s##*[![:space:]]}"}"
+  printf '%s' "$s"
+}
+
+default_remote() {
+  local bare_dir="$1"
+  # Prefer origin if it exists, otherwise fall back to the first remote.
+  if git -C "$bare_dir" remote get-url origin >/dev/null 2>&1; then
+    printf 'origin\n'
+    return 0
+  fi
+  git -C "$bare_dir" remote | head -n 1
+}
+
+bash_rc_path() {
+  printf '%s\n' "${HOME}/.bashrc"
+}
+
+# Ensure bash initialisation includes git-wt shell wrapper.
+# Returns 10 when it appends the line, 0 if already present.
+ensure_shell_integration() {
+  local rc line
+  rc="$(bash_rc_path)"
+  line='eval "$(git-wt init)"'
+
+  if [[ -f "$rc" ]] && grep -Fqx "$line" "$rc"; then
+    return 0
+  fi
+
+  touch "$rc"
+  printf '\n# git-wt shell integration\n%s\n' "$line" >>"$rc"
+  return 10
+}
+
+# List remote branches without the remote prefix.
+remote_branches() {
+  local bare_dir="$1"
+  local remote="$2"
+  local should_fetch="$3"
+
+  if ((should_fetch)); then
+    if ! git -C "$bare_dir" fetch --quiet "$remote"; then
+      warn "failed to fetch remote '${remote}', using cached refs"
+    fi
+  fi
+
+  while IFS= read -r branch; do
+    [[ "$branch" == "HEAD" ]] && continue
+    printf '%s\n' "$branch"
+  done < <(git -C "$bare_dir" for-each-ref --format='%(refname:strip=3)' "refs/remotes/${remote}")
+}
+
+# Parse worktree list into branch/path records.
+worktree_records() {
+  local bare_dir="$1"
+  local line path branch
+  path=""
+  branch=""
+
+  while IFS= read -r line; do
+    if [[ -z "$line" ]]; then
+      if [[ -n "$path" && -n "$branch" ]]; then
+        printf '%s\t%s\n' "$branch" "$path"
+      fi
+      path=""
+      branch=""
+      continue
+    fi
+
+    case "$line" in
+    worktree\ *) path="${line#worktree }" ;;
+    branch\ refs/heads/*) branch="${line#branch refs/heads/}" ;;
+    esac
+  done < <(
+    git -C "$bare_dir" worktree list --porcelain
+    printf '\n'
+  )
+}
+
+existing_worktrees() {
+  local bare_dir="$1"
+  local branch path
+  while IFS=$'\t' read -r branch path; do
+    [[ -n "$branch" ]] && printf '%s\n' "$branch"
+  done < <(worktree_records "$bare_dir")
+}
+
+worktree_path_for_branch() {
+  local bare_dir="$1"
+  local target_branch="$2"
+  local branch path
+
+  while IFS=$'\t' read -r branch path; do
+    if [[ "$branch" == "$target_branch" ]]; then
+      printf '%s\n' "$path"
+      return 0
+    fi
+  done < <(worktree_records "$bare_dir")
+
+  return 1
+}
+
+# Encode a branch name into a safe directory name.
+branch_to_dirname() {
+  local out="$1"
+  out="${out//%/%25}"
+  out="${out//\//%2F}"
+  printf '%s\n' "$out"
+}
+
+worktree_dirty_count() {
+  local worktree_path="$1"
+  local status line
+  local count=0
+
+  status="$(git -C "$worktree_path" status --porcelain 2>/dev/null || true)"
+  while IFS= read -r line; do
+    if [[ -n "$line" ]]; then
+      count=$((count + 1))
+    fi
+  done <<<"$status"
+
+  printf '%d\n' "$count"
+}
+
+worktree_dirty_label() {
+  local worktree_path="$1"
+  local count
+  count="$(worktree_dirty_count "$worktree_path")"
+  if ((count == 0)); then
+    printf 'clean\n'
+  elif ((count == 1)); then
+    printf '1 change\n'
+  else
+    printf '%d changes\n' "$count"
+  fi
+}
+
+available_branches() {
+  local bare_dir="$1"
+  local remote="$2"
+  local should_fetch="$3"
+  # Remote branches that do not yet have worktrees.
+  local -a remotes existing
+  local branch
+  declare -A existing_set=()
+
+  mapfile -t remotes < <(remote_branches "$bare_dir" "$remote" "$should_fetch")
+  mapfile -t existing < <(existing_worktrees "$bare_dir")
+
+  for branch in "${existing[@]}"; do
+    existing_set["$branch"]=1
+  done
+
+  for branch in "${remotes[@]}"; do
+    [[ -n "${existing_set[$branch]:-}" ]] && continue
+    printf '%s\n' "$branch"
+  done
+}
+
+# Create a single worktree and set upstream if possible.
+add_one_worktree() {
+  local bare_dir="$1"
+  local remote="$2"
+  local branch="$3"
+  local dirname target_for_git worktree_path
+
+  dirname="$(branch_to_dirname "$branch")"
+  target_for_git="../${dirname}"
+  worktree_path="${PWD}/${dirname}"
+
+  if [[ -e "$worktree_path" ]]; then
+    warn "skipping '${branch}': target path already exists (${worktree_path})"
+    return 1
+  fi
+
+  info "Creating worktree ${BOLD}${dirname}${RESET} → ${DIM}${branch}${RESET}"
+
+  if git -C "$bare_dir" show-ref --verify --quiet "refs/heads/${branch}"; then
+    if ! git -C "$bare_dir" worktree add "$target_for_git" "$branch" 2>&1 | sed 's/^/  /'; then
+      warn "failed to create worktree for '${branch}'"
+      return 1
+    fi
+  else
+    if ! git -C "$bare_dir" worktree add -b "$branch" "$target_for_git" "${remote}/${branch}" 2>&1 | sed 's/^/  /'; then
+      warn "failed to create worktree for '${branch}'"
+      return 1
+    fi
+  fi
+
+  if git -C "$bare_dir" show-ref --verify --quiet "refs/remotes/${remote}/${branch}"; then
+    if ! git -C "$worktree_path" rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' >/dev/null 2>&1; then
+      if ! git -C "$worktree_path" branch --set-upstream-to "${remote}/${branch}" "$branch" >/dev/null 2>&1; then
+        warn "could not set upstream ${remote}/${branch} for ${branch}"
+      fi
+    fi
+  fi
+
+  ok "Worktree ready: ${BOLD}${dirname}/${RESET}"
+  return 0
+}
+
+# Handler for cloning a bare repo and initial worktrees.
+cmd_clone() {
+  if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+    usage_clone
+    return 0
+  fi
+
+  local repo_url="${1:-}"
+  [[ $# -gt 2 ]] && die "usage: git-wt clone <repo-url> [directory]"
+  [[ -z "$repo_url" ]] && die "usage: git-wt clone <repo-url> [directory]"
+
+  # Derive project name from repo URL if not provided
+  local project_dir="${2:-}"
+  if [[ -z "$project_dir" ]]; then
+    project_dir="$(basename "$repo_url" .git)"
+  fi
+
+  if [[ -e "$project_dir" && ! -d "$project_dir" ]]; then
+    die "'$project_dir' exists and is not a directory"
+  fi
+
+  if [[ -d "$project_dir" ]]; then
+    [[ -d "$project_dir/.bare" ]] && die "'$project_dir' already exists as a git-wt project"
+    [[ -e "$project_dir/.git" ]] && die "'$project_dir' already contains a git repository"
+    if ! is_dir_empty "$project_dir"; then
+      die "'$project_dir' exists and is not empty"
+    fi
+  fi
+
+  info "Cloning ${BOLD}${repo_url}${RESET} into ${BOLD}${project_dir}/.bare${RESET}"
+  mkdir -p "$project_dir"
+  git clone --bare "$repo_url" "$project_dir/.bare"
+
+  # Set up fetch refspec so we can track all remote branches
+  git -C "$project_dir/.bare" config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+
+  info "Fetching remote branches..."
+  git -C "$project_dir/.bare" fetch --quiet origin
+
+  ok "Bare repo ready at ${BOLD}${project_dir}/.bare${RESET}"
+  echo ""
+
+  # Offer to create worktrees
+  cd "$project_dir"
+  if has_cmd fzf; then
+    _interactive_add ".bare" "origin" 0
+  else
+    warn "fzf not found; skipping interactive add. Run 'git-wt add --branches main' later."
+  fi
+}
+
+# Handler for adding worktrees.
+cmd_add() {
+  local remote=""
+  local no_fetch=0
+  local branches_csv=""
+
+  while (($#)); do
+    case "$1" in
+    --help | -h)
+      usage_add
+      return 0
+      ;;
+    --remote)
+      [[ $# -lt 2 ]] && die "missing value for --remote"
+      remote="$2"
+      shift
+      ;;
+    --remote=*)
+      remote="${1#*=}"
+      ;;
+    --no-fetch)
+      no_fetch=1
+      ;;
+    --branches)
+      [[ $# -lt 2 ]] && die "missing value for --branches"
+      branches_csv="$2"
+      shift
+      ;;
+    --branches=*)
+      branches_csv="${1#*=}"
+      ;;
+    *)
+      die "unknown option for add: $1"
+      ;;
+    esac
+    shift
+  done
+
+  local root
+  root="$(find_project_root)" || die "not inside a git-wt project (no .bare/ found)"
+  cd "$root"
+
+  local bare_dir=".bare"
+  remote="${remote:-$(default_remote "$bare_dir")}"
+  [[ -z "$remote" ]] && die "no remote found in bare repository"
+  git -C "$bare_dir" remote get-url "$remote" >/dev/null 2>&1 || die "remote '${remote}' does not exist"
+
+  if [[ -n "$branches_csv" ]]; then
+    _add_from_csv "$bare_dir" "$remote" "$no_fetch" "$branches_csv"
+  else
+    require_fzf
+    _interactive_add "$bare_dir" "$remote" "$no_fetch"
+  fi
+}
+
+_add_from_csv() {
+  local bare_dir="$1"
+  local remote="$2"
+  local no_fetch="$3"
+  local branches_csv="$4"
+  # Add worktrees from a comma-separated list.
+  local -a requested available
+  local branch candidate
+  local count=0
+  local failed=0
+  declare -A can_add=()
+
+  mapfile -t available < <(available_branches "$bare_dir" "$remote" "$((1 - no_fetch))")
+  for branch in "${available[@]}"; do
+    can_add["$branch"]=1
+  done
+
+  IFS=',' read -r -a requested <<<"$branches_csv"
+  for candidate in "${requested[@]}"; do
+    branch="$(trim "$candidate")"
+    [[ -z "$branch" ]] && continue
+
+    if [[ -z "${can_add[$branch]:-}" ]]; then
+      warn "branch '${branch}' is not available to add (already present or missing on ${remote})"
+      failed=1
+      continue
+    fi
+
+    if add_one_worktree "$bare_dir" "$remote" "$branch"; then
+      count=$((count + 1))
+    else
+      failed=1
+    fi
+  done
+
+  echo ""
+  ok "Created ${count} worktree(s)"
+  return "$failed"
+}
+
+# Interactive branch picker for adding worktrees.
+_interactive_add() {
+  local bare_dir="$1"
+  local remote="$2"
+  local no_fetch="$3"
+  local -a available
+  local selected branch
+  local count=0
+  local failed=0
+  local preview_cmd
+
+  if ((no_fetch)); then
+    info "Using cached branch list from ${remote}"
+  else
+    info "Fetching latest branches from ${remote}..."
+  fi
+
+  mapfile -t available < <(available_branches "$bare_dir" "$remote" "$((1 - no_fetch))")
+
+  if ((${#available[@]} == 0)); then
+    info "All remote branches already have worktrees. Nothing to add."
+    return 0
+  fi
+
+  preview_cmd="printf 'Branch: %s\\nRemote: %s\\n\\n' {} '$remote'; git -C \"$bare_dir\" log --oneline --decorate --color=always -n 20 $remote/{} 2>/dev/null || git -C \"$bare_dir\" log --oneline --decorate --color=always -n 20 {} 2>/dev/null || true"
+
+  info "Select branches to create worktrees for ${DIM}(TAB to multi-select, ENTER to confirm)${RESET}"
+  selected="$(printf '%s\n' "${available[@]}" | fzf --multi --prompt="branches> " --height=50% --reverse --border --header="Remote: ${remote} | CTRL-A: select all" --bind='ctrl-a:select-all' --preview="$preview_cmd" --preview-window='right:60%:wrap')" || {
+    info "No branches selected."
+    return 0
+  }
+
+  while IFS= read -r branch; do
+    [[ -z "$branch" ]] && continue
+
+    if add_one_worktree "$bare_dir" "$remote" "$branch"; then
+      count=$((count + 1))
+    else
+      failed=1
+    fi
+  done <<<"$selected"
+
+  echo ""
+  ok "Created ${count} worktree(s)"
+  return "$failed"
+}
+
+# Handler for removing worktrees.
+cmd_remove() {
+  local force=0
+  local yes=0
+  local branches_csv=""
+
+  while (($#)); do
+    case "$1" in
+    --help | -h)
+      usage_remove
+      return 0
+      ;;
+    --force)
+      force=1
+      ;;
+    --yes | -y)
+      yes=1
+      ;;
+    --branches)
+      [[ $# -lt 2 ]] && die "missing value for --branches"
+      branches_csv="$2"
+      shift
+      ;;
+    --branches=*)
+      branches_csv="${1#*=}"
+      ;;
+    *)
+      die "unknown option for remove: $1"
+      ;;
+    esac
+    shift
+  done
+
+  local root
+  root="$(find_project_root)" || die "not inside a git-wt project (no .bare/ found)"
+  cd "$root"
+
+  local bare_dir=".bare"
+  local -a records
+
+  mapfile -t records < <(worktree_records "$bare_dir")
+
+  if ((${#records[@]} == 0)); then
+    info "No worktrees to remove."
+    return 0
+  fi
+
+  if [[ -n "$branches_csv" ]]; then
+    _remove_from_csv "$bare_dir" "$force" "$yes" "$branches_csv"
+  else
+    require_fzf
+    _interactive_remove "$bare_dir" "$force" "$yes"
+  fi
+}
+
+# Remove one worktree, with optional dirty check.
+remove_one_worktree() {
+  local bare_dir="$1"
+  local branch="$2"
+  local path="$3"
+  local force="$4"
+  local dirty_count
+
+  dirty_count="$(worktree_dirty_count "$path")"
+  if ((dirty_count > 0 && force == 0)); then
+    warn "skipping '${branch}' (${path}): has ${dirty_count} uncommitted change(s); pass --force to remove"
+    return 1
+  fi
+
+  warn "Removing worktree ${BOLD}${path}${RESET} (${branch})"
+  if ((force)); then
+    if ! git -C "$bare_dir" worktree remove "$path" --force 2>&1 | sed 's/^/  /'; then
+      warn "failed to remove '${branch}' (${path})"
+      return 1
+    fi
+  else
+    if ! git -C "$bare_dir" worktree remove "$path" 2>&1 | sed 's/^/  /'; then
+      warn "failed to remove '${branch}' (${path})"
+      return 1
+    fi
+  fi
+  ok "Removed: ${path}"
+  return 0
+}
+
+_remove_from_csv() {
+  local bare_dir="$1"
+  local force="$2"
+  local yes="$3"
+  local branches_csv="$4"
+  # Remove worktrees from a comma-separated list.
+  local -a requested
+  local candidate branch path
+  local count=0
+  local failed=0
+  declare -A path_for_branch=()
+
+  while IFS=$'\t' read -r branch path; do
+    path_for_branch["$branch"]="$path"
+  done < <(worktree_records "$bare_dir")
+
+  IFS=',' read -r -a requested <<<"$branches_csv"
+
+  if ((yes == 0)); then
+    echo -e "${YELLOW}About to remove listed worktrees. Continue? [y/N]${RESET}"
+    read -r confirm
+    if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+      info "Aborted."
+      return 0
+    fi
+  fi
+
+  for candidate in "${requested[@]}"; do
+    branch="$(trim "$candidate")"
+    [[ -z "$branch" ]] && continue
+    path="${path_for_branch[$branch]:-}"
+    if [[ -z "$path" ]]; then
+      warn "branch '${branch}' has no active worktree"
+      failed=1
+      continue
+    fi
+
+    if remove_one_worktree "$bare_dir" "$branch" "$path" "$force"; then
+      count=$((count + 1))
+    else
+      failed=1
+    fi
+  done
+
+  echo ""
+  ok "Removed ${count} worktree(s)"
+  return "$failed"
+}
+
+# Interactive worktree picker for removal.
+_interactive_remove() {
+  local bare_dir="$1"
+  local force="$2"
+  local yes="$3"
+  local -a rows
+  local branch path label selected line confirm
+  local count=0
+  local failed=0
+
+  while IFS=$'\t' read -r branch path; do
+    [[ -z "$branch" || -z "$path" ]] && continue
+    label="$(worktree_dirty_label "$path")"
+    rows+=("${branch}"$'\t'"${path}"$'\t'"${label}")
+  done < <(worktree_records "$bare_dir")
+
+  if ((${#rows[@]} == 0)); then
+    info "No branch worktrees to remove."
+    return 0
+  fi
+
+  info "Select worktrees to remove ${DIM}(TAB to multi-select, ENTER to confirm)${RESET}"
+  selected="$(printf '%s\n' "${rows[@]}" | fzf --multi --delimiter=$'\t' --with-nth=1,3 --prompt="remove> " --height=50% --reverse --border --header="Field 1: branch | Field 3: dirty state | CTRL-A: select all" --bind='ctrl-a:select-all' --preview='printf "Branch: %s\nPath: %s\n\n" {1} {2}; up=$(git -C {2} rev-parse --abbrev-ref --symbolic-full-name @{upstream} 2>/dev/null || true); if [ -n "$up" ]; then ab=$(git -C {2} rev-list --left-right --count "$up...HEAD" 2>/dev/null || true); printf "Upstream: %s  (behind/ahead %s)\n" "$up" "$ab"; else printf "Upstream: (none)\n"; fi; echo; echo "Status:"; git -C {2} status --short --branch; echo; echo "Recent commits:"; git -C {2} log --oneline --decorate --color=always -n 8' --preview-window='right:65%:wrap')" || {
+    info "No worktrees selected."
+    return 0
+  }
+
+  if ((yes == 0)); then
+    echo -e "${YELLOW}About to remove selected worktrees. Continue? [y/N]${RESET}"
+    read -r confirm
+    if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+      info "Aborted."
+      return 0
+    fi
+  fi
+
+  while IFS= read -r line; do
+    [[ -z "$line" ]] && continue
+    IFS=$'\t' read -r branch path _ <<<"$line"
+    [[ -z "$branch" || -z "$path" ]] && continue
+
+    if remove_one_worktree "$bare_dir" "$branch" "$path" "$force"; then
+      count=$((count + 1))
+    else
+      failed=1
+    fi
+  done <<<"$selected"
+
+  echo ""
+  ok "Removed ${count} worktree(s)"
+  return "$failed"
+}
+
+# Handler for listing worktrees.
+cmd_list() {
+  local include_remote_missing=0
+  local no_fetch=0
+  local remote=""
+
+  while (($#)); do
+    case "$1" in
+    --help | -h)
+      usage_list
+      return 0
+      ;;
+    --all)
+      include_remote_missing=1
+      ;;
+    --remote)
+      [[ $# -lt 2 ]] && die "missing value for --remote"
+      remote="$2"
+      shift
+      ;;
+    --remote=*)
+      remote="${1#*=}"
+      ;;
+    --no-fetch)
+      no_fetch=1
+      ;;
+    *)
+      die "unknown option for list: $1"
+      ;;
+    esac
+    shift
+  done
+
+  local root
+  root="$(find_project_root)" || die "not inside a git-wt project (no .bare/ found)"
+  local bare_dir="$root/.bare"
+  local branch path
+  declare -A existing_set=()
+
+  while IFS=$'\t' read -r branch path; do
+    [[ -z "$branch" || -z "$path" ]] && continue
+    existing_set["$branch"]=1
+    printf '%s\t%s\n' "$branch" "$path"
+  done < <(worktree_records "$bare_dir")
+
+  if ((include_remote_missing == 0)); then
+    return 0
+  fi
+
+  remote="${remote:-$(default_remote "$bare_dir")}"
+  [[ -z "$remote" ]] && die "no remote found in bare repository"
+  git -C "$bare_dir" remote get-url "$remote" >/dev/null 2>&1 || die "remote '${remote}' does not exist"
+
+  while IFS= read -r branch; do
+    [[ -z "$branch" ]] && continue
+    [[ -n "${existing_set[$branch]:-}" ]] && continue
+    printf '%s\t%s\n' "$branch" "(remote only: ${remote}/${branch})"
+  done < <(remote_branches "$bare_dir" "$remote" "$((1 - no_fetch))")
+}
+
+# Fzf picker that returns a selected worktree path.
+pick_worktree_path() {
+  local selected line current_top
+  local branch path label marker
+  local -a rows
+  local -a fzf_args
+  # Build a selectable list, marking the current worktree.
+
+  require_fzf
+
+  local root
+  root="$(find_project_root)" || die "not inside a git-wt project (no .bare/ found)"
+  local bare_dir="$root/.bare"
+
+  current_top="$(git -C "$PWD" rev-parse --show-toplevel 2>/dev/null || true)"
+  while IFS=$'\t' read -r branch path; do
+    [[ -z "$branch" || -z "$path" ]] && continue
+    label="$(worktree_dirty_label "$path")"
+    marker=" "
+    if [[ -n "$current_top" && "$path" == "$current_top" ]]; then
+      marker="*"
+    fi
+    rows+=("${marker}"$'\t'"${branch}"$'\t'"${path}"$'\t'"${label}")
+  done < <(worktree_records "$bare_dir")
+
+  if ((${#rows[@]} == 0)); then
+    die "no branch worktrees available"
+  fi
+
+  fzf_args=(
+    --delimiter=$'\t'
+    --with-nth=1,2,4
+    --prompt="cd> "
+    --height=50%
+    --reverse
+    --border
+    --header="* = current worktree"
+    --preview='printf "Branch: %s\nPath: %s\n\n" {2} {3}; up=$(git -C {3} rev-parse --abbrev-ref --symbolic-full-name @{upstream} 2>/dev/null || true); if [ -n "$up" ]; then ab=$(git -C {3} rev-list --left-right --count "$up...HEAD" 2>/dev/null || true); printf "Upstream: %s  (behind/ahead %s)\n" "$up" "$ab"; else printf "Upstream: (none)\n"; fi; echo; echo "Recent commits:"; git -C {3} log --oneline --decorate --color=always -n 8'
+    --preview-window='right:65%:wrap'
+  )
+
+  selected="$(printf '%s\n' "${rows[@]}" | fzf "${fzf_args[@]}")" || return 1
+
+  IFS=$'\t' read -r _ branch path _ <<<"$selected"
+  [[ -z "$path" ]] && return 1
+
+  printf '%s\n' "$path"
+}
+
+cmd_cd() {
+  local emit_shell=0
+  local path
+  local integration_status=0
+  # Emit a shell-safe cd or a path for the wrapper to use.
+
+  while (($#)); do
+    case "$1" in
+    --help | -h)
+      usage_cd
+      return 0
+      ;;
+    --shell)
+      emit_shell=1
+      ;;
+    *)
+      die "unknown option for cd: $1"
+      ;;
+    esac
+    shift
+  done
+
+  path="$(pick_worktree_path)" || return $?
+
+  if ((emit_shell)); then
+    printf 'cd %q\n' "$path"
+  else
+    if [[ -t 1 ]]; then
+      ensure_shell_integration || integration_status=$?
+      case "$integration_status" in
+      10)
+        warn "installed shell integration into $(bash_rc_path)"
+        info "run once now: eval \"\$(git-wt init)\""
+        ;;
+      0)
+        info "run once in this shell: eval \"\$(git-wt init)\""
+        ;;
+      *)
+        warn "could not auto-configure shell integration"
+        info "add to ~/.bashrc: eval \"\$(git-wt init)\""
+        ;;
+      esac
+      warn "this invocation cannot change the current shell directory directly"
+    fi
+    printf '%s\n' "$path"
+  fi
+}
+
+# Internal helper for shell wrapper to get the target path.
+cmd_cd_path() {
+  local path
+  path="$(pick_worktree_path)" || return $?
+  printf '%s\n' "$path"
+}
+
+# Output the shell wrapper so cd can change the current shell.
+cmd_init() {
+  if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+    usage_init
+    return 0
+  fi
+
+  (($# == 0)) || die "usage: git-wt init"
+
+  cat <<'EOF'
+git-wt() {
+  if [[ "${1:-}" == "cd" ]]; then
+    case "${2:-}" in
+      -h|--help|--shell)
+        command git-wt "$@"
+        return $?
+        ;;
+    esac
+
+    shift
+    local __git_wt_target
+    __git_wt_target="$(command git-wt __cd-path "$@")" || return $?
+    [[ -n "$__git_wt_target" ]] || return 1
+    builtin cd "$__git_wt_target"
+    return 0
+  fi
+
+  command git-wt "$@"
+}
+EOF
+}
+
+# Command dispatcher.
+main() {
+  local cmd="${1:---help}"
+  if (($# > 0)); then
+    shift
+  fi
+
+  check_deps "$cmd"
+
+  case "$cmd" in
+  clone) cmd_clone "$@" ;;
+  add | a) cmd_add "$@" ;;
+  remove | rm | delete) cmd_remove "$@" ;;
+  list | ls) cmd_list "$@" ;;
+  cd) cmd_cd "$@" ;;
+  init) cmd_init "$@" ;;
+  __cd-path) cmd_cd_path "$@" ;;
+  --help | -h) usage ;;
+  --version | -v) echo "git-wt v${VERSION}" ;;
+  *) die "unknown command: $cmd\n  Run 'git-wt --help' for usage." ;;
+  esac
+}
+
+main "$@"

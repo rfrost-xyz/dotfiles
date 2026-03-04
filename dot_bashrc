@@ -25,12 +25,14 @@ source "$HOME/.local/share/fzf/completion.bash"
 source /usr/share/bash-completion/completions/fzf
 source "$HOME/.turso/env"
 
-# fzf configuration
-
 export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_CTRL_T_OPTS="--preview 'batcat --color=always --line-range :50 {}'"
 export FZF_ALT_C_COMMAND="fd --type d --hidden --exclude .git"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
 
 # --- Aliases ---
 alias ssh='ssh.exe' # Windows 1Password ssh.exe
@@ -97,6 +99,19 @@ clip() {
   # Pipe the file content to the Windows clipboard
   batcat "$1" | clip.exe && echo "Copied '$1' to clipboard"
 }
+
+# homebrew
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# git-wt shell integration
+eval "$(git-wt init)"
+
+# worktrunk
+if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init bash)"; fi
 
 # initialise zoxide
 eval "$(zoxide init --cmd cd bash)"

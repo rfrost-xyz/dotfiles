@@ -47,6 +47,7 @@ alias lsa='eza -la --group-directories-first --icons'
 alias cm='chezmoi'
 alias lg='lazygit'
 alias c='opencode'
+alias cx='claude'
 
 # --- Functions ---
 

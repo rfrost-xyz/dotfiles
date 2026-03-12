@@ -204,7 +204,6 @@ if [ -z "$(git config --get remote.origin.fetch)" ]; then
 fi
 """
 
-[post-create]
 tmux = """
 S={{ branch | sanitize }}
 W={{ worktree_path }}

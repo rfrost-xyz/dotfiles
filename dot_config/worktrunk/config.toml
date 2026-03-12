@@ -209,26 +209,28 @@ S={{ branch | sanitize }}
 W={{ worktree_path }}
 tmux new-session -d -s "$S" -c "$W" -n dev
 
-# Create 4-pane layout: shell | backend / claude | frontend
-tmux split-window -h -t "$S:dev" -c "$W"
-tmux split-window -v -t "$S:dev.0" -c "$W"
-tmux split-window -v -t "$S:dev.2" -c "$W"
+# Split right pane at 20% width
+tmux split-window -h -t "$S:dev" -c "$W" -l 20%
 
-# Start services in each pane
-tmux send-keys -t "$S:dev.1" 'npm run backend' Enter
-tmux send-keys -t "$S:dev.2" 'claude' Enter
+# Split left pane horizontally: 70% top (nvim), 30% bottom (shell)
+tmux split-window -v -t "$S:dev.1" -c "$W" -l 30%
 
-tmux send-keys -t "$S:dev.3" 'npm run frontend' Enter
+# Start services
+tmux send-keys -t "$S:dev.1" 'nvim' Enter
+tmux send-keys -t "$S:dev.3" 'opencode' Enter
 
-tmux select-pane -t "$S:dev.0"
+# Focus the terminal pane
+tmux select-pane -t "$S:dev.2"
+
 echo "✓ Session '$S' — attach with: tmux attach -t $S"
-
 """
 
 [pre-remove]
 tmux = "tmux kill-session -t {{ branch | sanitize }} 2>/dev/null || true"
 
 [aliases]
+upstream = "git push -u origin {{ branch }}"
+
 mr = """
 git push -u origin {{ branch }} && \
 glab mr create \
@@ -238,6 +240,19 @@ glab mr create \
   --yes
 """
 log = "git log --oneline {{ default_branch }}..HEAD"
+
+tmux = """
+S={{ branch | sanitize }}
+W={{ worktree_path }}
+tmux kill-session -t "$S" 2>/dev/null || true
+tmux new-session -d -s "$S" -c "$W" -n dev
+tmux split-window -h -t "$S:dev" -c "$W" -l 20%
+tmux split-window -v -t "$S:dev.1" -c "$W" -l 30%
+tmux send-keys -t "$S:dev.1" 'nvim' Enter
+tmux send-keys -t "$S:dev.3" 'opencode' Enter
+tmux select-pane -t "$S:dev.2"
+echo "✓ Session '$S' — attach with: tmux attach -t $S"
+"""
 
 [commit.generation]
 command = "CLAUDECODE= MAX_THINKING_TOKENS=0 claude -p --no-session-persistence --model=haiku --tools='' --disable-slash-commands --setting-sources='' --system-prompt=''"

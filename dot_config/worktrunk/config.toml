@@ -214,6 +214,8 @@ glab mr create \
   --yes
 """
 
+log = "git log --oneline {{ default_branch }}..HEAD"
+
 [commit.generation]
 command = "CLAUDECODE= MAX_THINKING_TOKENS=0 claude -p --no-session-persistence --model=haiku --tools='' --disable-slash-commands --setting-sources='' --system-prompt=''"
 

@@ -46,6 +46,7 @@ alias lsa='eza -la --group-directories-first --icons'
 
 alias cm='chezmoi'
 alias lg='lazygit'
+alias t='tmux'
 alias c='opencode'
 alias cx='claude --dangerously-skip-permissions'
 
@@ -111,5 +112,4 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 # worktrunk
 if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init bash)"; fi
 
-# initialise zoxide
 eval "$(zoxide init --cmd cd bash)"

@@ -203,3 +203,75 @@ if [ -z "$(git config --get remote.origin.fetch)" ]; then
   git fetch --all --quiet
 fi
 """
+
+[aliases]
+mr = """
+git push -u origin {{ branch }} && \
+glab mr create \
+  --title "$(git log -1 --format=%s)" \
+  --description "$(git log -1 --format=%b)" \
+  --target-branch {{ default_branch }} \
+  --yes
+"""
+
+[commit.generation]
+command = "CLAUDECODE= MAX_THINKING_TOKENS=0 claude -p --no-session-persistence --model=haiku --tools='' --disable-slash-commands --setting-sources='' --system-prompt=''"
+
+template = """
+Write a commit message for the staged changes below.
+
+<format>
+- Subject line under 50 chars
+- For material changes, add a blank line then a body paragraph explaining the change
+- Output only the commit message, no quotes or code blocks
+</format>
+
+<style>
+- Imperative mood: "Add feature" not "Added feature"
+- Match recent commit style (conventional commits)
+- Describe the change, not the intent or benefit
+</style>
+
+<diffstat>
+{{ git_diff_stat }}
+</diffstat>
+
+<diff>
+{{ git_diff }}
+</diff>
+
+<context>
+Branch: {{ branch }}
+{% if recent_commits %}<recent_commits>
+{% for commit in recent_commits %}- {{ commit }}
+{% endfor %}</recent_commits>{% endif %}
+</context>
+"""
+
+squash-template = """
+Combine these commits into a single commit message.
+
+<format>
+- Subject line under 50 chars
+- For material changes, add a blank line then a body paragraph explaining the change
+- Output only the commit message, no quotes or code blocks
+</format>
+
+<style>
+- Imperative mood: "Add feature" not "Added feature"
+- Match the style of commits being squashed (conventional commits)
+- Describe the change, not the intent or benefit
+</style>
+
+<commits branch="{{ branch }}" target="{{ target_branch }}">
+{% for commit in commits %}- {{ commit }}
+{% endfor %}</commits>
+
+<diffstat>
+{{ git_diff_stat }}
+</diffstat>
+
+<diff>
+{{ git_diff }}
+</diff>
+"""

@@ -47,7 +47,7 @@ alias lsa='eza -la --group-directories-first --icons'
 alias cm='chezmoi'
 alias lg='lazygit'
 alias c='opencode'
-alias cx='claude'
+alias cx='claude --dangerously-skip-permissions'
 
 # --- Functions ---
 
@@ -107,9 +107,6 @@ eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
-
-# git-wt shell integration
-eval "$(git-wt init)"
 
 # worktrunk
 if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init bash)"; fi

@@ -268,7 +268,7 @@ Write a commit message for the staged changes below.
 
 <style>
 - Imperative mood: "Add feature" not "Added feature"
-- Match recent commit style (conventional commits)
+- Match recent commit style (always use conventional commits)
 - Describe the change, not the intent or benefit
 </style>
 
@@ -299,7 +299,7 @@ Combine these commits into a single commit message.
 
 <style>
 - Imperative mood: "Add feature" not "Added feature"
-- Match the style of commits being squashed (conventional commits)
+- Match the style of commits being squashed (always use conventional commits)
 - Describe the change, not the intent or benefit
 </style>
 

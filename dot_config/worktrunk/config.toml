@@ -205,28 +205,48 @@ fi
 """
 
 tmux = """
-S={{ branch | sanitize }}
+S={{ repo }}
+B={{ branch | sanitize }}
 W={{ worktree_path }}
-tmux new-session -d -s "$S" -c "$W" -n dev
+
+if tmux has-session -t "$S" 2>/dev/null; then
+  # Session exists — add a new window
+  tmux new-window -t "$S" -n "$B" -c "$W"
+else
+  # Create session with first window named after branch
+  tmux new-session -d -s "$S" -c "$W" -n "$B"
+fi
 
 # Split right pane at 20% width
-tmux split-window -h -t "$S:dev" -c "$W" -l 20%
+tmux split-window -h -t "$S:$B" -c "$W" -l 20%
 
 # Split left pane horizontally: 70% top (nvim), 30% bottom (shell)
-tmux split-window -v -t "$S:dev.1" -c "$W" -l 30%
+tmux split-window -v -t "$S:$B.1" -c "$W" -l 30%
 
 # Start services
-tmux send-keys -t "$S:dev.1" 'nvim' Enter
-tmux send-keys -t "$S:dev.3" 'opencode' Enter
+tmux send-keys -t "$S:$B.1" 'nvim' Enter
+tmux send-keys -t "$S:$B.3" 'opencode' Enter
 
 # Focus the terminal pane
-tmux select-pane -t "$S:dev.2"
+tmux select-pane -t "$S:$B.2"
 
-echo "✓ Session '$S' — attach with: tmux attach -t $S"
+echo "✓ Session '$S' window '$B' — attach with: tmux attach -t $S"
 """
 
 [pre-remove]
-tmux = "tmux kill-session -t {{ branch | sanitize }} 2>/dev/null || true"
+tmux = """
+S={{ repo }}
+B={{ branch | sanitize }}
+# Count windows in the session
+COUNT=$(tmux list-windows -t "$S" 2>/dev/null | wc -l)
+if [ "${COUNT:-0}" -le 1 ]; then
+  # Last window — kill the whole session
+  tmux kill-session -t "$S" 2>/dev/null || true
+else
+  # Kill just this branch's window
+  tmux kill-window -t "$S:$B" 2>/dev/null || true
+fi
+"""
 
 [aliases]
 upstream = "git push -u origin {{ branch }}"
@@ -242,16 +262,25 @@ glab mr create \
 log = "git log --oneline {{ default_branch }}..HEAD"
 
 tmux = """
-S={{ branch | sanitize }}
+S={{ repo }}
+B={{ branch | sanitize }}
 W={{ worktree_path }}
-tmux kill-session -t "$S" 2>/dev/null || true
-tmux new-session -d -s "$S" -c "$W" -n dev
-tmux split-window -h -t "$S:dev" -c "$W" -l 20%
-tmux split-window -v -t "$S:dev.1" -c "$W" -l 30%
-tmux send-keys -t "$S:dev.1" 'nvim' Enter
-tmux send-keys -t "$S:dev.3" 'opencode' Enter
-tmux select-pane -t "$S:dev.2"
-echo "✓ Session '$S' — attach with: tmux attach -t $S"
+
+# Kill existing window for this branch if any
+tmux kill-window -t "$S:$B" 2>/dev/null || true
+
+if tmux has-session -t "$S" 2>/dev/null; then
+  tmux new-window -t "$S" -n "$B" -c "$W"
+else
+  tmux new-session -d -s "$S" -c "$W" -n "$B"
+fi
+
+tmux split-window -h -t "$S:$B" -c "$W" -l 20%
+tmux split-window -v -t "$S:$B.1" -c "$W" -l 30%
+tmux send-keys -t "$S:$B.1" 'nvim' Enter
+tmux send-keys -t "$S:$B.3" 'opencode' Enter
+tmux select-pane -t "$S:$B.2"
+echo "✓ Session '$S' window '$B' — attach with: tmux attach -t $S"
 """
 
 [commit.generation]
@@ -315,3 +344,6 @@ Combine these commits into a single commit message.
 {{ git_diff }}
 </diff>
 """
+
+[list]
+summary = true

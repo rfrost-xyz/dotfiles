@@ -205,7 +205,7 @@ fi
 """
 
 tmux = """
-S={{ repo }}
+S=$(basename "$(dirname {{ repo_path }})")
 B={{ branch | sanitize }}
 W={{ worktree_path }}
 
@@ -235,7 +235,7 @@ echo "✓ Session '$S' window '$B' — attach with: tmux attach -t $S"
 
 [pre-remove]
 tmux = """
-S={{ repo }}
+S=$(basename "$(dirname {{ repo_path }})")
 B={{ branch | sanitize }}
 # Count windows in the session
 COUNT=$(tmux list-windows -t "$S" 2>/dev/null | wc -l)
@@ -262,7 +262,7 @@ glab mr create \
 log = "git log --oneline {{ default_branch }}..HEAD"
 
 tmux = """
-S={{ repo }}
+S=$(basename "$(dirname {{ repo_path }})")
 B={{ branch | sanitize }}
 W={{ worktree_path }}
 

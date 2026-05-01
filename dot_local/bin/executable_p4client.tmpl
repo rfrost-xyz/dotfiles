@@ -1,12 +1,28 @@
 #!/bin/bash
 
-# A P4 client for use in WSL and Windows.
+# A P4 client helper with OS-specific root handling.
 
 # --- Configuration ---
 P4USER="squint1"
 P4PORT="ssl:35.176.29.207:1666"
 HOSTNAME="$(hostname)"
+{{- $kernelRelease := lower .chezmoi.kernel.osrelease }}
+{{- if eq .chezmoi.os "windows" }}
+OS_KIND="windows"
 ROOT_BASE="D:\\Stage\\"
+{{- else if and (eq .chezmoi.os "linux") (or (contains "microsoft" $kernelRelease) (contains "wsl" $kernelRelease)) }}
+OS_KIND="windows"
+ROOT_BASE="D:\\Stage\\"
+{{- else if eq .chezmoi.os "linux" }}
+OS_KIND="linux"
+ROOT_BASE="$HOME/Stage"
+{{- else if eq .chezmoi.os "darwin" }}
+OS_KIND="macos"
+ROOT_BASE="$HOME/Stage"
+{{- else }}
+OS_KIND="linux"
+ROOT_BASE="$HOME/Stage"
+{{- end }}
 
 # --- Globals ---
 user=""
@@ -84,8 +100,13 @@ generate_client_details() {
   p4client="${p4user}_${user}_${hostname}_${stream_sanitized}"
 
   # Define client root paths
-  client_root_win="${root_base%\\}\\$p4client"
-  client_root_wsl=$(wslpath -u "$client_root_win")
+  if [ "$OS_KIND" = "windows" ]; then
+    client_root_win="${root_base%\\}\\$p4client"
+    client_root_wsl="$(wslpath -u "$client_root_win")"
+  else
+    client_root_wsl="${root_base%/}/$p4client"
+    client_root_win=""
+  fi
 }
 
 create_workspace_files() {
@@ -108,12 +129,20 @@ create_workspace_files() {
 }
 
 display_summary() {
+  local client_root_display
+  client_root_display="$client_root_wsl"
+  if [ -n "$client_root_win" ]; then
+    client_root_display="$client_root_win"
+  fi
+
   echo ""
   echo "Client:   $p4client"
   echo "Owner:    $p4user"
   echo "Stream:   $p4stream"
-  echo "Root:     $client_root_win"
-  echo "AltRoot:  $client_root_wsl"
+  echo "Root:     $client_root_display"
+  if [ -n "$client_root_win" ]; then
+    echo "AltRoot:  $client_root_wsl"
+  fi
   echo ""
 }
 
@@ -165,7 +194,8 @@ ensure_login() {
 }
 
 create_p4_client() {
-  P4PORT="$p4port" P4USER="$p4user" p4 client -i <<EOF
+  if [ -n "$client_root_win" ]; then
+    P4PORT="$p4port" P4USER="$p4user" p4 client -i <<EOF
 Client: $p4client
 Owner: $p4user
 Host:
@@ -178,6 +208,19 @@ Options:    clobber rmdir
 SubmitOptions:  revertunchanged
 Stream: $p4stream
 EOF
+  else
+    P4PORT="$p4port" P4USER="$p4user" p4 client -i <<EOF
+Client: $p4client
+Owner: $p4user
+Host:
+Description:
+ Created by p4_client.sh on $(date)
+Root: ${client_root_wsl}
+Options:    clobber rmdir
+SubmitOptions:  revertunchanged
+Stream: $p4stream
+EOF
+  fi
 
   if [ $? -eq 0 ]; then
     echo ""

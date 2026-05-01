@@ -1,0 +1,32 @@
+{
+  "autoDreamEnabled": true,
+  "autoMemoryEnabled": true,
+  "editorMode": "vim",
+  "effortLevel": "high",
+  "advisorModel": "opus",
+  "tui": "fullscreen",
+  "enabledPlugins": {
+    "pyright-lsp@claude-plugins-official": true,
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "slack@claude-plugins-official": true,
+    "worktrunk@worktrunk": true
+  },
+  "env": {
+    "CLAUDE_CODE_DISABLE_1M_CONTEXT": "1",
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "extraKnownMarketplaces": {
+    "worktrunk": {
+      "source": {
+        "repo": "max-sixty/worktrunk",
+        "source": "github"
+      }
+    }
+  },
+  "skipDangerousModePermissionPrompt": true,
+  "statusLine": {
+    "command": "wt list statusline --format=claude-code",
+    "type": "command"
+  },
+  "theme": "auto"
+}

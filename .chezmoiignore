@@ -3,5 +3,7 @@
 .p4trust
 .ssh/known_hosts
 .ssh/known_hosts.old
-# LazyVim extras are pinned in lua/config/lazy.lua; this is mutable UI state
+# LazyVim/Mason: declare the *set* in lua (lazy.lua imports + plugins/mason.lua);
+# let neovim own the actual installs + versions. These are neovim-managed state:
 .config/nvim/lazyvim.json
+.config/nvim/lazy-lock.json

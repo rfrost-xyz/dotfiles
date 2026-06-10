@@ -41,4 +41,12 @@ LUA
 
 nvim --headless "+Lazy! restore" "+luafile $lua_file" +qa
 
+# Lazy may touch the lockfile while installing/restoring. Keep the managed
+# lockfile authoritative so `chezmoi status` stays clean after the hook runs.
+chezmoi apply --force --include files --exclude scripts ~/.config/nvim/lazy-lock.json
+
+# Clean up artifacts from earlier broken hook locations.
+rm -f "$HOME/.chezmoiscripts/20-nvim-sync.sh" "$HOME/20-nvim-sync.sh"
+rmdir "$HOME/.chezmoiscripts" 2>/dev/null || true
+
 echo "chezmoi: Neovim sync complete"

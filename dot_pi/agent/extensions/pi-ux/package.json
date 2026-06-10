@@ -1,0 +1,17 @@
+{
+  "name": "pi-ux",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Personal pi extension suite: response metrics, hooks, permissions, quotas, theme sync, autocomplete, plus /config + /stats commands. Statusline lives as a sibling extension; shared lib in extensions/lib.",
+  "pi": {
+    "extensions": [
+      "./metrics/index.ts",
+      "./hooks/index.ts",
+      "./permissions/index.ts",
+      "./quotas/index.ts",
+      "./theme-sync/index.ts",
+      "./autocomplete/index.ts",
+      "./ux.ts"
+    ]
+  }
+}

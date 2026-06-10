@@ -1,0 +1,9 @@
+# This file is loaded by ~/.bashrc to load all custom functions.
+# Go through every script in this directory (except this one) and source it.
+# This ensures all custom functions are loaded into the current shell session.
+
+for f in "${BASH_SOURCE[0]%/*}"/*.sh; do
+    if [ -f "$f" ]; then
+        source "$f"
+    fi
+done

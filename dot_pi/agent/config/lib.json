@@ -1,0 +1,10 @@
+{
+  "menu": {
+    "maxVisible": 10
+  },
+  "context": {
+    "usableTokens": 160000,
+    "tolerancePercent": 20,
+    "fillBasis": "window"
+  }
+}

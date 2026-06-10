@@ -1,0 +1,446 @@
+# # User Configuration
+#
+# Create with `wt config create`.
+#
+# Location:
+#
+# - macOS/Linux: `~/.config/worktrunk/config.toml` (or `$XDG_CONFIG_HOME` if set)
+# - Windows: `%APPDATA%\worktrunk\config.toml`
+#
+# ## Worktree path template
+#
+# Controls where new worktrees are created.
+#
+# **Variables:**
+#
+# - `{{ repo_path }}` — absolute path to the repository (e.g., `/Users/me/code/myproject`)
+# - `{{ repo }}` — repository directory name (e.g., `myproject`)
+# - `{{ branch }}` — raw branch name (e.g., `feature/auth`)
+# - `{{ branch | sanitize }}` — filesystem-safe: `/` and `\` become `-` (e.g., `feature-auth`)
+# - `{{ branch | sanitize_db }}` — database-safe: lowercase, underscores, hash suffix (e.g., `feature_auth_x7k`)
+#
+# **Examples** for repo at `~/code/myproject`, branch `feature/auth`:
+#
+# # Default — sibling directory
+# # Creates: ~/code/myproject.feature-auth
+# # worktree-path = "{{ repo_path }}/../{{ repo }}.{{ branch | sanitize }}"
+#
+# # Inside the repository
+# # Creates: ~/code/myproject/.worktrees/feature-auth
+# worktree-path = "{{ repo_path }}/.worktrees/{{ branch | sanitize }}"
+#
+# # Centralized worktrees directory
+# # Creates: ~/worktrees/myproject/feature-auth
+# worktree-path = "~/worktrees/{{ repo }}/{{ branch | sanitize }}"
+#
+# `~` expands to the home directory. Relative paths are relative to the repository root.
+#
+# ## LLM commit messages
+#
+# Generate commit messages automatically during merge. Requires an external CLI tool.
+#
+# See LLM commits docs (https://worktrunk.dev/llm-commits/) for setup and Custom prompt templates (#custom-prompt-templates) for template customization.
+#
+# ## Command config
+#
+# ### List
+#
+# Persistent flag values for `wt list`. Override on command line as needed.
+#
+# [list]
+# summary = false    # Enable LLM branch summaries (requires [commit.generation])
+#
+# full = false       # Show CI, main…± diffstat, and LLM summaries (--full)
+# branches = false   # Include branches without worktrees (--branches)
+# remotes = false    # Include remote-only branches (--remotes)
+#
+# ### Commit
+#
+# Shared by `wt step commit`, `wt step squash`, and `wt merge`.
+#
+# [commit]
+# stage = "all"      # What to stage before commit: "all", "tracked", or "none"
+#
+# ### Merge
+#
+# All flags are on by default. Set to false to change default behavior.
+#
+# [merge]
+# squash = true      # Squash commits into one (--no-squash to preserve history)
+# commit = true      # Commit uncommitted changes first (--no-commit to skip)
+# rebase = true      # Rebase onto target before merge (--no-rebase to skip)
+# remove = true      # Remove worktree after merge (--no-remove to keep)
+# verify = true      # Run project hooks (--no-verify to skip)
+#
+# ### Switch picker
+#
+# Configuration for `wt switch` interactive picker.
+#
+# [switch.picker]
+# # Pager command for diff preview (overrides git's core.pager)
+# # pager = "delta --paging=never"
+#
+# # Timeout (ms) for git commands during picker loading (default: 200)
+# # Lower values show the TUI faster; 0 disables timeouts
+# # timeout-ms = 200
+#
+# ### User project-specific settings
+#
+# For context:
+#
+# - Project config (https://worktrunk.dev/config/#project-configuration) settings are shared with teammates.
+# - User configs generally apply to all projects.
+# - User configs _also_ has a `[projects]` table which holds project-specific settings for the user, such as worktree layout and setting overrides. That's what this section covers.
+#
+# Entries are keyed by project identifier (e.g., `github.com/user/repo`).
+#
+# #### Setting overrides (Experimental)
+#
+# Override global user config for a specific project. Scalar values (like `worktree-path`) replace the global value. Hooks append — both global and per-project hooks run.
+#
+# [projects."github.com/user/repo"]
+# worktree-path = ".worktrees/{{ branch | sanitize }}"
+# list.full = true
+# merge.squash = false
+# post-create.env = "cp .env.example .env"
+#
+# ### Custom prompt templates
+#
+# Templates use minijinja (https://docs.rs/minijinja/) syntax.
+#
+# #### Commit template
+#
+# Available variables:
+#
+# - `{{ git_diff }}`, `{{ git_diff_stat }}` — diff content
+# - `{{ branch }}`, `{{ repo }}` — context
+# - `{{ recent_commits }}` — recent commit messages
+#
+# Default template:
+#
+# <!-- DEFAULT_TEMPLATE_START -->
+# [commit.generation]
+# template = """
+# Write a commit message for the staged changes below.
+#
+# <format>
+# - Subject line under 50 chars
+# - For material changes, add a blank line then a body paragraph explaining the change
+# - Output only the commit message, no quotes or code blocks
+# </format>
+#
+# <style>
+# - Imperative mood: "Add feature" not "Added feature"
+# - Match recent commit style (conventional commits if used)
+# - Describe the change, not the intent or benefit
+# </style>
+#
+# <diffstat>
+# {{ git_diff_stat }}
+# </diffstat>
+#
+# <diff>
+# {{ git_diff }}
+# </diff>
+#
+# <context>
+# Branch: {{ branch }}
+# {% if recent_commits %}<recent_commits>
+# {% for commit in recent_commits %}- {{ commit }}
+# {% endfor %}</recent_commits>{% endif %}
+# </context>
+#
+# """
+# <!-- DEFAULT_TEMPLATE_END -->
+#
+# #### Squash template
+#
+# Available variables (in addition to commit template variables):
+#
+# - `{{ commits }}` — list of commits being squashed
+# - `{{ target_branch }}` — merge target branch
+#
+# Default template:
+#
+# <!-- DEFAULT_SQUASH_TEMPLATE_START -->
+# [commit.generation]
+# squash-template = """
+# Combine these commits into a single commit message.
+#
+# <format>
+# - Subject line under 50 chars
+# - For material changes, add a blank line then a body paragraph explaining the change
+# - Output only the commit message, no quotes or code blocks
+# </format>
+#
+# <style>
+# - Imperative mood: "Add feature" not "Added feature"
+# - Match the style of commits being squashed (conventional commits if used)
+# - Describe the change, not the intent or benefit
+# </style>
+#
+# <commits branch="{{ branch }}" target="{{ target_branch }}">
+# {% for commit in commits %}- {{ commit }}
+# {% endfor %}</commits>
+#
+# <diffstat>
+# {{ git_diff_stat }}
+# </diffstat>
+#
+# <diff>
+# {{ git_diff }}
+# </diff>
+#
+# """
+# <!-- DEFAULT_SQUASH_TEMPLATE_END -->
+
+worktree-path = "../{{ branch | sanitize }}"
+
+[[pre-start]]
+fetch-refspec = """
+if [ -z "$(git config --get remote.origin.fetch)" ]; then
+  git config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
+  git fetch --all --quiet
+fi
+"""
+
+[[pre-start]]
+tmux = """
+S=$(basename "$(dirname {{ repo_path }})")
+B={{ branch | sanitize }}
+W={{ worktree_path }}
+
+if tmux has-session -t "$S" 2>/dev/null; then
+  # Session exists — add a new window
+  tmux new-window -t "$S" -n "$B" -c "$W"
+else
+  # Create session with first window named after branch
+  tmux new-session -d -s "$S" -c "$W" -n "$B"
+fi
+
+# Split right pane at 20% width
+tmux split-window -h -t "$S:$B" -c "$W" -l 20%
+
+# Split left pane horizontally: 70% top (nvim), 30% bottom (shell)
+tmux split-window -v -t "$S:$B.1" -c "$W" -l 30%
+
+# Start services
+tmux send-keys -t "$S:$B.1" 'nvim' Enter
+tmux send-keys -t "$S:$B.3" 'pi' Enter
+
+# Focus the pane
+tmux select-pane -t "$S:$B.1"
+
+echo "✓ Session '$S' window '$B' — attach with: tmux attach -t $S"
+"""
+
+[pre-remove]
+tmux = """
+S=$(basename "$(dirname {{ repo_path }})")
+B={{ branch | sanitize }}
+# Count windows in the session
+COUNT=$(tmux list-windows -t "$S" 2>/dev/null | wc -l)
+if [ "${COUNT:-0}" -le 1 ]; then
+  # Last window — kill the whole session
+  tmux kill-session -t "$S" 2>/dev/null || true
+else
+  # Kill just this branch's window
+  tmux kill-window -t "$S:$B" 2>/dev/null || true
+fi
+"""
+
+[aliases]
+upstream = "git push -u origin {{ branch }}"
+
+mr = """
+git push -u origin {{ branch }} && \
+glab mr create \
+  --title "$(git log -1 --format=%s)" \
+  --description "$(git log -1 --format=%b)" \
+  --target-branch {{ default_branch }} \
+  --yes
+"""
+log = "git log --oneline {{ default_branch }}..HEAD"
+
+tmux = """
+S=$(basename "$(dirname {{ repo_path }})")
+B={{ branch | sanitize }}
+W={{ worktree_path }}
+
+# Kill existing window for this branch if any
+tmux kill-window -t "$S:$B" 2>/dev/null || true
+
+if tmux has-session -t "$S" 2>/dev/null; then
+  tmux new-window -t "$S" -n "$B" -c "$W"
+else
+  tmux new-session -d -s "$S" -c "$W" -n "$B"
+fi
+
+tmux split-window -h -t "$S:$B" -c "$W" -l 20%
+tmux split-window -v -t "$S:$B.1" -c "$W" -l 30%
+tmux send-keys -t "$S:$B.1" 'nvim' Enter
+tmux send-keys -t "$S:$B.3" 'pi' Enter
+tmux select-pane -t "$S:$B.2"
+echo "✓ Session '$S' window '$B' — attach with: tmux attach -t $S"
+"""
+
+switch-assist = """
+DESC={{ args }}
+if [ -z "$DESC" ]; then
+  echo "usage: wt switch-assist <description of the work>" >&2
+  exit 1
+fi
+
+NAME=$({
+  cat <<'PROMPT_EOF'
+Convert the work description below into ONE Conventional Branches name and output only that name — no quotes, no commentary, no preamble, no trailing newline beyond one.
+
+Format: <type>/<short-description>
+
+Allowed types (pick by what kind of work this is, not by the eventual commit type — docs work uses chore/):
+- feat:    new user-facing functionality
+- fix:     bug fixes and behaviour corrections
+- hotfix:  urgent production fixes
+- release: release-prep branches (description includes the version, e.g. release/v1.2.0)
+- chore:   maintenance, dependencies, docs, refactors, tests, CI
+
+Description rules:
+- lowercase a-z 0-9 only; hyphens as separators
+- no underscores, spaces, or uppercase
+- dots only for version numbers
+- no consecutive, leading, or trailing hyphens or dots
+- short and descriptive (4-6 words max)
+- include a ticket id when one is obvious in the input (feat/issue-123-new-login)
+
+Work description:
+PROMPT_EOF
+  printf '%s\\n' "$DESC"
+} | CLAUDECODE= MAX_THINKING_TOKENS=0 claude -p \
+  --no-session-persistence --model=haiku --tools='' \
+  --disable-slash-commands --setting-sources='' --system-prompt='' \
+  | tail -n1 | tr -d '[:space:]')
+
+if [ -z "$NAME" ]; then
+  echo "✗ branch name generation failed" >&2
+  exit 1
+fi
+
+printf '→ %s\\n' "$NAME" >&2
+printf 'Create branch? [Y/n/e=edit] ' >&2
+read ANS </dev/tty
+case "$ANS" in
+  n|N) echo "aborted" >&2; exit 1 ;;
+  e|E) printf 'name: ' >&2; read NAME </dev/tty ;;
+esac
+
+exec wt switch --create "$NAME"
+"""
+
+[commit.generation]
+command = "PI_SKIP_VERSION_CHECK=1 pi -p --provider openai-codex --model gpt-5.4-mini --thinking off --no-tools --no-session --no-context-files --no-skills --no-prompt-templates --no-extensions --system-prompt ''"
+
+template = """
+Write a commit message for the staged changes below.
+
+<format>
+- Conventional Commits: `<type>[optional scope]: <description>`
+- Subject line under 50 chars, imperative mood ("add" not "added")
+- For material changes, add a blank line then a body paragraph explaining the change
+- Breaking changes: use `!` before the colon (e.g. `refactor(core)!: ...`) or a `BREAKING CHANGE:` footer
+- Output only the commit message, no quotes, code blocks or LLM attribution
+</format>
+
+<types>
+- feat:     new user-facing functionality
+- fix:      bug fixes and behaviour corrections
+- perf:     performance improvements
+- refactor: internal restructuring with no behaviour change
+- style:    formatting or style-only changes
+- test:     test-only changes
+- docs:     documentation or docstring updates
+- build:    build tooling or dependency changes
+- ci:       CI or automation pipeline changes
+- chore:    repository maintenance
+- revert:   revert of a previous change
+</types>
+
+<scope>
+- Add a scope only when it meaningfully narrows the change for a reader of `git log` — typically a package or subsystem name (e.g. `fix(graph): ...`, `refactor(core)!: ...`).
+- Omit the scope when the type alone is enough (e.g. `docs: update README`). Do not invent a scope.
+</scope>
+
+<style>
+- One logical change per commit. If the description needs the word "and", the change should have been split.
+- Describe the change, not the intent or benefit.
+- Match recent commit style for tone and scope conventions.
+</style>
+
+<diffstat>
+{{ git_diff_stat }}
+</diffstat>
+
+<diff>
+{{ git_diff }}
+</diff>
+
+<context>
+Branch: {{ branch }}
+{% if recent_commits %}<recent_commits>
+{% for commit in recent_commits %}- {{ commit }}
+{% endfor %}</recent_commits>{% endif %}
+</context>
+"""
+
+squash-template = """
+Combine these commits into a single commit message.
+
+<format>
+- Conventional Commits: `<type>[optional scope]: <description>`
+- Subject line under 50 chars, imperative mood ("add" not "added")
+- For material changes, add a blank line then a body paragraph explaining the change
+- Breaking changes: use `!` before the colon (e.g. `refactor(core)!: ...`) or a `BREAKING CHANGE:` footer
+- Output only the commit message, no quotes, code blocks or LLM attribution
+</format>
+
+<types>
+- feat:     new user-facing functionality
+- fix:      bug fixes and behaviour corrections
+- perf:     performance improvements
+- refactor: internal restructuring with no behaviour change
+- style:    formatting or style-only changes
+- test:     test-only changes
+- docs:     documentation or docstring updates
+- build:    build tooling or dependency changes
+- ci:       CI or automation pipeline changes
+- chore:    repository maintenance
+- revert:   revert of a previous change
+</types>
+
+<scope>
+- Add a scope only when it meaningfully narrows the change for a reader of `git log` — typically a package or subsystem name (e.g. `fix(graph): ...`, `refactor(core)!: ...`).
+- Omit the scope when the type alone is enough. Do not invent a scope.
+- Note: the branch prefix (feat/fix/hotfix/release/chore) does not dictate the commit type — e.g. a `chore/update-readme-docs` branch should still produce `docs: ...` commits.
+</scope>
+
+<style>
+- Pick the single type that best captures the combined change. If commits span multiple types and cannot honestly be summarized under one, prefer the most user-visible type (feat > fix > perf > refactor > ...).
+- Describe the change, not the intent or benefit.
+- Match the style of the commits being squashed for tone and scope conventions.
+</style>
+
+<commits branch="{{ branch }}" target="{{ target_branch }}">
+{% for commit in commits %}- {{ commit }}
+{% endfor %}</commits>
+
+<diffstat>
+{{ git_diff_stat }}
+</diffstat>
+
+<diff>
+{{ git_diff }}
+</diff>
+"""
+
+[list]
+summary = true
+

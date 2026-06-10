@@ -1,0 +1,24 @@
+# User aliases.
+# Sourced by ~/.bashrc after the omarchy defaults so these override.
+
+alias cat='bat'
+alias ff='fzf'
+alias c='opencode'
+alias cx='claude --dangerously-skip-permissions'
+alias cdx='codex'
+alias cm='chezmoi'
+alias cz='chezit'
+alias lg='lazygit'
+alias lj='lazyjira'
+
+# Tools
+# Set in ~/.local/share/omarchy/default/bash/aliases 
+# alias c='opencode'
+# alias cx='printf "\033[2J\033[3J\033[H" && claude --permission-mode bypassPermissions'
+# alias d='docker'
+# alias r='rails'
+# alias t='tmux attach || tmux new -s Work'
+# alias ic='tdl c'
+# alias ix='tdl cx'
+# alias icx='tdl c cx'
+alias icp='tdl pi'

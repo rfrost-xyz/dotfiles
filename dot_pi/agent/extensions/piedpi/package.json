@@ -1,0 +1,9 @@
+{
+  "name": "piedpi",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Personal extension suite — statusline + omarchy-theme — sharing a slim local lib.",
+  "pi": {
+    "extensions": ["./omarchy-theme.ts", "./statusline.ts", "./context.ts", "./config.ts"]
+  }
+}

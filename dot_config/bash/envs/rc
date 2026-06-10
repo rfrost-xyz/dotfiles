@@ -1,0 +1,13 @@
+# Environment variables and PATH additions.
+# Sourced by ~/.bashrc after the omarchy defaults.
+
+# Pi: prefer XDG Base Directory locations over ~/.pi/agent.
+# export PI_CODING_AGENT_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/pi/agent"
+# export PI_CODING_AGENT_SESSION_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/pi/agent/sessions"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# obsidian
+# export PATH="$PATH:$HOME/.local/bin"

@@ -1,0 +1,56 @@
+{
+  "lines": [
+    {
+      "left": [
+        "gitBranch",
+        "gitWorkDiff",
+        "gitAhead",
+        "gitBranchDiff",
+        "usage",
+        "context",
+        "rate5h",
+        "rateWeekly"
+      ],
+      "right": [
+        "effort",
+        "model"
+      ]
+    }
+  ],
+  "gitBase": "origin/main",
+  "gitDiffStyle": "symbolsNumbers",
+  "contextAmount": "used",
+  "showContextTotal": true,
+  "usageInput": true,
+  "usageOutput": true,
+  "usageCacheRead": true,
+  "usageCacheWrite": true,
+  "showRate5hReset": true,
+  "showRateWeeklyReset": true,
+  "modelDisplay": "displayName",
+  "modelStripContext": true,
+  "pieContext": true,
+  "pieRate5h": true,
+  "pieRateWeekly": true,
+  "rate5hWarning": 80,
+  "rate5hError": 90,
+  "rateWeeklyWarning": 80,
+  "rateWeeklyError": 90,
+  "usableTokens": 128000,
+  "tolerancePercent": 15,
+  "fillBasis": "usable",
+  "separator": " · ",
+  "defaultColumns": 200,
+  "colors": {
+    "gitBranch": "accent",
+    "gitWorkDiff": "accent",
+    "gitAhead": "accent",
+    "gitBranchDiff": "accent",
+    "usage": "dim",
+    "context": "dim",
+    "model": "dim",
+    "effort": "dim",
+    "rate5h": "muted",
+    "rateWeekly": "muted"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "version": 2,
+  "live": true,
+  "appendToMessage": true,
+  "liveMetrics": [
+    "duration",
+    "usage",
+    "tokensPerSecond"
+  ],
+  "finalMetrics": [
+    "duration",
+    "usage"
+  ],
+  "minAppendDurationMs": 2000,
+  "intervalMs": 1000,
+  "label": "Took",
+  "liveStyle": "terse",
+  "phrases": {
+    "enabled": true,
+    "themes": [
+      "siliconValley",
+      "officeSpace",
+      "wankernomics"
+    ]
+  },
+  "highlightColor": "accent",
+  "phraseAnimation": "shimmer",
+  "phraseAnimationMs": 80
+}

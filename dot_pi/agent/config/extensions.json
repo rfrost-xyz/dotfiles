@@ -1,0 +1,26 @@
+{
+  "statusline": {
+    "enabled": true
+  },
+  "metrics": {
+    "enabled": true
+  },
+  "hooks": {
+    "enabled": true
+  },
+  "permissions": {
+    "enabled": true
+  },
+  "codex-quotas": {
+    "enabled": true
+  },
+  "theme-sync": {
+    "enabled": true
+  },
+  "autocomplete": {
+    "enabled": true
+  },
+  "quotas": {
+    "enabled": true
+  }
+}

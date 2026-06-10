@@ -1,0 +1,69 @@
+model = "gpt-5.5"
+model_reasoning_effort = "medium"
+approvals_reviewer = "guardian_subagent"
+personality = "pragmatic"
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}dev{{ .chezmoi.pathSeparator }}journey-io-pipeline"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Projects{{ .chezmoi.pathSeparator }}journey-io-pipeline"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}.pi"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}.pi{{ .chezmoi.pathSeparator }}agent{{ .chezmoi.pathSeparator }}extensions{{ .chezmoi.pathSeparator }}piedpi"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Projects{{ .chezmoi.pathSeparator }}engineering-docs"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.commandDir }}{{ .chezmoi.pathSeparator }}.agents{{ .chezmoi.pathSeparator }}skills{{ .chezmoi.pathSeparator }}qiddiya-spatial-merge"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Documents{{ .chezmoi.pathSeparator }}Personal"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Projects{{ .chezmoi.pathSeparator }}squint-fighter"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.commandDir }}"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Projects{{ .chezmoi.pathSeparator }}middleout"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}agent-usage-report{{ .chezmoi.pathSeparator }}sessionscope"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Projects{{ .chezmoi.pathSeparator }}anton"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Projects{{ .chezmoi.pathSeparator }}timesheet"]
+trust_level = "trusted"
+
+[tui]
+status_line = ["model-with-reasoning", "five-hour-limit", "weekly-limit", "context-used", "context-window-size", "used-tokens", "total-input-tokens", "total-output-tokens", "task-progress", "branch-changes", "{{ .chezmoi.config.git.command }}-branch", "run-state"]
+status_line_use_colors = true
+pet = "fireball"
+
+[tui.model_availability_nux]
+"gpt-5.5" = 4
+
+[features]
+hooks = true
+memories = true
+terminal_resize_reflow = true
+goals = true
+prevent_idle_sleep = true
+
+[mcp_servers.atlassian-squintopera]
+url = "https{{ .chezmoi.pathListSeparator }}{{ .chezmoi.pathSeparator }}{{ .chezmoi.pathSeparator }}mcp.atlassian.com{{ .chezmoi.pathSeparator }}v1{{ .chezmoi.pathSeparator }}mcp"
+
+[mcp_servers.atlassian-journey]
+url = "https{{ .chezmoi.pathListSeparator }}{{ .chezmoi.pathSeparator }}{{ .chezmoi.pathSeparator }}mcp.atlassian.com{{ .chezmoi.pathSeparator }}v1{{ .chezmoi.pathSeparator }}mcp"
+
+[notice]
+fast_default_opt_out = true

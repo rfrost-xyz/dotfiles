@@ -1,0 +1,87 @@
+{
+  "enabled": true,
+  "left": [
+    "gitBranch",
+    "gitWorkDiff",
+    "gitAhead",
+    "gitBranchDiff",
+    "gitWorktree"
+  ],
+  "right": [
+    "statuses"
+  ],
+  "showCost": true,
+  "showGitBranch": true,
+  "showGitDiffs": true,
+  "showGitBranchDiffs": true,
+  "showGitAheadBehind": true,
+  "gitDiffStyle": "symbolsNumbers",
+  "showWorktree": true,
+  "gitBase": "origin/main",
+  "codexWindow": "both",
+  "codexDisplay": "remaining",
+  "costCurrency": "GBP",
+  "usdToGbp": 0.79,
+  "codex5hWarning": 70,
+  "codex5hError": 90,
+  "codexWeeklyWarning": 70,
+  "codexWeeklyError": 90,
+  "contextWarning": 50,
+  "contextError": 80,
+  "colors": {
+    "cwd": "accent",
+    "gitBranch": "dim",
+    "gitWorktree": "accent",
+    "gitAhead": "text",
+    "gitBranchDiff": "text",
+    "gitWorkDiff": "text",
+    "usage": "dim",
+    "cost": "dim",
+    "codex5h": "dim",
+    "codexWeekly": "dim",
+    "context": "dim",
+    "model": "dim",
+    "thinking": "dim",
+    "statuses": "accent",
+    "git": "dim",
+    "codex": "dim"
+  },
+  "disabledSegments": [
+    "cwd",
+    "cost",
+    "gitWorktree"
+  ],
+  "lines": [
+    {
+      "left": [
+        "gitBranch",
+        "gitWorkDiff",
+        "gitAhead",
+        "gitBranchDiff",
+        "gitWorktree"
+      ],
+      "right": [
+        "statuses"
+      ]
+    },
+    {
+      "left": [
+        "usage",
+        "context",
+        "codex5h",
+        "codexWeekly",
+        "cost"
+      ],
+      "right": [
+        "thinking",
+        "model"
+      ]
+    },
+    {
+      "left": [
+        "cwd"
+      ],
+      "right": []
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+
+[user]
+  name = Richard Frost
+  email = richard.frost@squintopera.com
+  signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJwnn397qQDmlEN6xMTZ5OxxRBjVOq16FgU1F0GCcGL1
+[init]
+  defaultBranch = main
+[core]
+  editor = nvim
+  longpaths = true
+  autocrlf = input
+[gpg]
+  format = ssh
+[commit]
+  gpgsign = true
+[tag]
+  gpgsign = true
+[push]
+  followTags = true
+  autoSetupRemote = true
+[filter "lfs"]
+  clean = git-lfs clean -- %f
+  smudge = git-lfs smudge -- %f
+  process = git-lfs filter-process
+  required = true
+[alias]
+  who = shortlog -sn --all --no-merges
+[fetch]
+  prune = true
+[pull]
+	rebase = true
+[credential "https://git.squintopera.com"]
+	helper =
+	helper = !/usr/bin/glab auth git-credential
+[gpg "ssh"]
+	allowedSignersFile = /home/rfrost/.ssh/allowed_signers

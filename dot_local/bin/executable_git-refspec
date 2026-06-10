@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# fix-bare-repos.sh
+
+ROOT="${1:-$HOME/dev}"
+
+find "$ROOT" -name HEAD -path '*/.git/HEAD' -exec dirname {} \; 2>/dev/null | while read gitdir; do
+  # Only bare repos
+  if [ "$(git -C "$gitdir" config --get core.bare 2>/dev/null)" != "true" ]; then
+    continue
+  fi
+
+  repo="$(dirname "$gitdir")"
+  echo "=== $repo ==="
+
+  # Fix fetch refspec if missing
+  if [ -z "$(git -C "$gitdir" config --get remote.origin.fetch 2>/dev/null)" ]; then
+    git -C "$gitdir" config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
+    echo "  ✓ Set remote.origin.fetch"
+  fi
+
+  # Fetch all remotes
+  git -C "$gitdir" fetch --all --quiet 2>/dev/null
+  echo "  ✓ Fetched"
+
+  # Set upstream tracking for each local branch with a matching remote
+  git -C "$gitdir" for-each-ref --format='%(refname:short)' refs/heads/ | while read branch; do
+    if git -C "$gitdir" rev-parse --verify "origin/$branch" &>/dev/null; then
+      if [ -z "$(git -C "$gitdir" config --get "branch.$branch.remote" 2>/dev/null)" ]; then
+        git -C "$gitdir" branch --set-upstream-to="origin/$branch" "$branch" 2>/dev/null
+        echo "  ✓ $branch → origin/$branch"
+      fi
+    fi
+  done
+
+
+  echo ""
+done

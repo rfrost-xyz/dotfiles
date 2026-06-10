@@ -1,0 +1,5 @@
+# Runtime/state files — regenerated locally, never tracked
+.claude.json
+.p4trust
+.ssh/known_hosts
+.ssh/known_hosts.old

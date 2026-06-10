@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Re-sync LazyVim plugins to the committed lockfile whenever the declared
+# plugin set or enabled extras change. chezmoi re-runs this on `chezmoi apply`
+# because the hashes below change with the files:
+#   lazyvim.json:   {{ include "dot_config/nvim/lazyvim.json" | sha256sum }}
+#   lazy-lock.json: {{ include "dot_config/nvim/lazy-lock.json" | sha256sum }}
+set -eu
+
+command -v nvim >/dev/null 2>&1 || exit 0
+
+echo "chezmoi: syncing LazyVim plugins (Lazy restore)…"
+nvim --headless "+Lazy! restore" +qa || true
+echo "chezmoi: LazyVim plugins synced. Mason tools install on next interactive nvim."

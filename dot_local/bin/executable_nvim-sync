@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Re-run when the declarative Neovim plugin inputs change:
-#   lazy.lua:       {{ include "dot_config/nvim/lua/config/lazy.lua" | sha256sum }}
-#   mason.lua:      {{ include "dot_config/nvim/lua/plugins/mason.lua" | sha256sum }}
-#   lazy-lock.json: {{ include "dot_config/nvim/lazy-lock.json" | sha256sum }}
-
 command -v nvim >/dev/null 2>&1 || {
-  echo "chezmoi: nvim not found; skipping Neovim sync"
-  exit 0
+  echo "nvim-sync: nvim not found"
+  exit 1
 }
 
-echo "chezmoi: syncing Lazy.nvim plugins and Mason tools"
+command -v chezmoi >/dev/null 2>&1 || {
+  echo "nvim-sync: chezmoi not found"
+  exit 1
+}
+
+echo "nvim-sync: restoring Lazy.nvim plugins and Mason tools"
 
 lua_file="$(mktemp)"
 trap 'rm -f "$lua_file"' EXIT
@@ -42,11 +42,11 @@ LUA
 nvim --headless "+Lazy! restore" "+luafile $lua_file" +qa
 
 # Lazy may touch the lockfile while installing/restoring. Keep the managed
-# lockfile authoritative so `chezmoi status` stays clean after the hook runs.
+# lockfile authoritative so `chezmoi status` stays clean after sync.
 chezmoi apply --force --include files --exclude scripts ~/.config/nvim/lazy-lock.json
 
-# Clean up artifacts from earlier broken hook locations.
+# Clean up artifacts from the removed chezmoi run-script approach.
 rm -f "$HOME/.chezmoiscripts/20-nvim-sync.sh" "$HOME/20-nvim-sync.sh"
 rmdir "$HOME/.chezmoiscripts" 2>/dev/null || true
 
-echo "chezmoi: Neovim sync complete"
+echo "nvim-sync: complete"

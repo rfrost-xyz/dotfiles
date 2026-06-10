@@ -3,3 +3,5 @@
 .p4trust
 .ssh/known_hosts
 .ssh/known_hosts.old
+# LazyVim extras are pinned in lua/config/lazy.lua; this is mutable UI state
+.config/nvim/lazyvim.json

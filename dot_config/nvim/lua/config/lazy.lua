@@ -18,9 +18,8 @@ require("lazy").setup({
   spec = {
     -- add LazyVim and import its plugins
     { "LazyVim/LazyVim", import = "lazyvim.plugins" },
-    -- Extras, pinned declaratively so they are reproducible on every machine.
-    -- This is the source of truth — NOT the mutable lazyvim.json that the
-    -- :LazyExtras UI writes (that file is gitignored).
+    -- Extras are pinned here so every machine loads the same LazyVim spec.
+    -- Do not rely on lazyvim.json; :LazyExtras treats it as mutable UI state.
     { import = "lazyvim.plugins.extras.coding.blink" },
     { import = "lazyvim.plugins.extras.coding.mini-surround" },
     { import = "lazyvim.plugins.extras.coding.neogen" },

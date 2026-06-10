@@ -13,6 +13,32 @@ command -v nvim >/dev/null 2>&1 || {
 
 echo "chezmoi: syncing Lazy.nvim plugins and Mason tools"
 
-nvim --headless "+Lazy! restore" "+lua local Config = require('lazy.core.config'); local Plugin = require('lazy.core.plugin'); local spec = Config.plugins['mason.nvim']; local opts = spec and Plugin.values(spec, 'opts', false) or {}; local seen, tools = {}, {}; for _, tool in ipairs(opts.ensure_installed or {}) do if not seen[tool] then seen[tool] = true; tools[#tools + 1] = tool end end; if #tools > 0 then vim.opt.rtp:prepend(vim.fn.stdpath('data') .. '/lazy/mason.nvim'); require('mason').setup({}); require('mason.api.command').MasonInstall(tools, {}) end" +qa
+lua_file="$(mktemp)"
+trap 'rm -f "$lua_file"' EXIT
+
+cat >"$lua_file" <<'LUA'
+local Config = require("lazy.core.config")
+local Plugin = require("lazy.core.plugin")
+
+local spec = Config.plugins["mason.nvim"]
+local opts = spec and Plugin.values(spec, "opts", false) or {}
+local seen = {}
+local tools = {}
+
+for _, tool in ipairs(opts.ensure_installed or {}) do
+  if not seen[tool] then
+    seen[tool] = true
+    tools[#tools + 1] = tool
+  end
+end
+
+if #tools > 0 then
+  vim.opt.rtp:prepend(vim.fn.stdpath("data") .. "/lazy/mason.nvim")
+  require("mason").setup({})
+  require("mason.api.command").MasonInstall(tools, {})
+end
+LUA
+
+nvim --headless "+Lazy! restore" "+luafile $lua_file" +qa
 
 echo "chezmoi: Neovim sync complete"

@@ -48,5 +48,9 @@ chezmoi apply --force --include files --exclude scripts ~/.config/nvim/lazy-lock
 # Clean up artifacts from the removed chezmoi run-script approach.
 rm -f "$HOME/.chezmoiscripts/20-nvim-sync.sh" "$HOME/20-nvim-sync.sh"
 rmdir "$HOME/.chezmoiscripts" 2>/dev/null || true
+source_dir="$(chezmoi source-path 2>/dev/null || true)"
+if [ -n "$source_dir" ]; then
+  rm -f "$source_dir/20-nvim-sync.sh"
+fi
 
 echo "nvim-sync: complete"

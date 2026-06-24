@@ -1,13 +1,10 @@
 {
-  "lastChangelogVersion": "0.79.0",
+  "lastChangelogVersion": "0.80.2",
   "theme": "omarchy",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.5",
-  "defaultThinkingLevel": "medium",
-  "enabledModels": [
-    "openai-codex/gpt-5.4-mini",
-    "openai-codex/gpt-5.5"
-  ],
+  "defaultThinkingLevel": "high",
+  "enabledModels": ["openai-codex/gpt-5.5"],
   "packages": [
     "npm:pi-mcp-adapter",
     "npm:pi-rewind",
@@ -19,16 +16,17 @@
     "showTerminalProgress": true
   },
   "treeFilterMode": "default",
-  "skills": [
-    "~/.claude/skills",
-    "~/.codex/skills",
-    "~/.agents/skills"
-  ],
+  "skills": ["~/.agents/skills"],
   "hideThinkingBlock": false,
   "autocompleteMaxVisible": 7,
   "doubleEscapeAction": "tree",
   "quietStartup": true,
   "compaction": {
     "enabled": true
+  },
+  "showHardwareCursor": true,
+  "images": {
+    "blockImages": true
   }
 }
+

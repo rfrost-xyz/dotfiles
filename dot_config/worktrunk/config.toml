@@ -372,6 +372,7 @@ Write a commit message for the staged changes below.
 <style>
 - One logical change per commit. If the description needs the word "and", the change should have been split.
 - Describe the change, not the intent or benefit.
+- British English spelling (organise, behaviour, colour). No em or en dashes.
 - Match recent commit style for tone and scope conventions.
 </style>
 
@@ -425,6 +426,7 @@ Combine these commits into a single commit message.
 <style>
 - Pick the single type that best captures the combined change. If commits span multiple types and cannot honestly be summarized under one, prefer the most user-visible type (feat > fix > perf > refactor > ...).
 - Describe the change, not the intent or benefit.
+- British English spelling (organise, behaviour, colour). No em or en dashes.
 - Match the style of the commits being squashed for tone and scope conventions.
 </style>
 

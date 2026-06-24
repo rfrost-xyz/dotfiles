@@ -1,6 +1,8 @@
 # Runtime/state files — regenerated locally, never tracked
 .claude.json
 .p4trust
+# Pi auth — contains API keys / OAuth tokens, never track
+.pi/agent/auth.json
 .ssh/known_hosts
 .ssh/known_hosts.old
 # LazyVim/Mason: declare the *set* in lua (lazy.lua imports + plugins/mason.lua);

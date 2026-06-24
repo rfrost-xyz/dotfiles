@@ -59,6 +59,10 @@ terminal_resize_reflow = true
 goals = true
 prevent_idle_sleep = true
 
+[agents]
+max_threads = 8
+max_depth = 2
+
 [mcp_servers.atlassian-squintopera]
 url = "https{{ .chezmoi.pathListSeparator }}{{ .chezmoi.pathSeparator }}{{ .chezmoi.pathSeparator }}mcp.atlassian.com{{ .chezmoi.pathSeparator }}v1{{ .chezmoi.pathSeparator }}mcp"
 

@@ -1,7 +1,7 @@
 ---
-name: user-atom-commit
+name: git-commit
 description: Split pending changes into logical, atomic Conventional Commits. Terse human subjects; bodies only when needed. No LLM attribution.
-allowed-tools: Bash Read
+allowed-tools: Bash Read Edit Write Grep Glob Agent
 ---
 
 Make atomic Conventional Commits from the current working tree.

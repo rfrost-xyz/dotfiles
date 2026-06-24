@@ -1,5 +1,5 @@
 ---
-name: user-review-cr
+name: git-cr-review
 description: Thoroughly review one or more GitLab MRs or GitHub PRs in isolated worktrunk worktrees, producing a structured review note per change request.
 allowed-tools: Bash Read Edit Write Grep Glob Agent
 ---
@@ -82,7 +82,7 @@ review one fully, write the note, then move to the next.
   in later steps.
 - Run `wt switch <shortcut> --format json --no-cd` from any existing
   worktree or the bare repo (e.g., `wt switch mr:1234 --format json
-  --no-cd` or `wt switch pr:567 --format json --no-cd`). Worktrunk
+--no-cd` or `wt switch pr:567 --format json --no-cd`). Worktrunk
   resolves the CR via `glab` or `gh`, fetches the branch, creates a
   worktree if needed, and prints
   `{ "branch": ..., "worktree_path": ..., ... }`. Capture
@@ -122,7 +122,7 @@ Pick the right CLI based on the platform recorded in step 1.
 **GitHub PRs**:
 
 - `gh pr view <num> --json
-  title,author,headRefName,baseRefName,url,body,labels,isDraft,mergeable,mergeStateStatus,statusCheckRollup,headRepositoryOwner,headRepository`
+title,author,headRefName,baseRefName,url,body,labels,isDraft,mergeable,mergeStateStatus,statusCheckRollup,headRepositoryOwner,headRepository`
   and map the fields to the same conceptual slots: title, author,
   source_branch (`headRefName`), target_branch (`baseRefName`),
   web_url (`url`), description (`body`), labels, draft (`isDraft`),

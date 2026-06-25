@@ -1,0 +1,9 @@
+{
+  "fx": {
+    "default": { "effect": "shimmer", "palette": "accent", "animated": true },
+    "perSkill": {
+      "playbook": { "effect": "gradient", "palette": "rainbow", "animated": true }
+    },
+    "speedMs": 80
+  }
+}

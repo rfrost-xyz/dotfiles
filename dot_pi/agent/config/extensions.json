@@ -1,24 +1,24 @@
 {
   "statusline": {
-    "enabled": true
+    "enabled": false
   },
   "metrics": {
     "enabled": false
   },
   "hooks": {
-    "enabled": true
+    "enabled": false
   },
   "permissions": {
-    "enabled": true
+    "enabled": false
   },
   "codex-quotas": {
     "enabled": true
   },
   "theme-sync": {
-    "enabled": true
+    "enabled": false
   },
   "autocomplete": {
-    "enabled": true
+    "enabled": false
   },
   "quotas": {
     "enabled": true

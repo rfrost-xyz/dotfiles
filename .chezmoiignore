@@ -9,3 +9,7 @@
 # let neovim own the actual installs + versions. These are neovim-managed state:
 .config/nvim/lazyvim.json
 .config/nvim/lazy-lock.json
+# piedpi is its own git repo now (~/.pi/agent/extensions/piedpi) — managed
+# there, not via chezmoi.
+.pi/agent/extensions/piedpi
+.pi/agent/extensions/piedpi/**

@@ -13,3 +13,6 @@
 # there, not via chezmoi.
 .pi/agent/extensions/piedpi
 .pi/agent/extensions/piedpi/**
+# pi-ux retired — fully replaced by piedpi, deleted on disk.
+.pi/agent/extensions/pi-ux
+.pi/agent/extensions/pi-ux/**

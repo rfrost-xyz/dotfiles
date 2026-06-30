@@ -238,14 +238,24 @@ echo "✓ Session '$S' window '$B' — attach with: tmux attach -t $S"
 tmux = """
 S=$(basename "$(dirname {{ repo_path }})")
 B={{ branch | sanitize }}
-# Count windows in the session
-COUNT=$(tmux list-windows -t "$S" 2>/dev/null | wc -l)
-if [ "${COUNT:-0}" -le 1 ]; then
-  # Last window — kill the whole session
-  tmux kill-session -t "$S" 2>/dev/null || true
+TARGET="$S:$B"
+
+# Which window is the merge/remove running in? We must never tear down our
+# own window (that loses the agent's context) nor the session it lives in.
+CUR=""
+[ -n "$TMUX_PANE" ] && CUR=$(tmux display-message -p -t "$TMUX_PANE" '#{session_name}:#{window_name}' 2>/dev/null)
+
+if ! tmux has-session -t "$S" 2>/dev/null; then
+  : # no session to clean up
+elif [ "$CUR" = "$TARGET" ]; then
+  : # removing from this worktree's own window — leave it; session + context survive
 else
-  # Kill just this branch's window
-  tmux kill-window -t "$S:$B" 2>/dev/null || true
+  COUNT=$(tmux list-windows -t "$S" 2>/dev/null | wc -l)
+  if [ "${COUNT:-0}" -le 1 ]; then
+    : # only window left — never kill the whole session
+  else
+    tmux kill-window -t "$TARGET" 2>/dev/null || true
+  fi
 fi
 """
 

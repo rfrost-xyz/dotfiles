@@ -1,10 +1,18 @@
 {
-  "lastChangelogVersion": "0.80.2",
+  "lastChangelogVersion": "0.80.3",
   "theme": "omarchy",
-  "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.5",
+  "defaultProvider": "opencode-go",
+  "defaultModel": "glm-5.2",
   "defaultThinkingLevel": "high",
-  "enabledModels": ["openai-codex/gpt-5.5"],
+  "enabledModels": [
+    "openai-codex/gpt-5.5",
+    "opencode-go/glm-5.2",
+    "opencode-go/minimax-m3",
+    "opencode-go/qwen3.7-max",
+    "opencode-go/deepseek-v4-flash",
+    "opencode-go/deepseek-v4-pro",
+    "opencode-go/kimi-k2.7-code"
+  ],
   "packages": [
     "npm:pi-mcp-adapter",
     "npm:pi-rewind",
@@ -16,8 +24,10 @@
     "showTerminalProgress": true
   },
   "treeFilterMode": "default",
-  "skills": ["~/.agents/skills"],
-  "hideThinkingBlock": false,
+  "skills": [
+    "~/.agents/skills"
+  ],
+  "hideThinkingBlock": true,
   "autocompleteMaxVisible": 7,
   "doubleEscapeAction": "tree",
   "quietStartup": true,
@@ -27,6 +37,6 @@
   "showHardwareCursor": true,
   "images": {
     "blockImages": true
-  }
+  },
+  "steeringMode": "one-at-a-time"
 }
-

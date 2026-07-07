@@ -1,5 +1,5 @@
 model = "gpt-5.5"
-model_reasoning_effort = "medium"
+model_reasoning_effort = "high"
 approvals_reviewer = "guardian_subagent"
 personality = "pragmatic"
 [projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}dev{{ .chezmoi.pathSeparator }}journey-io-pipeline"]
@@ -44,10 +44,106 @@ trust_level = "trusted"
 [projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Projects{{ .chezmoi.pathSeparator }}timesheet"]
 trust_level = "trusted"
 
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Projects{{ .chezmoi.pathSeparator }}squint-fantasy"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}.pi{{ .chezmoi.pathSeparator }}agent{{ .chezmoi.pathSeparator }}extensions"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Projects{{ .chezmoi.pathSeparator }}journey-caper"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.pathSeparator }}tmp{{ .chezmoi.pathSeparator }}anton-bench-692928-0-1781608776427015732"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.pathSeparator }}tmp"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.pathSeparator }}tmp{{ .chezmoi.pathSeparator }}anton-bench-1155780-0-1781653227584763491"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.pathSeparator }}tmp{{ .chezmoi.pathSeparator }}anton-bench-1155780-1-1781653430327389171"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.pathSeparator }}tmp{{ .chezmoi.pathSeparator }}anton-bench-1155780-2-1781653440915396944"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.pathSeparator }}tmp{{ .chezmoi.pathSeparator }}anton-bench-1158795-0-1781653512381742458"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.pathSeparator }}tmp{{ .chezmoi.pathSeparator }}anton-bench-1238978-20-1781688849396179083"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.pathSeparator }}tmp{{ .chezmoi.pathSeparator }}anton-bench-1238978-21-1781688887704890101"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.pathSeparator }}tmp{{ .chezmoi.pathSeparator }}anton-bench-1238978-22-1781688961631724427"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.pathSeparator }}tmp{{ .chezmoi.pathSeparator }}anton-bench-1238978-23-1781689136903838647"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.pathSeparator }}tmp{{ .chezmoi.pathSeparator }}anton-bench-1238978-24-1781689223590967285"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.pathSeparator }}tmp{{ .chezmoi.pathSeparator }}anton-bench-1238978-25-1781689234419599044"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.pathSeparator }}tmp{{ .chezmoi.pathSeparator }}anton-bench-1238978-26-1781689274126131672"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.pathSeparator }}tmp{{ .chezmoi.pathSeparator }}anton-bench-1238978-27-1781689358125416466"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.pathSeparator }}tmp{{ .chezmoi.pathSeparator }}anton-bench-1238978-28-1781689459827731232"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.pathSeparator }}tmp{{ .chezmoi.pathSeparator }}anton-bench-1238978-29-1781689484777091135"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.pathSeparator }}tmp{{ .chezmoi.pathSeparator }}anton-bench-1238978-30-1781689610071729933"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.pathSeparator }}tmp{{ .chezmoi.pathSeparator }}anton-bench-1238978-31-1781689720488170919"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.pathSeparator }}tmp{{ .chezmoi.pathSeparator }}anton-bench-1238978-32-1781689777769238201"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.pathSeparator }}tmp{{ .chezmoi.pathSeparator }}anton-bench-1238978-33-1781689796268346636"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.pathSeparator }}tmp{{ .chezmoi.pathSeparator }}anton-bench-1238978-34-1781689881927506021"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.pathSeparator }}tmp{{ .chezmoi.pathSeparator }}anton-bench-1238978-35-1781689982570941006"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Projects{{ .chezmoi.pathSeparator }}journey-sync"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}.codex"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Projects{{ .chezmoi.pathSeparator }}insanity"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Projects{{ .chezmoi.pathSeparator }}canon"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Projects{{ .chezmoi.pathSeparator }}slackdump"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Projects{{ .chezmoi.pathSeparator }}dirac"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Projects{{ .chezmoi.pathSeparator }}pixel"]
+trust_level = "trusted"
+
 [tui]
 status_line = ["model-with-reasoning", "five-hour-limit", "weekly-limit", "context-used", "context-window-size", "used-tokens", "total-input-tokens", "total-output-tokens", "task-progress", "branch-changes", "{{ .chezmoi.config.git.command }}-branch", "run-state"]
 status_line_use_colors = true
-pet = "fireball"
+pet = "disabled"
 
 [tui.model_availability_nux]
 "gpt-5.5" = 4

@@ -1,2 +1,4 @@
 [tools]
-node = "26.2.0"
+go = "latest"
+node = "latest"
+uv = "0.11.20"

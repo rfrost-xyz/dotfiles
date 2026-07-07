@@ -19,6 +19,9 @@ detail; this is the shared baseline they sit on.
   description, e.g. `feat/add-export-command`, `release/v1.2.0`. Branches use
   only these five; commits use the full type set, so a `docs:` or `refactor:`
   commit lives on a `chore/` or `feat/` branch.
+- Issue numbers are optional in branch names. Prefer a short descriptive branch
+  such as `feat/scaffold-crate`; use `feat/scaffold-crate-issue-1` only when the
+  project explicitly wants issue numbers in branch names.
 - Commits are atomic and Conventional: `<type>[scope]: <description>`. One
   logical change each. Add a scope only when it narrows the change for a reader
   (usually a package or subsystem); default to none. See the git-commit skill
@@ -33,6 +36,8 @@ detail; this is the shared baseline they sit on.
   different structure.
 - Title is a Conventional Commit subject. Keep the body terse: what changed and
   why, never a restatement of the diff.
+- When a CR is intended to resolve an issue, include the platform's closing
+  keyword in the CR description, e.g. `Closes #1` for GitLab/GitHub issues.
 - See the git-cr-review skill when reviewing someone else's CR.
 
 # No LLM attribution

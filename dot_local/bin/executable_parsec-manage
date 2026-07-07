@@ -1,0 +1,294 @@
+#!/bin/bash
+# Repackage and optionally install the official Parsec Linux .deb on Arch/Omarchy
+# without using the AUR.
+set -euo pipefail
+
+PROG=$(basename "$0")
+DEFAULT_URL="https://builds.parsec.app/package/parsec-linux.deb"
+
+usage() {
+  cat <<EOF
+Usage: $PROG [options] [parsec-linux.deb]
+
+Options:
+  --install           Download latest deb by default, build local package, install deps,
+                      install/reinstall parsec, and verify.
+  --download          Download latest official deb before building, even without --install.
+  --no-download       Do not download; require the local deb path to exist.
+  --keep-artifacts    After --install, keep the downloaded deb and built package.
+                      By default, successful --install removes installer artifacts.
+  --url URL           Official deb URL to download. Default: $DEFAULT_URL
+  --output-dir DIR    Output/cache directory. Default: ~/Downloads
+  --verify-only       Verify current installed parsec + decoder compatibility.
+  -h, --help          Show this help.
+
+Defaults:
+  deb cache:          ~/Downloads/parsec-linux.deb
+  package output:     ~/Downloads/parsec-<version>-x86_64.pkg.tar.zst
+
+Examples:
+  $PROG --install
+  $PROG --download
+  $PROG --install ~/Downloads/parsec-linux.deb
+EOF
+}
+
+INSTALL=0
+DOWNLOAD=0
+DOWNLOAD_EXPLICIT=0
+VERIFY_ONLY=0
+KEEP_ARTIFACTS=0
+DOWNLOADED_DEB=0
+OUTDIR="$HOME/Downloads"
+DEB_SET=0
+DEB=""
+URL="$DEFAULT_URL"
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --install) INSTALL=1; shift ;;
+    --download) DOWNLOAD=1; DOWNLOAD_EXPLICIT=1; shift ;;
+    --no-download) DOWNLOAD=0; DOWNLOAD_EXPLICIT=1; shift ;;
+    --keep-artifacts) KEEP_ARTIFACTS=1; shift ;;
+    --url)
+      [ "$#" -ge 2 ] || { echo "error: --url needs a value" >&2; exit 2; }
+      URL="$2"; shift 2 ;;
+    --output-dir)
+      [ "$#" -ge 2 ] || { echo "error: --output-dir needs a value" >&2; exit 2; }
+      OUTDIR="$2"; shift 2 ;;
+    --verify-only) VERIFY_ONLY=1; shift ;;
+    -h|--help) usage; exit 0 ;;
+    --) shift; break ;;
+    -*) echo "error: unknown option: $1" >&2; usage >&2; exit 2 ;;
+    *) DEB="$1"; DEB_SET=1; shift ;;
+  esac
+done
+
+# If the caller did not give a local deb, cache/use the latest official deb in OUTDIR.
+if [ "$DEB_SET" -eq 0 ]; then
+  DEB="$OUTDIR/parsec-linux.deb"
+fi
+
+# --install means "make this machine ready", so fetch latest by default unless explicitly disabled
+# or a caller provided a local deb path.
+if [ "$INSTALL" -eq 1 ] && [ "$DOWNLOAD_EXPLICIT" -eq 0 ] && [ "$DEB_SET" -eq 0 ]; then
+  DOWNLOAD=1
+fi
+
+BUILD_DEPS=(curl libarchive zstd)
+RUNTIME_DEPS=(
+  glibc gcc-libs systemd openssl libx11 libxcursor libxi libsm libglvnd
+  alsa-lib libjpeg-turbo libpng curl ffmpeg4.4 libxrandr vulkan-icd-loader
+)
+
+sudo_pacman_install() {
+  sudo pacman -S --needed "$@"
+}
+
+missing_packages() {
+  pacman -T "$@" 2>/dev/null || true
+}
+
+ensure_tools() {
+  local missing=()
+  command -v curl >/dev/null || missing+=(curl)
+  command -v bsdtar >/dev/null || missing+=(libarchive)
+  command -v zstd >/dev/null || missing+=(zstd)
+
+  if [ "${#missing[@]}" -eq 0 ]; then
+    return 0
+  fi
+
+  if [ "$INSTALL" -eq 1 ]; then
+    echo "Installing installer tools: ${missing[*]}"
+    sudo_pacman_install "${missing[@]}"
+  else
+    echo "error: missing tools: ${missing[*]}" >&2
+    echo "Run with --install, or install manually: sudo pacman -S --needed ${missing[*]}" >&2
+    exit 1
+  fi
+}
+
+validate_https_url() {
+  case "$URL" in
+    https://*) ;;
+    *) echo "error: refusing non-HTTPS download URL: $URL" >&2; exit 1 ;;
+  esac
+}
+
+validate_deb_archive() {
+  local deb="$1"
+  local listing
+  listing=$(bsdtar -tf "$deb" 2>/dev/null || true)
+  grep -qx 'debian-binary' <<<"$listing" || { echo "error: $deb is not a valid deb: missing debian-binary" >&2; return 1; }
+  grep -Eq '^control\.tar\.' <<<"$listing" || { echo "error: $deb is not a valid deb: missing control.tar.*" >&2; return 1; }
+  grep -Eq '^data\.tar\.' <<<"$listing" || { echo "error: $deb is not a valid deb: missing data.tar.*" >&2; return 1; }
+}
+
+download_latest_deb() {
+  validate_https_url
+  mkdir -p "$OUTDIR"
+  local tmp
+  tmp=$(mktemp "$OUTDIR/parsec-linux.deb.tmp.XXXXXX")
+  echo "Downloading latest official Parsec deb: $URL"
+  curl --fail --location --show-error --proto '=https' --tlsv1.2 \
+    --connect-timeout 20 --retry 3 --retry-delay 2 \
+    --output "$tmp" "$URL"
+  validate_deb_archive "$tmp"
+  mv "$tmp" "$DEB"
+  DOWNLOADED_DEB=1
+  echo "Saved deb: $DEB"
+}
+
+install_runtime_deps() {
+  local missing
+  mapfile -t missing < <(missing_packages "${RUNTIME_DEPS[@]}")
+  if [ "${#missing[@]}" -gt 0 ]; then
+    echo "Installing Parsec runtime deps: ${missing[*]}"
+    sudo_pacman_install "${missing[@]}"
+  else
+    echo "Runtime deps already satisfied."
+  fi
+}
+
+verify_decoder_compat() {
+  echo "Verifying FFmpeg compatibility for Parsec..."
+  if [ ! -e /usr/lib/libavcodec.so.58 ]; then
+    echo "error: /usr/lib/libavcodec.so.58 missing. Install ffmpeg4.4." >&2
+    return 1
+  fi
+  local symbols
+  symbols=$(nm -D /usr/lib/libavcodec.so.58 2>/dev/null || true)
+  if ! grep -q ' avcodec_close' <<<"$symbols"; then
+    echo "error: libavcodec.so.58 exists but lacks avcodec_close; Parsec decoder list may be empty." >&2
+    return 1
+  fi
+  echo "OK: ffmpeg4.4 provides libavcodec.so.58 with avcodec_close."
+}
+
+verify_install() {
+  echo "Verifying installed Parsec files..."
+  pacman -Q parsec >/dev/null
+  test -x /usr/bin/parsecd
+  test -f /usr/share/parsec/skel/appdata.json
+  pacman -Ql parsec | grep -E '/usr/bin/parsecd|/usr/share/parsec/skel/appdata.json' >/dev/null
+  verify_decoder_compat
+  echo "OK: Parsec is installed and decoder compatibility libs are present."
+}
+
+if [ "$VERIFY_ONLY" -eq 1 ]; then
+  verify_install
+  exit 0
+fi
+
+ensure_tools
+mkdir -p "$OUTDIR"
+
+if [ "$DOWNLOAD" -eq 1 ]; then
+  download_latest_deb
+fi
+
+[ -f "$DEB" ] || {
+  echo "error: deb not found: $DEB" >&2
+  echo "Run with --download/--install to fetch it from $DEFAULT_URL" >&2
+  exit 1
+}
+validate_deb_archive "$DEB"
+
+WORK="$(mktemp -d -t parsec-build-XXXX)"
+ROOT="$WORK/root"
+cleanup() { rm -rf "$WORK"; }
+trap cleanup EXIT
+
+mkdir -p "$ROOT"
+bsdtar -xf "$DEB" -C "$WORK"
+
+DATA=$(ls "$WORK"/data.tar.* 2>/dev/null | head -1 || true)
+[ -n "$DATA" ] || { echo "error: no data.tar.* found inside $DEB" >&2; exit 1; }
+bsdtar -xf "$DATA" -C "$ROOT"
+find "$ROOT" -type d -exec chmod 755 {} \;
+
+[ -f "$ROOT/usr/bin/parsecd" ] || { echo "error: /usr/bin/parsecd missing after extraction" >&2; exit 1; }
+[ -f "$ROOT/usr/share/parsec/skel/appdata.json" ] || { echo "error: parsec skel missing after extraction" >&2; exit 1; }
+
+CONTROL_DIR="$WORK/control-meta"
+mkdir -p "$CONTROL_DIR"
+CONTROL_ARCHIVE=$(ls "$WORK"/control.tar.* 2>/dev/null | head -1 || true)
+[ -n "$CONTROL_ARCHIVE" ] && bsdtar -xf "$CONTROL_ARCHIVE" -C "$CONTROL_DIR"
+DEB_VERSION=$(awk '/^Version:/{print $2; exit}' "$CONTROL_DIR/control" 2>/dev/null || true)
+PKGVER="${DEB_VERSION:-150-97c}"
+NORMALISED=${PKGVER//-/.}
+[ "${NORMALISED##*-}" = "$NORMALISED" ] && NORMALISED="${NORMALISED}-1"
+OUT="$OUTDIR/parsec-${NORMALISED}-x86_64.pkg.tar.zst"
+
+SIZE_KIB=$(du -sk "$ROOT/usr" | cut -f1)
+{
+  echo "pkgname = parsec"
+  echo "pkgver = ${NORMALISED}"
+  echo "pkgdesc = Simple, low-latency desktop and game streaming."
+  echo "url = https://parsec.app/"
+  echo "builddate = $(date +%s)"
+  echo "packager = rfrost <rfrost@localhost>"
+  echo "size = $((SIZE_KIB * 1024))"
+  echo "arch = x86_64"
+  echo "license = unknown"
+  for dep in "${RUNTIME_DEPS[@]}"; do
+    echo "depend = $dep"
+  done
+} > "$ROOT/.PKGINFO"
+
+(
+  cd "$ROOT"
+  { printf '.PKGINFO\n'; find . -mindepth 1 -maxdepth 1 ! -name '.PKGINFO' -printf '%P\n' | LC_ALL=C sort; } > "$WORK/toc"
+  bsdtar --format=ustar \
+    --uid 0 --gid 0 \
+    --mtime=@1700000000 \
+    -C "$ROOT" -cf - -T "$WORK/toc" \
+  | zstd -q -19 -T0 -o "$OUT.temp"
+)
+mv "$OUT.temp" "$OUT"
+
+pacman -Qip "$OUT" >/dev/null
+if zstd -dc "$OUT" | tar -tv 2>/dev/null | awk '$1 ~ /^h/ { bad=1 } END { exit bad ? 1 : 0 }'; then
+  :
+else
+  echo "error: generated package contains hardlink entries; refusing to continue" >&2
+  exit 1
+fi
+
+echo
+echo "BUILT: $OUT"
+ls -la "$OUT"
+echo
+pacman -Qip "$OUT" | grep -E '^(Name|Version|Depends On|Installed Size)'
+
+if [ "$INSTALL" -eq 1 ]; then
+  install_runtime_deps
+  echo "Installing local Parsec package..."
+  sudo pacman -U "$OUT"
+  verify_install
+
+  if [ "$KEEP_ARTIFACTS" -eq 0 ]; then
+    echo "Cleaning installer artifacts..."
+    rm -f "$OUT"
+    if [ "$DOWNLOADED_DEB" -eq 1 ] && [ "$DEB_SET" -eq 0 ]; then
+      rm -f "$DEB"
+    fi
+    if [ "$DOWNLOADED_DEB" -eq 1 ] && [ "$DEB_SET" -eq 0 ]; then
+      echo "OK: removed generated package and downloaded deb."
+    else
+      echo "OK: removed generated package."
+    fi
+  else
+    echo "Keeping installer artifacts:"
+    echo "  deb: $DEB"
+    echo "  pkg: $OUT"
+  fi
+else
+  echo
+  echo "Install/reinstall with:"
+  echo "  sudo pacman -U $OUT"
+  echo
+  echo "Or let this script fetch latest + handle deps + install:"
+  echo "  $0 --install"
+fi

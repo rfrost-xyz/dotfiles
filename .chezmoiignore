@@ -18,13 +18,8 @@
 .pi/agent/extensions/pi-ux
 .pi/agent/extensions/pi-ux/**
 
-{{- if ne $role "headless" }}
-10-install-personal-bash.sh
-{{- end }}
-
 {{- if eq $role "headless" }}
 # Omaterm/headless: keep the terminal override layer, leave desktop/base files alone.
-.bashrc
 .config/alacritty
 .config/ghostty
 .config/hypr

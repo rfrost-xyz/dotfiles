@@ -34,10 +34,9 @@ role = "desktop"  # Omarchy laptop
 ```
 
 `desktop` is the default when no role is configured, preserving the laptop
-behaviour. `headless` keeps Omaterm's omadots `.bashrc` as the base, installs
-only the terminal override layer, skips Hyprland/Ghostty/Parsec/P4/1Password
-desktop pieces, and disables Git commit/tag signing unless you provision a
-signing key in the container.
+behaviour. `headless` skips Hyprland/Ghostty/Parsec/P4/1Password desktop
+pieces, sources the Omaterm/omadots shell base when present, and disables Git
+commit/tag signing unless you provision a signing key in the container.
 
 Typical Omaterm bootstrap:
 

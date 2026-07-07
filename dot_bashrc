@@ -1,13 +1,19 @@
 # If not running interactively, don't do anything (leave this at the top of this file)
 [[ $- != *i* ]] && return
 
-# All the default Omarchy aliases and functions, when this is an Omarchy host.
-# Personal overrides below also support lighter remote shells such as Omaterm.
-if [ -r ~/.local/share/omarchy/default/bash/rc ]; then
-  source ~/.local/share/omarchy/default/bash/rc
-  DOTFILES_BASE_DEFAULTS=1
-else
-  DOTFILES_BASE_DEFAULTS=0
-fi
+DOTFILES_BASE_DEFAULTS=0
+
+for rc in \
+  "$HOME/.local/share/omarchy/default/bash/rc" \
+  "$HOME/.local/share/omadots/default/bash/rc" \
+  "$HOME/.local/share/omadots/bash/rc" \
+  "$HOME/.omadots/default/bash/rc" \
+  "$HOME/.omadots/bash/rc"; do
+  if [ -r "$rc" ]; then
+    source "$rc"
+    DOTFILES_BASE_DEFAULTS=1
+    break
+  fi
+done
 
 [ -r ~/.config/bash/personal.sh ] && source ~/.config/bash/personal.sh

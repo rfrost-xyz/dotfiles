@@ -35,7 +35,7 @@ role = "desktop"  # Omarchy laptop
 
 `desktop` is the default when no role is configured, preserving the laptop
 behaviour. `headless` skips Hyprland/Ghostty/Parsec/P4/1Password desktop
-pieces, sources the Omaterm/omadots shell base when present, and disables Git
+pieces, leaves Omaterm's `.bashrc` under omadots control, and disables Git
 commit/tag signing unless you provision a signing key in the container.
 
 Typical Omaterm bootstrap:
@@ -48,4 +48,8 @@ cat > ~/.config/chezmoi/chezmoi.toml <<'EOF'
 role = "headless"
 EOF
 chezmoi apply
+
+grep -qxF '[ -r "$HOME/.config/bash/personal.sh" ] && source "$HOME/.config/bash/personal.sh"' ~/.bashrc ||
+  printf '\n[ -r "$HOME/.config/bash/personal.sh" ] && source "$HOME/.config/bash/personal.sh"\n' >> ~/.bashrc
+exec bash -l
 ```

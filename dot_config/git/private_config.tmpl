@@ -1,17 +1,26 @@
+{{- $role := get . "role" | default "desktop" -}}
 [user]
 	name = Richard Frost
 	email = richard.frost@squintopera.com
+{{- if ne $role "headless" }}
 	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJwnn397qQDmlEN6xMTZ5OxxRBjVOq16FgU1F0GCcGL1
+{{- end }}
 [commit]
+{{- if eq $role "headless" }}
+	gpgsign = false
+{{- else }}
 	gpgsign = true
+{{- end }}
 [pull]
 	rebase = true
 [init]
 	defaultBranch = main
+{{- if ne $role "headless" }}
 [{{ .chezmoi.config.gpg.command }}]
 	format = ssh
 [{{ .chezmoi.config.gpg.command }} "ssh"]
 	program = {{ .chezmoi.pathSeparator }}opt{{ .chezmoi.pathSeparator }}1Password{{ .chezmoi.pathSeparator }}{{ .chezmoi.config.onepassword.command }}-ssh-sign
+{{- end }}
 [alias]
 	co = checkout
 	br = branch

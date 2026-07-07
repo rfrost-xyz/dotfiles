@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+set -u
+
+print_label() {
+  local label="${1:-}"
+
+  case "$label" in
+    "" | docker-desktop | localhost)
+      return 1
+      ;;
+  esac
+
+  printf '%s\n' "${label%%.*}"
+  exit 0
+}
+
+tailscale_hostname() {
+  command -v tailscale >/dev/null 2>&1 || return 1
+
+  local json
+  if command -v timeout >/dev/null 2>&1; then
+    json="$(timeout 1s tailscale status --json 2>/dev/null)" || return 1
+  else
+    json="$(tailscale status --json 2>/dev/null)" || return 1
+  fi
+
+  if command -v jq >/dev/null 2>&1; then
+    printf '%s\n' "$json" | jq -r '.Self.HostName // empty' 2>/dev/null
+  else
+    printf '%s\n' "$json" | awk -F'"' '$2 == "HostName" { print $4; exit }'
+  fi
+}
+
+ssh_server_hostname() {
+  [ -n "${SSH_CONNECTION:-}" ] || return 1
+
+  local _client_ip _client_port server_ip _server_port
+  read -r _client_ip _client_port server_ip _server_port <<EOF
+$SSH_CONNECTION
+EOF
+
+  [ -n "${server_ip:-}" ] || return 1
+  getent hosts "$server_ip" 2>/dev/null | awk '{ print $2; exit }'
+}
+
+print_label "${MACHINE_NAME:-}"
+print_label "${TMUX_HOST_LABEL:-}"
+print_label "${OMATERM_HOSTNAME:-}"
+print_label "${OMATERM_HOST:-}"
+print_label "${TAILSCALE_HOSTNAME:-}"
+
+print_label "$(tailscale_hostname)"
+print_label "$(ssh_server_hostname)"
+
+hostname -s 2>/dev/null || hostname

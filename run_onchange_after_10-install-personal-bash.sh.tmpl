@@ -1,0 +1,24 @@
+{{- $role := get . "role" | default "desktop" -}}
+#!/usr/bin/env bash
+set -eu
+
+{{- if eq $role "headless" }}
+bashrc="$HOME/.bashrc"
+marker="# chezmoi: source personal shell layer"
+
+touch "$bashrc"
+
+if ! grep -Fq "$marker" "$bashrc"; then
+  cat >>"$bashrc" <<'EOF'
+
+# chezmoi: source personal shell layer
+if [ -r "$HOME/.config/bash/personal.sh" ]; then
+  DOTFILES_BASE_DEFAULTS="${DOTFILES_BASE_DEFAULTS:-1}"
+  source "$HOME/.config/bash/personal.sh"
+fi
+# chezmoi: end personal shell layer
+EOF
+fi
+{{- else }}
+exit 0
+{{- end }}

@@ -1,6 +1,36 @@
 # Third-party shell init (eval "$(... init bash)" style).
 # Runs after envs/ so PATH additions are already in place.
 
+if [ "${DOTFILES_BASE_DEFAULTS:-0}" != "1" ]; then
+  shopt -s histappend
+  HISTCONTROL=ignoreboth
+  HISTSIZE=32768
+  HISTFILESIZE="${HISTSIZE}"
+
+  if [[ ! -v BASH_COMPLETION_VERSINFO && -f /usr/share/bash-completion/bash_completion ]]; then
+    source /usr/share/bash-completion/bash_completion
+  fi
+
+  set +h
+
+  if command -v mise >/dev/null 2>&1; then
+    eval "$(mise activate bash)"
+  fi
+
+  if [[ ${TERM:-} != "dumb" ]] && command -v starship >/dev/null 2>&1; then
+    eval "$(starship init bash)"
+  fi
+
+  if command -v zoxide >/dev/null 2>&1; then
+    eval "$(zoxide init bash)"
+  fi
+
+  if command -v fzf >/dev/null 2>&1; then
+    [ -f /usr/share/fzf/completion.bash ] && source /usr/share/fzf/completion.bash
+    [ -f /usr/share/fzf/key-bindings.bash ] && source /usr/share/fzf/key-bindings.bash
+  fi
+fi
+
 if command -v wt >/dev/null 2>&1; then
   eval "$(command wt config shell init bash)"
 fi

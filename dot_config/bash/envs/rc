@@ -1,5 +1,12 @@
 # Environment variables and PATH additions.
-# Sourced by ~/.bashrc after the omarchy defaults.
+# Sourced by ~/.config/bash/personal.sh after the base defaults.
+
+case ":$PATH:" in
+  *":$HOME/.local/bin:"*) ;;
+  *) export PATH="$PATH:$HOME/.local/bin" ;;
+esac
+
+[ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
 
 # Pi: prefer XDG Base Directory locations over ~/.pi/agent.
 # export PI_CODING_AGENT_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/pi/agent"

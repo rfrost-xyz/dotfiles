@@ -1,0 +1,9 @@
+{{- $role := get . "role" | default "desktop" -}}
+Host ws255
+	HostName ws-255
+	User omaterm
+
+{{- if ne $role "headless" }}
+Host *
+	IdentityAgent ~/.1password/agent.sock
+{{- end }}

@@ -18,8 +18,8 @@
         "context"
       ],
       "right": [
-        "codex5h",
-        "codexWeekly"
+        "quota5h",
+        "quotaWeekly"
       ]
     }
   ],
@@ -31,51 +31,5 @@
     "subagents",
     "statuses"
   ],
-  "gitDiffStyle": "symbolsNumbers",
-  "gitBase": "origin/main",
-  "codexDisplay": "remaining",
-  "costCurrency": "GBP",
-  "usdToGbp": 0.79,
-  "codex5hWarning": 50,
-  "codex5hError": 75,
-  "codexWeeklyWarning": 50,
-  "codexWeeklyError": 75,
-  "showCodex5hReset": true,
-  "codex5hResetDisplay": "relative",
-  "showCodexWeeklyReset": true,
-  "codexWeeklyResetDisplay": "days",
-  "showCodexWeeklyResetTime": false,
-  "showContextTotal": true,
-  "contextAmount": "used",
-  "usageParts": {
-    "input": true,
-    "output": true,
-    "cacheRead": true,
-    "cacheWrite": true
-  },
-  "modelDisplay": "id",
-  "pieContext": true,
-  "pieCodex5h": true,
-  "pieCodexWeekly": true,
-  "colors": {
-    "gitBranch": "dim",
-    "gitWorktree": "dim",
-    "gitUpstream": "accent",
-    "gitAhead": "accent",
-    "gitBranchDiff": "text",
-    "gitWorkDiff": "text",
-    "usage": "dim",
-    "cost": "dim",
-    "codex5h": "dim",
-    "codexWeekly": "dim",
-    "context": "dim",
-    "model": "dim",
-    "thinking": "dim",
-    "autoCompact": "dim",
-    "subagents": "dim",
-    "statuses": "accent",
-    "turnTime": "dim"
-  },
-  "contextWarning": 50,
-  "contextError": 75
+  "gitBase": "origin/main"
 }

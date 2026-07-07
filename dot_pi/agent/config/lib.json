@@ -3,8 +3,71 @@
     "maxVisible": 10
   },
   "context": {
-    "usableTokens": 160000,
+    "usablePercent": 50,
     "tolerancePercent": 20,
     "fillBasis": "window"
+  },
+  "statusline": {
+    "git": {
+      "diffStyle": "symbolsNumbers"
+    },
+    "tokens": {
+      "mode": "grouped",
+      "parts": {
+        "input": true,
+        "output": true,
+        "cacheRead": true,
+        "cacheWrite": true
+      }
+    },
+    "context": {
+      "amount": "used",
+      "showTotal": true,
+      "pie": true
+    },
+    "quota": {
+      "fiveHour": {
+        "display": "used",
+        "warning": 50,
+        "error": 75,
+        "showReset": true,
+        "resetDisplay": "relative",
+        "pie": true
+      },
+      "weekly": {
+        "display": "remaining",
+        "warning": 50,
+        "error": 75,
+        "showReset": true,
+        "resetDisplay": "days",
+        "showResetTime": false,
+        "pie": true
+      }
+    },
+    "cost": {
+      "currency": "GBP",
+      "usdToGbp": 0.79
+    },
+    "model": {
+      "display": "providerId"
+    },
+    "colors": {
+      "gitBranch": "dim",
+      "gitWorktree": "dim",
+      "gitUpstream": "accent",
+      "gitAhead": "accent",
+      "gitBranchDiff": "text",
+      "gitWorkDiff": "text",
+      "usage": "dim",
+      "cost": "dim",
+      "quota5h": "dim",
+      "quotaWeekly": "dim",
+      "context": "dim",
+      "model": "dim",
+      "thinking": "dim",
+      "autoCompact": "dim",
+      "subagents": "dim",
+      "statuses": "accent"
+    }
   }
 }

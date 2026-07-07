@@ -1,20 +1,33 @@
+{{- $role := get . "role" | default "desktop" -}}
 
 [user]
   name = Richard Frost
   email = richard.frost@squintopera.com
+{{- if ne $role "headless" }}
   signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJwnn397qQDmlEN6xMTZ5OxxRBjVOq16FgU1F0GCcGL1
+{{- end }}
 [init]
   defaultBranch = main
 [core]
   editor = nvim
   longpaths = true
   autocrlf = input
+{{- if ne $role "headless" }}
 [gpg]
   format = ssh
+{{- end }}
 [commit]
+{{- if eq $role "headless" }}
+  gpgsign = false
+{{- else }}
   gpgsign = true
+{{- end }}
 [tag]
+{{- if eq $role "headless" }}
+  gpgsign = false
+{{- else }}
   gpgsign = true
+{{- end }}
 [push]
   followTags = true
   autoSetupRemote = true
@@ -32,5 +45,7 @@
 [credential "https://git.squintopera.com"]
 	helper =
 	helper = !/usr/bin/glab auth git-credential
+{{- if ne $role "headless" }}
 [gpg "ssh"]
 	allowedSignersFile = /home/rfrost/.ssh/allowed_signers
+{{- end }}

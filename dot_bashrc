@@ -1,11 +1,13 @@
 # If not running interactively, don't do anything (leave this at the top of this file)
 [[ $- != *i* ]] && return
 
-# All the default Omarchy aliases and functions
-# (don't mess with these directly, just overwrite them here!)
-source ~/.local/share/omarchy/default/bash/rc
+# All the default Omarchy aliases and functions, when this is an Omarchy host.
+# Personal overrides below also support lighter remote shells such as Omaterm.
+if [ -r ~/.local/share/omarchy/default/bash/rc ]; then
+  source ~/.local/share/omarchy/default/bash/rc
+  DOTFILES_BASE_DEFAULTS=1
+else
+  DOTFILES_BASE_DEFAULTS=0
+fi
 
-# Local overrides: envs first (PATH), then aliases, functions, third-party init.
-for d in envs aliases functions init; do
-  [ -f ~/.config/bash/$d/rc ] && source ~/.config/bash/$d/rc
-done
+[ -r ~/.config/bash/personal.sh ] && source ~/.config/bash/personal.sh

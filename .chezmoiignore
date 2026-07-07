@@ -1,3 +1,4 @@
+{{- $role := get . "role" | default "desktop" -}}
 # Runtime/state files — regenerated locally, never tracked
 .claude.json
 .p4trust
@@ -16,3 +17,24 @@
 # pi-ux retired — fully replaced by piedpi, deleted on disk.
 .pi/agent/extensions/pi-ux
 .pi/agent/extensions/pi-ux/**
+
+{{- if eq $role "headless" }}
+# Omaterm/headless: keep the terminal override layer, leave desktop/base files alone.
+.bashrc
+.config/alacritty
+.config/ghostty
+.config/hypr
+.config/omarchy
+.config/waybar
+.local/share/omarchy
+
+# Laptop-only tools and P4/1Password-backed files.
+.local/bin/parsec-manage
+.local/bin/p4client
+.p4enviro
+.p4ignore
+.config/bash/functions/p4_wrapper.sh
+.config/lazyjira/auth.json
+.ssh/fnox_anton
+.ssh/fnox_journey_io_pipeline
+{{- end }}

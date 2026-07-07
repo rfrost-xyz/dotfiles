@@ -1,5 +1,5 @@
 # User aliases.
-# Sourced by ~/.bashrc after the omarchy defaults so these override.
+# Sourced by ~/.config/bash/personal.sh after the base defaults.
 
 alias cat='bat'
 alias ff='fzf'
@@ -10,6 +10,7 @@ alias cm='chezmoi'
 alias cz='chezit'
 alias lg='lazygit'
 alias lj='lazyjira'
+alias t='tmux attach || tmux new -s Work'
 
 # Tools
 # Set in ~/.local/share/omarchy/default/bash/aliases 
@@ -17,7 +18,6 @@ alias lj='lazyjira'
 # alias cx='printf "\033[2J\033[3J\033[H" && claude --permission-mode bypassPermissions'
 # alias d='docker'
 # alias r='rails'
-# alias t='tmux attach || tmux new -s Work'
 # alias ic='tdl c'
 # alias ix='tdl cx'
 # alias icx='tdl c cx'

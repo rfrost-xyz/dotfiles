@@ -1,0 +1,24 @@
+{{ if eq (get . "role" | default "desktop") "headless" -}}
+#!/usr/bin/env bash
+# Omaterm parity: install packages the Omarchy desktop provides but the Omaterm
+# base image (omadots) doesn't ship. Add tools here to keep containers in parity.
+#
+# chezmoi runs this on `apply` and re-runs it whenever the rendered content
+# changes (i.e. when you edit the package list below). Headless/Omaterm only —
+# on the desktop role this template renders empty and chezmoi skips it.
+set -euo pipefail
+
+packages=(
+  bat
+)
+
+missing=()
+for pkg in "${packages[@]}"; do
+  pacman -Qq "$pkg" &>/dev/null || missing+=("$pkg")
+done
+
+if (( ${#missing[@]} > 0 )); then
+  echo "==> Installing Omaterm parity packages: ${missing[*]}"
+  sudo pacman -S --needed --noconfirm "${missing[@]}"
+fi
+{{ end -}}

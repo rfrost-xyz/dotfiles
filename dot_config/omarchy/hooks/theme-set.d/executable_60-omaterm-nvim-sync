@@ -1,0 +1,22 @@
+#!/bin/bash
+# Sync the active omarchy theme's neovim colorscheme to the headless omaterm
+# box (ws-255, auth-free over Tailscale) so its nvim loads the *exact* same
+# truecolor scheme as this laptop — the terminal only carries 16 ANSI colours,
+# not the theme identity, so this file is the channel that does.
+#
+# Fire-and-forget: a theme change must never block or fail because omaterm is
+# unreachable. omaterm picks up the new theme on its next nvim launch (parity
+# with this laptop, where a running nvim doesn't hot-reload either).
+#
+# theme.lua is chezmoi-ignored on both ends (nvim runtime state), so this push
+# does not fight chezmoi.
+
+THEME_NVIM="$HOME/.config/omarchy/current/theme/neovim.lua"
+[ -r "$THEME_NVIM" ] || exit 0
+
+timeout 10 scp -q \
+  -o ConnectTimeout=5 -o BatchMode=yes \
+  "$THEME_NVIM" \
+  omaterm@ws-255:.config/nvim/lua/plugins/theme.lua >/dev/null 2>&1
+
+exit 0

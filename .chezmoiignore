@@ -10,6 +10,9 @@
 # let neovim own the actual installs + versions. These are neovim-managed state:
 .config/nvim/lazyvim.json
 .config/nvim/lazy-lock.json
+# Active nvim colorscheme. Runtime state, never tracked: on the desktop omarchy
+# owns it (symlink → current theme); on omaterm the theme-set hook syncs it in.
+.config/nvim/lua/plugins/theme.lua
 # piedpi is its own git repo now (~/.pi/agent/extensions/piedpi) — managed
 # there, not via chezmoi.
 .pi/agent/extensions/piedpi
@@ -20,9 +23,8 @@
 
 {{- if ne $role "headless" }}
 # Desktop: omarchy owns the nvim theme (theme.lua symlink → current theme), so
-# the headless-only ANSI terminal-follow scheme must not land on the laptop.
-.config/nvim/colors/omaterm-ansi.lua
-.config/nvim/lua/plugins/omaterm-ansi.lua
+# the headless-only live theme-watcher must not land on the laptop.
+.config/nvim/lua/plugins/omaterm-theme-watch.lua
 {{- end }}
 
 {{- if eq $role "headless" }}

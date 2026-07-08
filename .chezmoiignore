@@ -18,6 +18,13 @@
 .pi/agent/extensions/pi-ux
 .pi/agent/extensions/pi-ux/**
 
+{{- if ne $role "headless" }}
+# Desktop: omarchy owns the nvim theme (theme.lua symlink → current theme), so
+# the headless-only ANSI terminal-follow scheme must not land on the laptop.
+.config/nvim/colors/omaterm-ansi.lua
+.config/nvim/lua/plugins/omaterm-ansi.lua
+{{- end }}
+
 {{- if eq $role "headless" }}
 # Omaterm/headless: keep the terminal override layer, leave desktop/base files alone.
 .bashrc

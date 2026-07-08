@@ -2,6 +2,9 @@
 # Runtime/state files — regenerated locally, never tracked
 .claude.json
 .p4trust
+# Local per-machine secrets sourced by the shell (e.g. OP_SERVICE_ACCOUNT_TOKEN).
+# Never tracked — lives only on the box, filled in by hand.
+.config/bash/envs/local
 # Pi auth — contains API keys / OAuth tokens, never track
 .pi/agent/auth.json
 .ssh/known_hosts
@@ -29,7 +32,10 @@
 
 {{- if eq $role "headless" }}
 # Omaterm/headless: keep the terminal override layer, leave desktop/base files alone.
-.bashrc
+# NB: .bashrc is deliberately NOT ignored — it's the portable entrypoint that
+# sources whichever base exists (omarchy or omadots' ~/.config/shell/all) and then
+# the personal layer. omadots' own .bashrc has no hook for ~/.config/bash, so
+# chezmoi must own .bashrc for the override layer to load at all.
 .config/alacritty
 .config/ghostty
 .config/hypr

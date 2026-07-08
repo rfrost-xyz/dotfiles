@@ -14,7 +14,14 @@ esac
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
+case ":$PATH:" in
+  *":$BUN_INSTALL/bin:"*) ;;
+  *) export PATH="$BUN_INSTALL/bin:$PATH" ;;
+esac
 
 # obsidian
 # export PATH="$PATH:$HOME/.local/bin"
+
+# Per-machine secrets (gitignored, never committed) — e.g. OP_SERVICE_ACCOUNT_TOKEN.
+# Create ~/.config/bash/envs/local with `export VAR=...` lines; see .chezmoiignore.
+[ -r "${XDG_CONFIG_HOME:-$HOME/.config}/bash/envs/local" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/bash/envs/local"

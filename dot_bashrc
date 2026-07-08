@@ -1,14 +1,13 @@
 # If not running interactively, don't do anything (leave this at the top of this file)
 [[ $- != *i* ]] && return
 
+# Load the base-defaults layer, then let the personal layer override it.
+# Omarchy (desktop) ships defaults under ~/.local/share/omarchy; Omaterm ships
+# them via omadots at ~/.config/shell/all. Source whichever exists first.
 DOTFILES_BASE_DEFAULTS=0
-
 for rc in \
   "$HOME/.local/share/omarchy/default/bash/rc" \
-  "$HOME/.local/share/omadots/default/bash/rc" \
-  "$HOME/.local/share/omadots/bash/rc" \
-  "$HOME/.omadots/default/bash/rc" \
-  "$HOME/.omadots/bash/rc"; do
+  "$HOME/.config/shell/all"; do
   if [ -r "$rc" ]; then
     source "$rc"
     DOTFILES_BASE_DEFAULTS=1
@@ -16,4 +15,10 @@ for rc in \
   fi
 done
 
+# Personal override layer (envs, aliases, functions, tool init).
 [ -r ~/.config/bash/personal.sh ] && source ~/.config/bash/personal.sh
+
+# Auto-start tmux on login — Omaterm/omadots boxes only (base at ~/.config/shell/all).
+if [ -r ~/.config/shell/all ] && [ -z "$TMUX" ] && command -v tmux >/dev/null 2>&1; then
+  tmux attach || tmux new -s Work
+fi

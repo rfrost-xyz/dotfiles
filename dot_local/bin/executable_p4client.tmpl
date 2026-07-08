@@ -124,7 +124,7 @@ create_workspace_files() {
   echo "P4PORT=$p4port" >>"$p4config"
 
   # Create .p4ignore
-  local p4ignore="$client_root_wsl/p4ignore"
+  local p4ignore="$client_root_wsl/.p4ignore"
   echo ".p4config" >"$p4ignore"
 }
 

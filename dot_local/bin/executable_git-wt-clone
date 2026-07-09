@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+#
+# git-wt-clone — clone a repo as a bare repo laid out for worktrunk worktrees.
+#
+# Usage:
+#   git wt-clone <url> [dir]
+#
+# Creates:
+#   <dir>/.bare        the bare repository (git-dir)
+#   <dir>/.git         a gitdir: file pointing at .bare, so plain git and wt
+#                      both work from <dir> and every worktree lives inside it
+#   <dir>/<default>    a worktree for the remote's default branch (main/master/…)
+#
+# Unlike `git clone --bare`, this sets the remote tracking refspec, fetches so
+# refs/remotes/origin/* actually populate, and sets upstream — so pull/push work
+# immediately. Other branches are created on demand the first time you
+# `wt switch <branch>`; nothing is pre-cloned into local heads.
+
+set -euo pipefail
+
+die() { printf 'git-wt-clone: %s\n' "$*" >&2; exit 1; }
+say() { printf '  \033[32m✓\033[0m %s\n' "$*" >&2; }
+
+[ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ] && {
+	sed -n '3,20p' "$0" | sed 's/^# \{0,1\}//'
+	exit 0
+}
+
+url="${1:-}"
+[ -n "$url" ] || die "usage: git wt-clone <url> [dir]"
+
+# Derive the folder name from the URL when not given: strip a trailing .git and
+# any :/ prefix, then take the last path component.
+dir="${2:-}"
+if [ -z "$dir" ]; then
+	dir="${url%.git}"
+	dir="${dir%/}"
+	dir="${dir##*[:/]}"
+fi
+[ -n "$dir" ] || die "could not derive a directory name from '$url' — pass one explicitly"
+
+# Refuse to clobber an existing non-empty target.
+if [ -e "$dir" ]; then
+	[ -d "$dir" ] || die "'$dir' exists and is not a directory"
+	[ -z "$(ls -A "$dir" 2>/dev/null)" ] || die "'$dir' already exists and is not empty"
+fi
+
+command -v wt >/dev/null 2>&1 || die "wt (worktrunk) not found on PATH"
+
+bare="$dir/.bare"
+
+printf '\033[1mCloning %s → %s/\033[0m\n' "$url" "$dir" >&2
+
+mkdir -p "$dir"
+git init --quiet --bare "$bare"
+printf 'gitdir: ./.bare\n' > "$dir/.git"
+say "bare repo at $bare"
+
+# `git remote add` writes the standard +refs/heads/*:refs/remotes/origin/* fetch
+# refspec that `git clone --bare` leaves out. That refspec is why fetch below
+# populates remote-tracking refs and upstream tracking works at all.
+git -C "$bare" remote add origin "$url"
+git -C "$bare" fetch --quiet --tags --prune origin
+say "fetched origin"
+
+# Detect the remote's default branch rather than guessing main vs master.
+default="$(git -C "$bare" ls-remote --symref origin HEAD 2>/dev/null \
+	| awk '/^ref:/ { sub("refs/heads/", "", $2); print $2; exit }')"
+if [ -z "$default" ]; then
+	for cand in main master; do
+		if git -C "$bare" show-ref --quiet --verify "refs/remotes/origin/$cand"; then
+			default="$cand"; break
+		fi
+	done
+fi
+[ -n "$default" ] || die "could not determine the default branch from origin"
+
+# Point HEAD at the default and create a local branch tracking origin, so the
+# worktree wt creates pulls/pushes without any further setup.
+git -C "$bare" symbolic-ref HEAD "refs/heads/$default"
+if ! git -C "$bare" show-ref --quiet --verify "refs/heads/$default"; then
+	git -C "$bare" branch --track "$default" "origin/$default" >/dev/null 2>&1
+fi
+say "default branch: $default (tracking origin/$default)"
+
+# Let wt create and place the worktree per its worktree-path config. -C runs it
+# in the new repo; --no-cd/-y keep it non-interactive from this subprocess.
+wt -C "$dir" switch --no-cd -y "$default" >/dev/null
+worktree="$(git -C "$bare" worktree list --porcelain \
+	| awk -v b="refs/heads/$default" '/^worktree /{p=$2} $0=="branch "b{print p; exit}')"
+say "worktree: ${worktree:-$dir/$default}"
+
+printf '\n\033[1mDone.\033[0m Enter it with:\n    cd %s && wt switch %s\n' "$dir" "$default" >&2
+[ -n "$worktree" ] && printf '  or directly: cd %s\n' "$worktree" >&2

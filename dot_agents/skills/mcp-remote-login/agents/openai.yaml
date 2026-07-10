@@ -1,0 +1,4 @@
+interface:
+  display_name: "MCP Remote Login"
+  short_description: "Authenticate remote MCP servers over SSH tunnels"
+  default_prompt: "Use $mcp-remote-login to authenticate an MCP server running on a remote Tailscale host."

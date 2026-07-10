@@ -1,0 +1,4 @@
+[tools]
+go = "latest"
+node = "latest"
+uv = "0.11.20"

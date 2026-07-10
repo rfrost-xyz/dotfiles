@@ -28,6 +28,10 @@
 # Desktop: omarchy owns the nvim theme (theme.lua symlink → current theme), so
 # the headless-only live theme-watcher must not land on the laptop.
 .config/nvim/lua/plugins/omaterm-theme-watch.lua
+# Desktop signs via the 1Password SSH agent (op-ssh-sign); the on-disk signing
+# key is a headless-only fallback and must never land on the laptop.
+.ssh/git_signing_key
+.ssh/git_signing_key.pub
 {{- end }}
 
 {{- if eq $role "headless" }}
@@ -43,7 +47,7 @@
 .config/waybar
 .local/share/omarchy
 
-# Laptop-only tools and P4/1Password-backed files.
+# Laptop-only tools and P4 files.
 .local/bin/parsec-manage
 .local/bin/p4client
 .p4enviro
@@ -51,5 +55,4 @@
 .config/bash/functions/p4_wrapper.sh
 .config/lazyjira/auth.json
 .ssh/fnox_anton
-.ssh/fnox_journey_io_pipeline
 {{- end }}

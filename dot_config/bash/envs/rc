@@ -19,6 +19,16 @@ case ":$PATH:" in
   *) export PATH="$BUN_INSTALL/bin:$PATH" ;;
 esac
 
+# npm globals (agent CLIs) live outside the mise node installs so a node
+# upgrade or a repo-pinned node version cannot take them away.
+# One-off per machine: npm config set prefix "$HOME/.npm-global"
+if [ -d "$HOME/.npm-global/bin" ]; then
+  case ":$PATH:" in
+    *":$HOME/.npm-global/bin:"*) ;;
+    *) export PATH="$HOME/.npm-global/bin:$PATH" ;;
+  esac
+fi
+
 # obsidian
 # export PATH="$PATH:$HOME/.local/bin"
 

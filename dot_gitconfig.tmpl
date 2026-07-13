@@ -5,6 +5,8 @@
   email = richard.frost@squintopera.com
 {{- if ne $role "headless" }}
   signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJwnn397qQDmlEN6xMTZ5OxxRBjVOq16FgU1F0GCcGL1
+{{- else }}
+  signingkey = {{ .chezmoi.homeDir }}/.ssh/git_signing_key.pub
 {{- end }}
 [init]
   defaultBranch = main
@@ -12,22 +14,12 @@
   editor = nvim
   longpaths = true
   autocrlf = input
-{{- if ne $role "headless" }}
 [gpg]
   format = ssh
-{{- end }}
 [commit]
-{{- if eq $role "headless" }}
-  gpgsign = false
-{{- else }}
   gpgsign = true
-{{- end }}
 [tag]
-{{- if eq $role "headless" }}
-  gpgsign = false
-{{- else }}
   gpgsign = true
-{{- end }}
 [push]
   followTags = true
   autoSetupRemote = true
@@ -45,7 +37,19 @@
 [credential "https://git.squintopera.com"]
 	helper =
 	helper = !/usr/bin/glab auth git-credential
-{{- if ne $role "headless" }}
+{{- if eq $role "headless" }}
+# Headless has no 1Password SSH agent / desktop app, so GitHub auth is HTTPS via
+# the gh CLI token rather than SSH.
+[credential "https://github.com"]
+	helper =
+	helper = !/usr/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper =
+	helper = !/usr/bin/gh auth git-credential
+{{- end }}
 [gpg "ssh"]
+{{- if eq $role "headless" }}
+	allowedSignersFile = {{ .chezmoi.homeDir }}/.ssh/allowed_signers
+{{- else }}
 	allowedSignersFile = /home/rfrost/.ssh/allowed_signers
 {{- end }}

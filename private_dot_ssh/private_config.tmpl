@@ -7,3 +7,11 @@ Host ws255
 Host *
 	IdentityAgent ~/.1password/agent.sock
 {{- end }}
+{{- if eq $role "headless" }}
+# Headless has no 1Password SSH agent, so offer the on-disk key directly for git
+# hosts. Same key as omarchy (op://Development/SSH Key) — registered for auth on
+# both GitHub and GitLab. HTTPS via gh/glab still works for those who use it.
+Host github.com git.squintopera.com
+	IdentityFile ~/.ssh/git_signing_key
+	IdentitiesOnly yes
+{{- end }}

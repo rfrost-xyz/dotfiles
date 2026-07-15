@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+# harness-status: record AI harness state and surface it in tmux.
+#
+# Usage:
+#   harness-status <harness> <state>   harness: claude|codex|opencode|pi|…
+#                                      state: working|waiting|done|idle|clear
+#   harness-status --codex [<json>]    map a Codex notify payload to a state
+#
+# Sets @harness_status (styled badge) and @harness (name) on the calling
+# tmux window, and appends a JSON record to
+# ~/.local/state/harness-status/events.jsonl for downstream consumers.
+set -uo pipefail
+
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/harness-status"
+
+if [ "${1:-}" = "--codex" ]; then
+  harness="codex"
+  case "${2:-}" in
+    *agent-turn-complete*) state="done" ;;
+    *) exit 0 ;;
+  esac
+else
+  harness="${1:?usage: harness-status <harness> <state>}"
+  state="${2:?usage: harness-status <harness> <state>}"
+fi
+
+case "$state" in
+  working) badge="#[fg=blue]✳#[default]" ;;
+  waiting) badge="#[fg=yellow]●#[default]" ;;
+  done)    badge="#[fg=green]✔#[default]" ;;
+  idle)    badge="#[fg=brightblack]○#[default]" ;;
+  clear)   badge="" ;;
+  *) echo "harness-status: unknown state '$state'" >&2; exit 2 ;;
+esac
+
+session="" window="" pane="" cwd=""
+if [ -n "${TMUX:-}" ] && [ -n "${TMUX_PANE:-}" ]; then
+  IFS="$(printf '\t')" read -r session window pane cwd < <(
+    tmux display-message -pt "$TMUX_PANE" \
+      '#{session_name}	#{window_id}	#{pane_id}	#{pane_current_path}' 2>/dev/null
+  ) || true
+fi
+
+if [ -n "$window" ]; then
+  if [ "$state" = "clear" ]; then
+    tmux set-option -w -t "$window" -u @harness_status 2>/dev/null || true
+    tmux set-option -w -t "$window" -u @harness 2>/dev/null || true
+  else
+    tmux set-option -w -t "$window" @harness_status "$badge" 2>/dev/null || true
+    tmux set-option -w -t "$window" @harness "$harness" 2>/dev/null || true
+  fi
+  tmux refresh-client -S 2>/dev/null || true
+fi
+
+mkdir -p "$STATE_DIR"
+ts="$(date -Is)"
+host="${HOSTNAME:-$(hostname)}"
+if command -v jq >/dev/null 2>&1; then
+  jq -cn \
+    --arg ts "$ts" --arg host "$host" --arg harness "$harness" --arg state "$state" \
+    --arg session "$session" --arg window "$window" --arg pane "$pane" --arg cwd "$cwd" \
+    '{ts:$ts, host:$host, harness:$harness, state:$state, session:$session, window:$window, pane:$pane, cwd:$cwd}' \
+    >>"$STATE_DIR/events.jsonl"
+else
+  printf '{"ts":"%s","host":"%s","harness":"%s","state":"%s","session":"%s","window":"%s","pane":"%s","cwd":"%s"}\n' \
+    "$ts" "$host" "$harness" "$state" "$session" "$window" "$pane" "$cwd" \
+    >>"$STATE_DIR/events.jsonl"
+fi

@@ -2,6 +2,7 @@ model = "gpt-5.5"
 model_reasoning_effort = "high"
 approvals_reviewer = "guardian_subagent"
 personality = "pragmatic"
+notify = ["{{ .chezmoi.homeDir }}/.local/bin/harness-status", "--codex"]
 [projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}dev{{ .chezmoi.pathSeparator }}journey-io-pipeline"]
 trust_level = "trusted"
 

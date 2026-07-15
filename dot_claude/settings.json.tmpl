@@ -11,6 +11,26 @@
   "worktree": {
     "baseRef": "fresh"
   },
+  "hooks": {
+    "UserPromptSubmit": [
+      { "hooks": [{ "type": "command", "command": "{{ .chezmoi.homeDir }}/.local/bin/harness-status claude working" }] }
+    ],
+    "PostToolUse": [
+      { "hooks": [{ "type": "command", "command": "{{ .chezmoi.homeDir }}/.local/bin/harness-status claude working" }] }
+    ],
+    "Notification": [
+      { "hooks": [{ "type": "command", "command": "{{ .chezmoi.homeDir }}/.local/bin/harness-status claude waiting" }] }
+    ],
+    "Stop": [
+      { "hooks": [{ "type": "command", "command": "{{ .chezmoi.homeDir }}/.local/bin/harness-status claude done" }] }
+    ],
+    "SessionStart": [
+      { "hooks": [{ "type": "command", "command": "{{ .chezmoi.homeDir }}/.local/bin/harness-status claude idle" }] }
+    ],
+    "SessionEnd": [
+      { "hooks": [{ "type": "command", "command": "{{ .chezmoi.homeDir }}/.local/bin/harness-status claude clear" }] }
+    ]
+  },
   "statusLine": {
     "type": "command",
     "command": "{{ .chezmoi.homeDir }}/.bun/bin/bun {{ .chezmoi.homeDir }}/.claude/piedcc/statusline.ts",

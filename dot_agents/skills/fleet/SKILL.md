@@ -111,9 +111,21 @@ The full runbook (with the teamcity-specific relay/runner migration steps) is
 
 # Access
 
-- All remote access is over **Tailscale**; the tailnet is the network boundary,
-  so SSH needs no extra auth beyond the tailnet (zero-trust setup).
-- Prefer MagicDNS hostnames (`ws-255`, `teamcity-ldn-01`) over raw tailnet IPs.
+- All remote access is over **Tailscale**; the tailnet is the network boundary
+  (zero-trust setup). The hosts run **Tailscale SSH**; when the tailnet SSH
+  policy uses **check mode**, a session may print a
+  `https://login.tailscale.com/a/…` URL and wait for browser re-authentication
+  before proceeding. In batch/agent use this looks like a silent hang: read
+  the connection's stderr for the check URL, approve it, and the session (and
+  further ones, for the check period) proceeds.
+- On the omaterm remotes, `tailscaled` runs inside the omaterm container with
+  `--tun=userspace-networking`: outbound plain TCP to `100.x` addresses does
+  NOT traverse the tailnet (it leaks to the regular network and fails
+  confusingly). From those shells, reach tailnet peers via
+  `ssh -o ProxyCommand='tailscale nc %h %p' <user>@<100.x IP>`. MagicDNS names
+  do not resolve there either; use tailnet IPs.
+- Prefer MagicDNS hostnames (`ws-255`, `teamcity-ldn-01`) over raw tailnet IPs
+  where they resolve (e.g. from iapetus).
 - Remote work runs inside `tmux` sessions; attach/reattach rather than starting
   duplicate sessions.
 

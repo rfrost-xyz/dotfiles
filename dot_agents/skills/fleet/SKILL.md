@@ -33,7 +33,14 @@ is the Omarchy terminal environment used on the remote hosts.
   crash-loops), docker socket mounted, home in the named volume
   `omaterm-home`.
 - Used for frequent/long-running agentic tasks, driven in `tmux` over SSH.
-- Reach it: `ssh omaterm@ws-255` (Tailscale). `ws-255` / `100.93.192.79`.
+- Runs **anton serve** (v0.4.2 binary at `~/.local/bin/anton` in the omaterm
+  home) in the detached tmux session `anton-serve`, port 4173, syncing local
+  harness usage to the central Turso store. Creds in `~/.config/anton/env`
+  (mode 600); restart with
+  `tmux new -d -s anton-serve 'set -a; . ~/.config/anton/env; set +a; exec ~/.local/bin/anton serve'`.
+  It does not survive a container restart; restart it by hand until it moves
+  to something supervised.
+- Reach it: `ssh omaterm@ws-255` (Tailscale). `ws-255` / `100.73.192.110`.
 - Local access from a Windows terminal (no SSH; the tailnet IP is not
   routable from the Windows host itself):
   `wsl -d archlinux -- docker exec -it -u omaterm -w /home/omaterm omaterm tmux new -A -s Work`
@@ -78,7 +85,10 @@ Tailscale SSH. There is no Tailscale on Windows. Node identity lives in
 `/var/lib/tailscale` inside the container (on ws-255 still in the container
 layer; move it to a named volume when the container is next recreated).
 Recreating the container without that state knocks the host off the tailnet;
-restore it and the node returns with its name and IP.
+restore it and the node returns with its name and IP. This bit ws-255 in the
+2026-07-15 headless recreation: the state was not carried over, so the node
+re-registered and its tailnet IP changed from `100.93.192.79` to
+`100.73.192.110` (remove the old node in the admin console if it lingers).
 
 ## Headless operation
 Docker Desktop is a per-user Windows app (starts at login, dies at logout), so

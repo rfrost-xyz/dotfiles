@@ -58,9 +58,9 @@ is the Omarchy terminal environment used on the remote hosts.
       `concurrent=3`, config in the named volume
       `gitlab-runner-agentic-config`. (A runner was first put on ws-255 by
       mistake and removed; it belongs here.)
-    - **gitlab-runner-qiddiya-docs** — group runner **#19** on the `qiddiya`
+    - **gitlab-runner-qiddiya** — group runner **#19** on the `qiddiya`
       group, tag `arch-docker`, Docker executor, `concurrent=3`, config in
-      the named volume `gitlab-runner-qiddiya-docs-config`.
+      the named volume `gitlab-runner-qiddiya-config`.
   - the **Sagan relay server** (`sagan-relay-relay-1`, `restart=unless-stopped`,
     port 8787; state in the named volume `sagan-relay_relay-data`, config in
     `sagan-relay-config`; compose project dir `~/sagan-relay` in the omaterm

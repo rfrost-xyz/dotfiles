@@ -44,12 +44,16 @@ is the Omarchy terminal environment used on the remote hosts.
 - Still on **Docker Desktop** (session-tied); its headless migration is
   pending (see "Headless operation").
 - Runs, in **Docker**:
-  - the **GitLab CI runner** — group runner **#18** on the `agentic` group
-    (serves sagan, dirac, anton), tag `arch-docker`, `--restart unless-stopped`,
-    Docker executor, `concurrent=3`. (A runner was first put on ws-255 by
-    mistake and removed; it belongs here.)
-  - a second runner, **gitlab-runner-qiddiya-docs** (config in the named
-    volume `gitlab-runner-qiddiya-docs-config`).
+  - both **GitLab CI runners**, as the compose project `gitlab-runners`
+    (`~/gitlab-runners/docker-compose.yml` in the omaterm home):
+    - **gitlab-runner-agentic** — group runner **#18** on the `agentic` group
+      (serves sagan, dirac, anton), tag `arch-docker`, Docker executor,
+      `concurrent=3`, config in the named volume
+      `gitlab-runner-agentic-config`. (A runner was first put on ws-255 by
+      mistake and removed; it belongs here.)
+    - **gitlab-runner-qiddiya-docs** — group runner **#19** on the `qiddiya`
+      group, tag `arch-docker`, Docker executor, `concurrent=3`, config in
+      the named volume `gitlab-runner-qiddiya-docs-config`.
   - the **Sagan relay server** (`sagan-relay-relay-1`, `restart=unless-stopped`,
     port 8787; state in the named volume `sagan-relay_relay-data`, config in
     `sagan-relay-config`; compose project dir `~/sagan-relay` in the omaterm

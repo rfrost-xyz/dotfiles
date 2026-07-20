@@ -90,6 +90,15 @@ restore it and the node returns with its name and IP. This bit ws-255 in the
 re-registered and its tailnet IP changed from `100.93.192.79` to
 `100.73.192.110` (remove the old node in the admin console if it lingers).
 
+Userspace cuts both ways: the container has no tun device and no 100.x route,
+so ordinary programs cannot dial OUT to tailnet IPs either — plain `ssh` to
+another tailnet host times out while `tailscale ping` succeeds (the CLI asks
+tailscaled to dial; the kernel cannot). Dial through tailscaled with
+`ProxyCommand tailscale nc %h %p`; the headless `~/.ssh/config` (chezmoi)
+carries this stanza for `teamcity-ldn-01`, and any new tailnet ssh target
+needs the same. Diagnosed 2026-07-16 when `relay:deploy` from ws-255 timed
+out despite healthy pings.
+
 ## Headless operation
 Docker Desktop is a per-user Windows app (starts at login, dies at logout), so
 nothing it hosts is a true system service. The migration to native

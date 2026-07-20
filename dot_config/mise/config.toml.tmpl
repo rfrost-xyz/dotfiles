@@ -1,0 +1,20 @@
+{{- $role := get . "role" | default "desktop" -}}
+{{- if ne $role "headless" -}}
+[settings]
+trusted_config_paths = ["~/Projects"]
+
+{{ end -}}
+[tools]
+fnox = "latest"
+go = "latest"
+node = "latest"
+uv = "0.11.20"
+{{- if eq $role "headless" }}
+# Headless-only: omarchy provides these via pacman; the omaterm containers
+# get them through mise. glab is pinned because the sagan release tasks call
+# it through mise shims, which fail on an unpinned tool.
+chezmoi = "latest"
+git-lfs = "latest"
+glab = "1.108.0"
+worktrunk = "latest"
+{{- end }}

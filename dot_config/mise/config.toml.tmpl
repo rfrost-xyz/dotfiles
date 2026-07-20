@@ -1,4 +1,9 @@
 {{- $role := get . "role" | default "desktop" -}}
+{{- if ne $role "headless" -}}
+[settings]
+trusted_config_paths = ["~/Projects"]
+
+{{ end -}}
 [tools]
 fnox = "latest"
 go = "latest"

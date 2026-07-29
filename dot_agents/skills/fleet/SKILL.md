@@ -51,7 +51,7 @@ is the Omarchy terminal environment used on the remote hosts.
 - Still on **Docker Desktop** (session-tied); its headless migration is
   pending (see "Headless operation").
 - Runs, in **Docker**:
-  - both **GitLab CI runners**, as the compose project `gitlab-runners`
+  - the **GitLab CI runners**, as the compose project `gitlab-runners`
     (`~/gitlab-runners/docker-compose.yml` in the omaterm home):
     - **gitlab-runner-agentic** — group runner **#18** on the `agentic` group
       (serves sagan, dirac, anton), tag `arch-docker`, Docker executor,
@@ -61,6 +61,10 @@ is the Omarchy terminal environment used on the remote hosts.
     - **gitlab-runner-qiddiya** — group runner **#19** on the `qiddiya`
       group, tag `arch-docker`, Docker executor, `concurrent=3`, config in
       the named volume `gitlab-runner-qiddiya-config`.
+    - **gitlab-runner-utilities** — group runner **#21** on the `utilities`
+      group (serves wafflecut), tag `arch-docker`, Docker executor,
+      `concurrent=3`, config in the named volume
+      `gitlab-runner-utilities-config`.
   - the **Sagan relay server** (`sagan-relay-relay-1`, `restart=unless-stopped`,
     port 8787; state in the named volume `sagan-relay_relay-data`, config in
     `sagan-relay-config`; compose project dir `~/sagan-relay` in the omaterm

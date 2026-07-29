@@ -180,7 +180,7 @@
 # </style>
 #
 # <commits branch="{{ branch }}" target="{{ target_branch }}">
-# {% for commit in commits %}- {{ commit }}
+# {% for commit in commit_details %}- {{ commit }}
 # {% endfor %}</commits>
 #
 # <diffstat>
@@ -441,7 +441,7 @@ Combine these commits into a single commit message.
 </style>
 
 <commits branch="{{ branch }}" target="{{ target_branch }}">
-{% for commit in commits %}- {{ commit }}
+{% for commit in commit_details %}- {{ commit }}
 {% endfor %}</commits>
 
 <diffstat>
@@ -455,4 +455,5 @@ Combine these commits into a single commit message.
 
 [list]
 summary = true
+json-schema = 1
 

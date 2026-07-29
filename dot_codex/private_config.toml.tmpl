@@ -1,4 +1,4 @@
-model = "gpt-5.5"
+model = "gpt-5.6-sol"
 model_reasoning_effort = "high"
 approvals_reviewer = "guardian_subagent"
 personality = "pragmatic"
@@ -139,6 +139,27 @@ trust_level = "trusted"
 [projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Projects{{ .chezmoi.pathSeparator }}pixel"]
 trust_level = "trusted"
 
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Projects{{ .chezmoi.pathSeparator }}qiddiya-standards"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Projects{{ .chezmoi.pathSeparator }}gantry"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}.agents{{ .chezmoi.pathSeparator }}skills"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Projects{{ .chezmoi.pathSeparator }}wafflecut"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Projects"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Projects{{ .chezmoi.pathSeparator }}sagan"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Projects{{ .chezmoi.pathSeparator }}bluedot"]
+trust_level = "trusted"
+
 [tui]
 status_line = ["model-with-reasoning", "five-hour-limit", "weekly-limit", "context-used", "context-window-size", "used-tokens", "total-input-tokens", "total-output-tokens", "task-progress", "branch-changes", "{{ .chezmoi.config.git.command }}-branch", "run-state"]
 status_line_use_colors = true
@@ -146,6 +167,7 @@ pet = "disabled"
 
 [tui.model_availability_nux]
 "gpt-5.5" = 4
+"gpt-5.6-sol" = 4
 
 [features]
 hooks = true

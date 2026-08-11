@@ -51,7 +51,7 @@ is the Omarchy terminal environment used on the remote hosts.
 - Still on **Docker Desktop** (session-tied); its headless migration is
   pending (see "Headless operation").
 - Runs, in **Docker**:
-  - the **GitLab CI runners**, as the compose project `gitlab-runners`
+  - both **GitLab CI runners**, as the compose project `gitlab-runners`
     (`~/gitlab-runners/docker-compose.yml` in the omaterm home):
     - **gitlab-runner-agentic** — group runner **#18** on the `agentic` group
       (serves sagan, dirac, anton), tag `arch-docker`, Docker executor,
@@ -61,10 +61,10 @@ is the Omarchy terminal environment used on the remote hosts.
     - **gitlab-runner-qiddiya** — group runner **#19** on the `qiddiya`
       group, tag `arch-docker`, Docker executor, `concurrent=3`, config in
       the named volume `gitlab-runner-qiddiya-config`.
-    - **gitlab-runner-utilities** — group runner **#21** on the `utilities`
-      group (serves wafflecut), tag `arch-docker`, Docker executor,
-      `concurrent=3`, config in the named volume
-      `gitlab-runner-utilities-config`.
+    - **gitlab-runner-docs** — group runner **#22** on the `docs` group
+      (serves the sagan room content repos), tag `arch-docker`, Docker
+      executor, `concurrent=3`, config in the named volume
+      `gitlab-runner-docs-config`. Added 2026-07-24.
   - the **Sagan relay server** (`sagan-relay-relay-1`, `restart=unless-stopped`,
     port 8787; state in the named volume `sagan-relay_relay-data`, config in
     `sagan-relay-config`; compose project dir `~/sagan-relay` in the omaterm
@@ -93,15 +93,6 @@ restore it and the node returns with its name and IP. This bit ws-255 in the
 2026-07-15 headless recreation: the state was not carried over, so the node
 re-registered and its tailnet IP changed from `100.93.192.79` to
 `100.73.192.110` (remove the old node in the admin console if it lingers).
-
-Userspace cuts both ways: the container has no tun device and no 100.x route,
-so ordinary programs cannot dial OUT to tailnet IPs either — plain `ssh` to
-another tailnet host times out while `tailscale ping` succeeds (the CLI asks
-tailscaled to dial; the kernel cannot). Dial through tailscaled with
-`ProxyCommand tailscale nc %h %p`; the headless `~/.ssh/config` (chezmoi)
-carries this stanza for `teamcity-ldn-01`, and any new tailnet ssh target
-needs the same. Diagnosed 2026-07-16 when `relay:deploy` from ws-255 timed
-out despite healthy pings.
 
 ## Headless operation
 Docker Desktop is a per-user Windows app (starts at login, dies at logout), so

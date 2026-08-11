@@ -56,3 +56,9 @@
 .config/lazyjira/auth.json
 .ssh/fnox_anton
 {{- end }}
+
+{{- if ne .chezmoi.hostname "iapetus" }}
+# Work vault snippets live only on iapetus.
+Documents/Work/.obsidian/snippets/math.css
+Documents/Work/.obsidian/snippets/mermaid.css
+{{- end }}

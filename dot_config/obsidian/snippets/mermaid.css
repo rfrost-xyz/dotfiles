@@ -1,0 +1,77 @@
+/* Mermaid diagrams that follow the active Omarchy/Obsidian theme */
+
+.markdown-rendered .mermaid {
+  --mermaid-scale: 0.75;
+}
+
+/* Scale the complete Mermaid render, preserving its geometry */
+.markdown-rendered .mermaid svg {
+  zoom: var(--mermaid-scale);
+  display: block;
+  margin-inline: auto;
+
+  /* Don't stretch Mermaid to the width of the note */
+  width: auto !important;
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+/* Nodes */
+.markdown-rendered .mermaid .node rect,
+.markdown-rendered .mermaid .node polygon,
+.markdown-rendered .mermaid .node circle,
+.markdown-rendered .mermaid .node ellipse,
+.markdown-rendered .mermaid .node path {
+  fill: color-mix(
+    in srgb,
+    var(--background-primary) 94%,
+    var(--text-normal)
+  ) !important;
+
+  stroke: var(--text-muted) !important;
+  stroke-width: 2px !important;
+}
+
+/* Node text */
+.markdown-rendered .mermaid .nodeLabel,
+.markdown-rendered .mermaid .nodeLabel p,
+.markdown-rendered .mermaid .label text,
+.markdown-rendered .mermaid .node text {
+  font-family: var(--font-text) !important;
+  font-weight: 400 !important;
+  color: var(--text-normal) !important;
+  fill: var(--text-normal) !important;
+}
+
+/* Don't change font-size here.
+   Mermaid calculated the node geometry using its own font size. */
+
+.markdown-rendered .mermaid .nodeLabel p,
+.markdown-rendered .mermaid .edgeLabel p {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.markdown-rendered .mermaid .nodeLabel {
+  text-align: center !important;
+}
+
+/* Connecting lines */
+.markdown-rendered .mermaid .flowchart-link,
+.markdown-rendered .mermaid .edgePath path {
+  stroke: var(--interactive-accent) !important;
+  stroke-width: 1.5px !important;
+}
+
+/* Arrowheads */
+.markdown-rendered .mermaid marker path {
+  fill: var(--interactive-accent) !important;
+  stroke: var(--interactive-accent) !important;
+}
+
+/* Edge labels */
+.markdown-rendered .mermaid .edgeLabel,
+.markdown-rendered .mermaid .edgeLabel p {
+  color: var(--text-muted) !important;
+  background: var(--background-primary) !important;
+}

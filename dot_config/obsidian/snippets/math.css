@@ -1,0 +1,24 @@
+.markdown-source-view,
+.markdown-rendered {
+  --math-block-scale: 1.6em;
+  --math-inline-scale: 1.1em;
+  --math-inline-baseline: 0.04em;
+}
+
+/* Block equations */
+.markdown-source-view .math-block > mjx-container,
+.markdown-rendered .math-block > mjx-container,
+.markdown-rendered mjx-container[display="true"] {
+  font-size: var(--math-block-scale) !important;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* Inline equations */
+.markdown-source-view span.math > mjx-container:not([display="true"]),
+.markdown-rendered span.math > mjx-container:not([display="true"]),
+.markdown-rendered .math-inline > mjx-container {
+  font-size: var(--math-inline-scale) !important;
+  vertical-align: var(--math-inline-baseline) !important;
+}

@@ -2,53 +2,118 @@
 
 :is(.mermaid, .mermaid-preview) {
   --mermaid-font-size: 12px;
-  --mermaid-surface: color-mix(
-    in srgb,
-    var(--background-primary) 94%,
-    var(--text-normal)
-  );
-  --mermaid-surface-alt: color-mix(
-    in srgb,
-    var(--background-primary) 97%,
-    var(--text-normal)
-  );
-  --mermaid-border: var(--text-muted);
-  --mermaid-line: var(--interactive-accent);
   --mermaid-text: var(--text-normal);
-  --mermaid-label-background: var(--background-primary);
-  --mermaid-tone-1: color-mix(
-    in srgb,
-    var(--interactive-accent) 35%,
-    var(--background-primary)
-  );
-  --mermaid-tone-2: color-mix(
-    in srgb,
-    var(--interactive-accent) 50%,
-    var(--background-primary)
-  );
-  --mermaid-tone-3: color-mix(
-    in srgb,
-    var(--interactive-accent) 65%,
-    var(--background-primary)
-  );
-  --mermaid-tone-4: color-mix(
-    in srgb,
-    var(--interactive-accent) 80%,
-    var(--background-primary)
-  );
+  --mermaid-line: var(--text-muted);
 
   margin-block: 1.25em;
-  overflow-x: auto;
-  overflow-y: hidden;
   text-align: center;
 }
 
-/* Preserve Mermaid's intrinsic dimensions; scroll diagrams that are too wide. */
+/* Slick's surface separation, derived from the current note background. */
+.theme-dark :is(.mermaid, .mermaid-preview) {
+  --mermaid-surface: color-mix(
+    in srgb,
+    var(--background-primary) 93%,
+    white
+  );
+  --mermaid-surface-alt: color-mix(
+    in srgb,
+    var(--background-primary) 97.5%,
+    white
+  );
+  --mermaid-border: color-mix(
+    in srgb,
+    var(--background-primary) 86%,
+    white
+  );
+  --mermaid-cluster-border: color-mix(
+    in srgb,
+    var(--background-primary) 89%,
+    white
+  );
+  --mermaid-label-background: color-mix(
+    in srgb,
+    var(--background-primary) 92%,
+    white
+  );
+  --mermaid-tone-1: color-mix(
+    in srgb,
+    var(--background-primary) 82%,
+    white
+  );
+  --mermaid-tone-2: color-mix(
+    in srgb,
+    var(--background-primary) 70%,
+    white
+  );
+  --mermaid-tone-3: color-mix(
+    in srgb,
+    var(--background-primary) 58%,
+    white
+  );
+  --mermaid-tone-4: color-mix(
+    in srgb,
+    var(--background-primary) 46%,
+    white
+  );
+}
+
+.theme-light :is(.mermaid, .mermaid-preview) {
+  --mermaid-surface: color-mix(
+    in srgb,
+    var(--background-primary) 93%,
+    black
+  );
+  --mermaid-surface-alt: color-mix(
+    in srgb,
+    var(--background-primary) 97.5%,
+    black
+  );
+  --mermaid-border: color-mix(
+    in srgb,
+    var(--background-primary) 86%,
+    black
+  );
+  --mermaid-cluster-border: color-mix(
+    in srgb,
+    var(--background-primary) 89%,
+    black
+  );
+  --mermaid-label-background: color-mix(
+    in srgb,
+    var(--background-primary) 92%,
+    black
+  );
+  --mermaid-tone-1: color-mix(
+    in srgb,
+    var(--background-primary) 82%,
+    black
+  );
+  --mermaid-tone-2: color-mix(
+    in srgb,
+    var(--background-primary) 70%,
+    black
+  );
+  --mermaid-tone-3: color-mix(
+    in srgb,
+    var(--background-primary) 58%,
+    black
+  );
+  --mermaid-tone-4: color-mix(
+    in srgb,
+    var(--background-primary) 46%,
+    black
+  );
+}
+
+/* Keep small diagrams intrinsic and shrink only diagrams wider than the note. */
 :is(.mermaid, .mermaid-preview) svg {
   display: inline-block;
   vertical-align: top;
-  height: auto;
-  filter: none;
+  width: auto !important;
+  max-width: 100% !important;
+  height: auto !important;
+  filter: none !important;
 }
 
 /* Nodes, groups and diagram-specific boxes */
@@ -89,6 +154,7 @@
 :is(.mermaid, .mermaid-preview)
   :is(.cluster rect, .cluster polygon, .cluster path, .er.attributeBoxEven) {
   fill: var(--mermaid-surface-alt) !important;
+  stroke: var(--mermaid-cluster-border) !important;
 }
 
 /* Text and HTML labels */

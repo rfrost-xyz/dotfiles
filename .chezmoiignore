@@ -58,7 +58,16 @@
 {{- end }}
 
 {{- if ne .chezmoi.hostname "iapetus" }}
-# Work vault snippets live only on iapetus.
-Documents/Work/.obsidian/snippets/math.css
-Documents/Work/.obsidian/snippets/mermaid.css
+# Obsidian is a desktop app and the Work vault lives only on iapetus, so the
+# whole concern is iapetus-only: the snippet store in .config/obsidian/snippets
+# and the vault symlinks that point at it.
+#
+# Ignoring just the two snippet symlinks left chezmoi still managing the
+# directories above them, so it created an empty Documents/Work/.obsidian/snippets
+# tree on the omaterm hosts — a vault skeleton with no vault. Ignore the subtree,
+# not the leaves. Nothing else under Documents is managed.
+.config/obsidian
+.config/obsidian/**
+Documents
+Documents/**
 {{- end }}

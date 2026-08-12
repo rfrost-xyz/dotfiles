@@ -1,19 +1,17 @@
 /* Mermaid diagrams that follow the active Omarchy/Obsidian theme */
 
-.markdown-rendered .mermaid {
-  --mermaid-scale: 0.75;
+:is(.mermaid, .mermaid-preview, .slick-mermaid-measure-host) {
+  --mermaid-scale: 1;
+  --mermaid-font-size: 12px;
 }
 
-/* Scale the complete Mermaid render, preserving its geometry */
-.markdown-rendered .mermaid svg {
+/*
+ * Keep Mermaid's generated width and intrinsic max-width. Slick Mermaid uses
+ * those together to leave small diagrams at their natural size and shrink only
+ * diagrams that would overflow the note.
+ */
+:is(.mermaid, .mermaid-preview, .slick-mermaid-measure-host) svg {
   zoom: var(--mermaid-scale);
-  display: block;
-  margin-inline: auto;
-
-  /* Don't stretch Mermaid to the width of the note */
-  width: auto !important;
-  max-width: 100% !important;
-  height: auto !important;
 }
 
 /* Nodes */
@@ -32,7 +30,22 @@
   stroke-width: 2px !important;
 }
 
-/* Node text */
+/* Typography */
+:is(.mermaid, .mermaid-preview, .slick-mermaid-measure-host)
+  svg
+  :is(
+    text,
+    tspan,
+    .nodeLabel,
+    .nodeLabel *,
+    .edgeLabel,
+    .edgeLabel *,
+    .cluster-label,
+    .cluster-label *
+  ) {
+  font-size: var(--mermaid-font-size) !important;
+}
+
 .markdown-rendered .mermaid .nodeLabel,
 .markdown-rendered .mermaid .nodeLabel p,
 .markdown-rendered .mermaid .label text,
@@ -42,9 +55,6 @@
   color: var(--text-normal) !important;
   fill: var(--text-normal) !important;
 }
-
-/* Don't change font-size here.
-   Mermaid calculated the node geometry using its own font size. */
 
 .markdown-rendered .mermaid .nodeLabel p,
 .markdown-rendered .mermaid .edgeLabel p {

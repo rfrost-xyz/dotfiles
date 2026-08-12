@@ -1,6 +1,6 @@
 /* Mermaid diagrams that follow the active Obsidian theme */
 
-:is(.mermaid, .mermaid-preview) {
+:is(.mermaid, .mermaid-preview, .mermaid-elk-wrapper) {
   --mermaid-font-size: 12px;
   --mermaid-text: var(--text-normal);
   --mermaid-line: var(--text-muted);
@@ -10,7 +10,7 @@
 }
 
 /* Slick's surface separation, derived from the current note background. */
-.theme-dark :is(.mermaid, .mermaid-preview) {
+.theme-dark :is(.mermaid, .mermaid-preview, .mermaid-elk-wrapper) {
   --mermaid-surface: color-mix(
     in srgb,
     var(--background-primary) 93%,
@@ -58,7 +58,7 @@
   );
 }
 
-.theme-light :is(.mermaid, .mermaid-preview) {
+.theme-light :is(.mermaid, .mermaid-preview, .mermaid-elk-wrapper) {
   --mermaid-surface: color-mix(
     in srgb,
     var(--background-primary) 93%,
@@ -106,14 +106,120 @@
   );
 }
 
-/* Keep small diagrams intrinsic and shrink only diagrams wider than the note. */
-:is(.mermaid, .mermaid-preview) svg {
+/*
+ * Mermaid writes the intrinsic width as an inline max-width. Keep that value
+ * for small diagrams and use the note width only as a non-important ceiling.
+ */
+:is(.mermaid, .mermaid-preview, .mermaid-elk-wrapper) svg {
   display: inline-block;
   vertical-align: top;
   width: auto !important;
-  max-width: 100% !important;
+  max-width: 100%;
   height: auto !important;
   filter: none !important;
+}
+
+/* Older ELK wrapper releases explicitly disabled fitting. */
+.mermaid-elk-wrapper {
+  overflow-x: hidden !important;
+}
+
+.mermaid-elk-wrapper svg[id^="mermaid-elk-"] {
+  width: auto !important;
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+/*
+ * Mermaid renderers use different class names, but all ultimately paint SVG
+ * primitives. Luminosity blending removes renderer palettes while preserving
+ * their contrast against the current note background. This is the fallback for
+ * every diagram type, including types added by Mermaid or the ELK renderer.
+ */
+:is(.mermaid, .mermaid-preview, .mermaid-elk-wrapper)
+  svg[aria-roledescription]
+  :is(path, rect, circle, ellipse, polygon, polyline, line) {
+  mix-blend-mode: luminosity;
+}
+
+/* Chart renderers sometimes paint an opaque white canvas. */
+:is(.mermaid, .mermaid-preview, .mermaid-elk-wrapper)
+  svg[aria-roledescription]
+  rect.background {
+  fill: transparent !important;
+  stroke: none !important;
+}
+
+/* HTML labels can carry Mermaid's palette outside SVG fill properties. */
+:is(.mermaid, .mermaid-preview, .mermaid-elk-wrapper)
+  svg[aria-roledescription]
+  foreignObject
+  * {
+  color: var(--mermaid-text) !important;
+  background-color: transparent !important;
+}
+
+/* XY charts: keep series distinct using shades of the same theme tone. */
+:is(.mermaid, .mermaid-preview, .mermaid-elk-wrapper)
+  svg[aria-roledescription="xychart"]
+  [class*="line-plot-"]
+  path {
+  fill: none !important;
+  stroke: var(--mermaid-tone-2) !important;
+}
+
+:is(.mermaid, .mermaid-preview, .mermaid-elk-wrapper)
+  svg[aria-roledescription="xychart"]
+  :is(.line-plot-1, .line-plot-3, .line-plot-5, .line-plot-7, .line-plot-9)
+  path {
+  stroke: var(--mermaid-tone-3) !important;
+}
+
+:is(.mermaid, .mermaid-preview, .mermaid-elk-wrapper)
+  svg[aria-roledescription="xychart"]
+  [class*="bar-plot-"]
+  rect {
+  fill: var(--mermaid-tone-2) !important;
+  stroke: var(--mermaid-border) !important;
+}
+
+:is(.mermaid, .mermaid-preview, .mermaid-elk-wrapper)
+  svg[aria-roledescription="xychart"]
+  :is(.bar-plot-1, .bar-plot-3, .bar-plot-5, .bar-plot-7, .bar-plot-9)
+  rect {
+  fill: var(--mermaid-tone-3) !important;
+}
+
+:is(.mermaid, .mermaid-preview, .mermaid-elk-wrapper)
+  svg[aria-roledescription="xychart"]
+  :is(.axis-line, .axisl-line)
+  path {
+  fill: none !important;
+  stroke: var(--mermaid-line) !important;
+}
+
+/* Timeline uses generated section classes rather than the generic node ones. */
+:is(.mermaid, .mermaid-preview, .mermaid-elk-wrapper)
+  svg[aria-roledescription="timeline"]
+  .timeline-node
+  .node-bkg {
+  fill: var(--mermaid-surface) !important;
+  stroke: var(--mermaid-border) !important;
+  filter: none !important;
+}
+
+:is(.mermaid, .mermaid-preview, .mermaid-elk-wrapper)
+  svg[aria-roledescription="timeline"]
+  .eventWrapper {
+  filter: none !important;
+}
+
+:is(.mermaid, .mermaid-preview, .mermaid-elk-wrapper)
+  svg[aria-roledescription="timeline"]
+  .lineWrapper
+  line {
+  fill: none !important;
+  stroke: var(--mermaid-line) !important;
 }
 
 /* Nodes, groups and diagram-specific boxes */

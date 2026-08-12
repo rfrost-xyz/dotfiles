@@ -1,38 +1,98 @@
-/* Mermaid diagrams that follow the active Omarchy/Obsidian theme */
+/* Mermaid diagrams that follow the active Obsidian theme */
 
-:is(.mermaid, .mermaid-preview, .slick-mermaid-measure-host) {
-  --mermaid-scale: 1;
+:is(.mermaid, .mermaid-preview) {
   --mermaid-font-size: 12px;
-}
-
-/*
- * Keep Mermaid's generated width and intrinsic max-width. Slick Mermaid uses
- * those together to leave small diagrams at their natural size and shrink only
- * diagrams that would overflow the note.
- */
-:is(.mermaid, .mermaid-preview, .slick-mermaid-measure-host) svg {
-  zoom: var(--mermaid-scale);
-}
-
-/* Nodes */
-.markdown-rendered .mermaid .node rect,
-.markdown-rendered .mermaid .node polygon,
-.markdown-rendered .mermaid .node circle,
-.markdown-rendered .mermaid .node ellipse,
-.markdown-rendered .mermaid .node path {
-  fill: color-mix(
+  --mermaid-surface: color-mix(
     in srgb,
     var(--background-primary) 94%,
     var(--text-normal)
-  ) !important;
+  );
+  --mermaid-surface-alt: color-mix(
+    in srgb,
+    var(--background-primary) 97%,
+    var(--text-normal)
+  );
+  --mermaid-border: var(--text-muted);
+  --mermaid-line: var(--interactive-accent);
+  --mermaid-text: var(--text-normal);
+  --mermaid-label-background: var(--background-primary);
+  --mermaid-tone-1: color-mix(
+    in srgb,
+    var(--interactive-accent) 35%,
+    var(--background-primary)
+  );
+  --mermaid-tone-2: color-mix(
+    in srgb,
+    var(--interactive-accent) 50%,
+    var(--background-primary)
+  );
+  --mermaid-tone-3: color-mix(
+    in srgb,
+    var(--interactive-accent) 65%,
+    var(--background-primary)
+  );
+  --mermaid-tone-4: color-mix(
+    in srgb,
+    var(--interactive-accent) 80%,
+    var(--background-primary)
+  );
 
-  stroke: var(--text-muted) !important;
-  stroke-width: 2px !important;
+  margin-block: 1.25em;
+  overflow-x: auto;
+  overflow-y: hidden;
+  text-align: center;
 }
 
-/* Typography */
-:is(.mermaid, .mermaid-preview, .slick-mermaid-measure-host)
-  svg
+/* Preserve Mermaid's intrinsic dimensions; scroll diagrams that are too wide. */
+:is(.mermaid, .mermaid-preview) svg {
+  display: inline-block;
+  vertical-align: top;
+  height: auto;
+  filter: none;
+}
+
+/* Nodes, groups and diagram-specific boxes */
+:is(.mermaid, .mermaid-preview)
+  :is(
+    .node rect,
+    .node circle,
+    .node ellipse,
+    .node polygon,
+    .node path,
+    .basic.label-container,
+    .label-container,
+    .cluster rect,
+    .cluster polygon,
+    .cluster path,
+    rect.actor,
+    rect.labelBox,
+    rect.note,
+    rect.activation0,
+    rect.activation1,
+    rect.activation2,
+    .er.entityBox,
+    .er.attributeBoxOdd,
+    .er.attributeBoxEven,
+    .er.relationshipLabelBox,
+    g.classGroup rect,
+    g.stateGroup rect,
+    .statediagram-cluster rect,
+    rect.branchLabelBkg,
+    rect.commit-label-bkg,
+    rect.tag-label-bkg
+  ) {
+  fill: var(--mermaid-surface) !important;
+  stroke: var(--mermaid-border) !important;
+  stroke-width: 1px !important;
+}
+
+:is(.mermaid, .mermaid-preview)
+  :is(.cluster rect, .cluster polygon, .cluster path, .er.attributeBoxEven) {
+  fill: var(--mermaid-surface-alt) !important;
+}
+
+/* Text and HTML labels */
+:is(.mermaid, .mermaid-preview)
   :is(
     text,
     tspan,
@@ -41,47 +101,128 @@
     .edgeLabel,
     .edgeLabel *,
     .cluster-label,
-    .cluster-label *
+    .cluster-label *,
+    .label,
+    .label *,
+    .branchLabel,
+    .branchLabel *,
+    .commit-label
   ) {
+  color: var(--mermaid-text) !important;
+  fill: var(--mermaid-text) !important;
+  font-family: var(--font-text) !important;
   font-size: var(--mermaid-font-size) !important;
 }
 
-.markdown-rendered .mermaid .nodeLabel,
-.markdown-rendered .mermaid .nodeLabel p,
-.markdown-rendered .mermaid .label text,
-.markdown-rendered .mermaid .node text {
-  font-family: var(--font-text) !important;
-  font-weight: 400 !important;
-  color: var(--text-normal) !important;
-  fill: var(--text-normal) !important;
-}
-
-.markdown-rendered .mermaid .nodeLabel p,
-.markdown-rendered .mermaid .edgeLabel p {
+:is(.mermaid, .mermaid-preview)
+  :is(.nodeLabel p, .edgeLabel p, .cluster-label p) {
   margin: 0 !important;
   padding: 0 !important;
 }
 
-.markdown-rendered .mermaid .nodeLabel {
+:is(.mermaid, .mermaid-preview) .nodeLabel {
   text-align: center !important;
 }
 
-/* Connecting lines */
-.markdown-rendered .mermaid .flowchart-link,
-.markdown-rendered .mermaid .edgePath path {
-  stroke: var(--interactive-accent) !important;
+:is(.mermaid, .mermaid-preview)
+  :is(.nodeLabel *, .cluster-label *) {
+  background: transparent !important;
+}
+
+/* Connectors */
+:is(.mermaid, .mermaid-preview)
+  :is(
+    .flowchart-link,
+    .edgePath path,
+    .edgePaths path.relation,
+    path.relation,
+    path.transition,
+    .er.relationshipLine,
+    path.relationshipLine,
+    line.actor-line,
+    line.messageLine0,
+    line.messageLine1,
+    g.stateGroup line,
+    line.note-edge
+  ) {
+  fill: none !important;
+  stroke: var(--mermaid-line) !important;
   stroke-width: 1.5px !important;
 }
 
-/* Arrowheads */
-.markdown-rendered .mermaid marker path {
-  fill: var(--interactive-accent) !important;
-  stroke: var(--interactive-accent) !important;
+:is(.mermaid, .mermaid-preview)
+  :is(marker, marker path, marker polygon, .arrowMarkerPath, .arrowheadPath) {
+  fill: var(--mermaid-line) !important;
+  stroke: var(--mermaid-line) !important;
 }
 
-/* Edge labels */
-.markdown-rendered .mermaid .edgeLabel,
-.markdown-rendered .mermaid .edgeLabel p {
-  color: var(--text-muted) !important;
-  background: var(--background-primary) !important;
+/* Connector label backgrounds */
+:is(.mermaid, .mermaid-preview)
+  :is(
+    .edgeLabel rect,
+    .edgeLabel .labelBkg,
+    .edgeLabel foreignObject .labelBkg,
+    .edgeLabel foreignObject span.edgeLabel,
+    .edgeLabel foreignObject span.edgeLabel p,
+    .cluster-label rect
+  ) {
+  fill: var(--mermaid-label-background) !important;
+  background: var(--mermaid-label-background) !important;
+}
+
+/* Multi-part diagrams use shades of one theme-derived tone. */
+:is(.mermaid, .mermaid-preview)
+  :is(path.pieCircle, rect.task, rect.journey-section, circle[class*="actor-"]) {
+  fill: var(--mermaid-tone-1) !important;
+  stroke: var(--mermaid-border) !important;
+}
+
+:is(.mermaid, .mermaid-preview) path.pieCircle:nth-of-type(4n + 2),
+:is(.mermaid, .mermaid-preview)
+  :is(
+    .task-type-1,
+    .task-type-5,
+    .task-type-9,
+    .section-type-1,
+    .section-type-5,
+    .section-type-9
+  ) {
+  fill: var(--mermaid-tone-2) !important;
+}
+
+:is(.mermaid, .mermaid-preview) path.pieCircle:nth-of-type(4n + 3),
+:is(.mermaid, .mermaid-preview)
+  :is(
+    .task-type-2,
+    .task-type-6,
+    .task-type-10,
+    .section-type-2,
+    .section-type-6,
+    .section-type-10
+  ) {
+  fill: var(--mermaid-tone-3) !important;
+}
+
+:is(.mermaid, .mermaid-preview) path.pieCircle:nth-of-type(4n),
+:is(.mermaid, .mermaid-preview)
+  :is(
+    .task-type-3,
+    .task-type-7,
+    .task-type-11,
+    .section-type-3,
+    .section-type-7,
+    .section-type-11
+  ) {
+  fill: var(--mermaid-tone-4) !important;
+}
+
+:is(.mermaid, .mermaid-preview)
+  svg[aria-roledescription="gitGraph"]
+  :is(
+    [class^="branch"]:not(.branchLabel):not(.branchLabelBkg),
+    [class^="commit"]:not(.commit-label):not(.commit-label-bkg),
+    [class^="arrow"]
+  ) {
+  fill: var(--mermaid-line) !important;
+  stroke: var(--mermaid-line) !important;
 }

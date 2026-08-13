@@ -160,6 +160,9 @@ trust_level = "trusted"
 [projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Projects{{ .chezmoi.pathSeparator }}bluedot"]
 trust_level = "trusted"
 
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Documents{{ .chezmoi.pathSeparator }}Work"]
+trust_level = "trusted"
+
 [tui]
 status_line = ["model-with-reasoning", "five-hour-limit", "weekly-limit", "context-used", "context-window-size", "used-tokens", "total-input-tokens", "total-output-tokens", "task-progress", "branch-changes", "{{ .chezmoi.config.git.command }}-branch", "run-state"]
 status_line_use_colors = true

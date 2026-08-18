@@ -1,6 +1,10 @@
 # Environment variables and PATH additions.
 # Sourced by ~/.config/bash/personal.sh after the base defaults.
 
+# Tailscale SSH does not preserve the container locale for Herdr panes.
+: "${LANG:=C.UTF-8}"
+export LANG
+
 case ":$PATH:" in
   *":$HOME/.local/bin:"*) ;;
   *) export PATH="$PATH:$HOME/.local/bin" ;;

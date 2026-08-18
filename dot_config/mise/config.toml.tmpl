@@ -5,6 +5,11 @@ trusted_config_paths = ["~/Projects"]
 
 {{ end -}}
 [tools]
+{{ if ne $role "headless" -}}
+claude = "latest"
+codex = "latest"
+pi = "latest"
+{{ end -}}
 fnox = "latest"
 go = "latest"
 node = "latest"

@@ -34,3 +34,8 @@ fi
 if command -v wt >/dev/null 2>&1; then
   eval "$(command wt config shell init bash)"
 fi
+
+# Auto-start tmux on Omaterm, except inside an existing tmux or Herdr pane.
+if [ -r ~/.config/shell/all ] && [ -z "$TMUX" ] && [ -z "$HERDR_ENV" ] && command -v tmux >/dev/null 2>&1; then
+  tmux attach || tmux new -s Work
+fi

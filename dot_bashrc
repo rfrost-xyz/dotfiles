@@ -17,8 +17,3 @@ done
 
 # Personal override layer (envs, aliases, functions, tool init).
 [ -r ~/.config/bash/personal.sh ] && source ~/.config/bash/personal.sh
-
-# Auto-start tmux on login — Omaterm/omadots boxes only (base at ~/.config/shell/all).
-if [ -r ~/.config/shell/all ] && [ -z "$TMUX" ] && command -v tmux >/dev/null 2>&1; then
-  tmux attach || tmux new -s Work
-fi

@@ -1,6 +1,6 @@
 {
-  "lastChangelogVersion": "0.80.6",
-  "theme": "omarchy",
+  "lastChangelogVersion": "0.84.2",
+  "theme": "dark",
   "defaultProvider": "opencode-go",
   "defaultModel": "glm-5.2",
   "defaultThinkingLevel": "high",

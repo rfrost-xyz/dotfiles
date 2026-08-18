@@ -43,14 +43,18 @@ is the Omarchy terminal environment used on the remote hosts.
 - Runs **ollama on the RTX 5090**, as the compose project `~/ollama` in the
   omaterm home (`restart: unless-stopped`, loopback `127.0.0.1:11434`). See
   "Local models on the 5090" below before touching it.
-- Reach it: `ssh omaterm@ws-255` (Tailscale). `ws-255` / `100.73.192.110`.
+- Reach it: `ssh omaterm@ws-255` (Tailscale). The managed SSH alias uses
+  `ws-255.tail079eff.ts.net` to avoid collision with corporate DNS.
+  `ws-255` / `100.73.192.110`.
 - Local access from a Windows terminal (no SSH; the tailnet IP is not
   routable from the Windows host itself):
   `wsl -d archlinux -- docker exec -it -u omaterm -w /home/omaterm omaterm tmux new -A -s Work`
 
 ## teamcity-ldn-01 — DevOps / services host
 - **Also Windows + WSL (Arch) + omaterm**, not a bare Linux server. Reached
-  `ssh omaterm@teamcity-ldn-01` (Tailscale). `teamcity-ldn-01` / `100.77.135.7`.
+  `ssh omaterm@teamcity-ldn-01` (Tailscale). The managed SSH alias uses
+  `teamcity-ldn-01.tail079eff.ts.net` to avoid collision with corporate DNS.
+  `teamcity-ldn-01` / `100.77.135.7`.
 - Still on **Docker Desktop** (session-tied); its headless migration is
   pending (see "Headless operation").
 - Runs, in **Docker**:
@@ -213,8 +217,9 @@ from iapetus is **not** set up and needs that decision plus the
   confusingly). From those shells, reach tailnet peers via
   `ssh -o ProxyCommand='tailscale nc %h %p' <user>@<100.x IP>`. MagicDNS names
   do not resolve there either; use tailnet IPs.
-- Prefer MagicDNS hostnames (`ws-255`, `teamcity-ldn-01`) over raw tailnet IPs
-  where they resolve (e.g. from iapetus).
+- Prefer the managed SSH aliases (`ws-255`, `teamcity-ldn-01`) over raw tailnet
+  IPs. Their `HostName` values are canonical MagicDNS FQDNs, which avoids the
+  same short names resolving through `SquintOpera.local` on the office network.
 - Remote work runs inside `tmux` sessions; attach/reattach rather than starting
   duplicate sessions.
 

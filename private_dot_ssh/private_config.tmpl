@@ -1,7 +1,14 @@
 {{- $role := get . "role" | default "desktop" -}}
-Host ws255
-	HostName ws-255
+Host ws-255 ws255
+	HostName ws-255.tail079eff.ts.net
 	User omaterm
+
+Host teamcity-ldn-01
+	HostName teamcity-ldn-01.tail079eff.ts.net
+	User omaterm
+{{- if eq $role "headless" }}
+	ProxyCommand tailscale nc %h %p
+{{- end }}
 
 {{- if ne $role "headless" }}
 Host *
@@ -9,10 +16,7 @@ Host *
 {{- end }}
 {{- if eq $role "headless" }}
 # Headless runs userspace tailscaled (no tun), so plain ssh cannot route
-# tailnet IPs; dial through tailscaled. Add a stanza per tailnet ssh target.
-Host teamcity-ldn-01
-	User omaterm
-	ProxyCommand tailscale nc %h %p
+# tailnet IPs; tailnet SSH targets dial through tailscaled above.
 # Headless has no 1Password SSH agent, so offer the on-disk key directly for git
 # hosts. Same key as omarchy (op://Development/SSH Key) — registered for auth on
 # both GitHub and GitLab. HTTPS via gh/glab still works for those who use it.

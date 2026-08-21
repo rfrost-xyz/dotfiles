@@ -1,0 +1,12 @@
+{{- $role := get . "role" | default "desktop" -}}
+{{- if eq $role "headless" }}
+# PiedPi lives in its own repo. On the desktop it is a worktrunk checkout
+# developed in place; the headless remotes consume it as a plain clone that
+# chezmoi keeps fresh. The wrapper manifest next to it is a managed file.
+[".pi/agent/extensions/piedpi/main"]
+    type = "git-repo"
+    url = "git@git.squintopera.com:agentic/piedpi.git"
+    refreshPeriod = "24h"
+    [".pi/agent/extensions/piedpi/main".pull]
+        args = ["--ff-only"]
+{{- end }}

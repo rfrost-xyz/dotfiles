@@ -1,0 +1,9 @@
+{
+  "name": "piedpi-wrapper",
+  "private": true,
+  "pi": {
+    "extensions": [
+      "./main/src/index.ts"
+    ]
+  }
+}

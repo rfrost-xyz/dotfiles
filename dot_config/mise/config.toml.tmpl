@@ -1,9 +1,13 @@
 {{- $role := get . "role" | default "desktop" -}}
-{{- if ne $role "headless" -}}
 [settings]
+{{ if ne $role "headless" -}}
 trusted_config_paths = ["~/Projects"]
-
 {{ end -}}
+# The agent CLIs cut several releases a week and we track them deliberately,
+# so the release-age hold just keeps `mise up` a version behind on all four.
+# Every other tool keeps the delay.
+minimum_release_age_excludes = ["claude", "codex", "opencode", "pi"]
+
 [tools]
 # Agent CLIs. mise is their single version owner on every role: the registry
 # ships native binaries (aqua/github), so no node install can take them away

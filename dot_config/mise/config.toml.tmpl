@@ -5,11 +5,14 @@ trusted_config_paths = ["~/Projects"]
 
 {{ end -}}
 [tools]
-{{ if ne $role "headless" -}}
+# Agent CLIs. mise is their single version owner on every role: the registry
+# ships native binaries (aqua/github), so no node install can take them away
+# and none of them needs one. `mise up` is the update route; a tool's own
+# `update`/`upgrade` subcommand writes a second copy mise cannot see.
 claude = "latest"
 codex = "latest"
+opencode = "latest"
 pi = "latest"
-{{ end -}}
 fnox = "latest"
 go = "latest"
 node = "latest"

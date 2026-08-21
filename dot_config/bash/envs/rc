@@ -23,8 +23,11 @@ case ":$PATH:" in
   *) export PATH="$BUN_INSTALL/bin:$PATH" ;;
 esac
 
-# npm globals (agent CLIs) live outside the mise node installs so a node
-# upgrade or a repo-pinned node version cannot take them away.
+# npm globals live outside the mise node installs so a node upgrade or a
+# repo-pinned node version cannot take them away. The agent CLIs no longer
+# need this: mise owns claude, codex, opencode and pi as native binaries.
+# What is left here is openspec, which has no mise registry entry, and the
+# prepend keeps npm's copy ahead of mise for anything installed this way.
 # One-off per machine: npm config set prefix "$HOME/.npm-global"
 if [ -d "$HOME/.npm-global/bin" ]; then
   case ":$PATH:" in

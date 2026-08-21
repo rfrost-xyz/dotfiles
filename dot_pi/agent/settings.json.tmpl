@@ -1,6 +1,9 @@
+{{/* Managed as a template: the theme is role-dependent (omarchy exists only
+on the desktop). Edit this file directly — never `chezmoi add`/`re-add` the
+live settings.json, that would strip the templating. */ -}}
 {
   "lastChangelogVersion": "0.84.2",
-  "theme": "omarchy",
+  "theme": {{ if eq (get . "role" | default "desktop") "headless" }}"dark"{{ else }}"omarchy"{{ end }},
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.6-terra",
   "defaultThinkingLevel": "high",

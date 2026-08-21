@@ -1,6 +1,12 @@
 ---
 name: fleet
-description: Rich's machine fleet — which host does what, how to reach it, and where config lives. Load when work spans machines or needs one specifically: SSH or tailscale access, the Sagan relay or GitLab CI/runners, Unreal Engine, WSL/Docker, headless boot, chezmoi dotfiles, GPU work, running local models via ollama on the ws-255 5090, or any "which machine / how do I reach it" question.
+description: >-
+  Rich's machine fleet — which host does what, how to reach it, and where
+  config lives. Load when work spans machines or needs one specifically: SSH
+  or tailscale access, the Sagan relay or GitLab CI/runners, Unreal Engine,
+  WSL/Docker, headless boot, chezmoi dotfiles, GPU work, running local models
+  via ollama on the ws-255 5090, or any "which machine / how do I reach it"
+  question.
 ---
 
 Three machines on one tailnet, one shared dotfiles source. Coding is normally on

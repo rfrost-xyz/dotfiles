@@ -1,6 +1,6 @@
-model = "gpt-5.6-sol"
-model_reasoning_effort = "high"
-approvals_reviewer = "user"
+model = "gpt-5.6-terra"
+model_reasoning_effort = "medium"
+approvals_reviewer = "auto_review"
 personality = "pragmatic"
 notify = ["{{ .chezmoi.homeDir }}/.local/bin/harness-status", "--codex"]
 service_tier = "default"
@@ -164,6 +164,18 @@ trust_level = "trusted"
 [projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Documents{{ .chezmoi.pathSeparator }}Work"]
 trust_level = "trusted"
 
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Projects{{ .chezmoi.pathSeparator }}UsageAllowance"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}dflash-test{{ .chezmoi.pathSeparator }}sruns{{ .chezmoi.pathSeparator }}qwen3.6_27b-q4_K_M-s5"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}dflash-test{{ .chezmoi.pathSeparator }}sruns{{ .chezmoi.pathSeparator }}qwen3.6_27b-q4_K_M-s5b"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}dflash-test{{ .chezmoi.pathSeparator }}sruns{{ .chezmoi.pathSeparator }}qwen3.6_27b-q4_K_M-s5c"]
+trust_level = "trusted"
+
 [tui]
 status_line = ["model-with-reasoning", "five-hour-limit", "weekly-limit", "context-used", "context-window-size", "used-tokens", "total-input-tokens", "total-output-tokens", "task-progress", "branch-changes", "{{ .chezmoi.config.git.command }}-branch", "run-state"]
 status_line_use_colors = true
@@ -193,6 +205,7 @@ url = "https{{ .chezmoi.pathListSeparator }}{{ .chezmoi.pathSeparator }}{{ .chez
 
 [notice]
 fast_default_opt_out = true
+hide_rate_limit_model_nudge = true
 
 {{- $role := get . "role" | default "desktop" }}
 {{- if ne $role "headless" }}

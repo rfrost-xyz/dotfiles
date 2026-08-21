@@ -147,6 +147,22 @@ The full runbook (with the teamcity-specific relay/runner migration steps) is
 Set up 2026-08-11. Runbook: `~/ollama/README.md` in the omaterm home. Read it
 before changing the service; the essentials to reason correctly are here.
 
+**Current service configuration** (set 2026-08-20, measured; full evidence in
+`~/dflash-test/reports/2026-08-20 DFlash Comparison 6 Stage 0 Ollama Tuning.md`):
+default model `qwen3.8:27b-mtp-q4_K_M`, `OLLAMA_CONTEXT_LENGTH: 131072`,
+`OLLAMA_KV_CACHE_TYPE: f16`, `OLLAMA_KEEP_ALIVE: -1`,
+`OLLAMA_MAX_LOADED_MODELS: 1`. 28,625 MiB of 32,607 at 100% GPU. The card is
+**not** shared with Unreal any more, which is why the window is doubled and the
+model is pinned resident. Do not set `OLLAMA_GPU_OVERHEAD` (it silently overruns
+its own reservation at this window) and do not expect `OLLAMA_NUM_PARALLEL` to
+do anything (the scheduler refuses to batch `architecture=qwen35`). Rollback
+copies: `docker-compose.yml.bak-f16-stage0`, `.bak-q8-stage0`, `.bak-0.32.9`.
+
+**Silent context trimming** (measured 2026-08-21): past `num_ctx` ollama drops the
+oldest messages and logs nothing (no `context_shift`, slot releases still say
+`truncated = 0`). That is where a task brief lives, so long-running agents must
+restate their brief periodically. The model itself holds fine at 98.7% occupancy.
+
 **Do not install ollama inside the omaterm container.** That shell has no
 `/dev/nvidia*`, no `/dev/dxg` and no `/usr/lib/wsl`, so it would run **CPU-only
 while looking fine**. The GPU belongs to the WSL distro, not the container.

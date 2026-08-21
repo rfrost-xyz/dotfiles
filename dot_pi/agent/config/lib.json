@@ -9,7 +9,8 @@
   },
   "statusline": {
     "git": {
-      "diffStyle": "symbolsNumbers"
+      "diffStyle": "symbolsNumbers",
+      "branchDisplay": "branch"
     },
     "tokens": {
       "mode": "grouped",

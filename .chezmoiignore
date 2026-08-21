@@ -16,10 +16,18 @@
 # Active nvim colorscheme. Runtime state, never tracked: on the desktop omarchy
 # owns it (symlink → current theme); on omaterm the theme-set hook syncs it in.
 .config/nvim/lua/plugins/theme.lua
-# piedpi is its own git repo now (~/.pi/agent/extensions/piedpi) — managed
-# there, not via chezmoi.
-.pi/agent/extensions/piedpi
-.pi/agent/extensions/piedpi/**
+# piedpi: the discovery wrapper (package.json, README.md) is managed; the
+# code itself is a git repo, never tracked file-by-file. On the desktop it is
+# a worktrunk checkout (bare .git + main/ + backups) chezmoi must not touch;
+# on headless, main/ is a chezmoi git-repo external (see .chezmoiexternal).
+.pi/agent/extensions/piedpi/.git
+.pi/agent/extensions/piedpi/.git/**
+.pi/agent/extensions/piedpi/main.bak
+.pi/agent/extensions/piedpi/main.bak/**
+{{- if ne $role "headless" }}
+.pi/agent/extensions/piedpi/main
+.pi/agent/extensions/piedpi/main/**
+{{- end }}
 # pi-ux retired — fully replaced by piedpi, deleted on disk.
 .pi/agent/extensions/pi-ux
 .pi/agent/extensions/pi-ux/**

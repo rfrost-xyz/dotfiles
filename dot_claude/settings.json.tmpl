@@ -7,31 +7,73 @@
   "permissions": {
     "defaultMode": "auto"
   },
-  "model": "claude-fable-5",
+  "model": "opus[1m]",
   "disableBundledSkills": true,
   "autoUpdates": false,
-  "worktree": {
-    "baseRef": "fresh"
-  },
   "hooks": {
     "UserPromptSubmit": [
-      { "hooks": [{ "type": "command", "command": "{{ .chezmoi.homeDir }}/.local/bin/harness-status claude working" }] }
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{{ .chezmoi.homeDir }}/.local/bin/harness-status claude working"
+          }
+        ]
+      }
     ],
     "PostToolUse": [
-      { "hooks": [{ "type": "command", "command": "{{ .chezmoi.homeDir }}/.local/bin/harness-status claude working" }] }
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{{ .chezmoi.homeDir }}/.local/bin/harness-status claude working"
+          }
+        ]
+      }
     ],
     "Notification": [
-      { "hooks": [{ "type": "command", "command": "{{ .chezmoi.homeDir }}/.local/bin/harness-status claude waiting" }] }
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{{ .chezmoi.homeDir }}/.local/bin/harness-status claude waiting"
+          }
+        ]
+      }
     ],
     "Stop": [
-      { "hooks": [{ "type": "command", "command": "{{ .chezmoi.homeDir }}/.local/bin/harness-status claude done" }] }
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{{ .chezmoi.homeDir }}/.local/bin/harness-status claude done"
+          }
+        ]
+      }
     ],
     "SessionStart": [
-      { "hooks": [{ "type": "command", "command": "{{ .chezmoi.homeDir }}/.local/bin/harness-status claude idle" }] }
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{{ .chezmoi.homeDir }}/.local/bin/harness-status claude idle"
+          }
+        ]
+      }
     ],
     "SessionEnd": [
-      { "hooks": [{ "type": "command", "command": "{{ .chezmoi.homeDir }}/.local/bin/harness-status claude clear" }] }
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{{ .chezmoi.homeDir }}/.local/bin/harness-status claude clear"
+          }
+        ]
+      }
     ]
+  },
+  "worktree": {
+    "baseRef": "fresh"
   },
   "statusLine": {
     "type": "command",
@@ -60,11 +102,11 @@
   "autoMemoryEnabled": true,
   "autoDreamEnabled": true,
   "skipDangerousModePermissionPrompt": true,
+  "skipWorkflowUsageWarning": true,
   "theme": "auto",
   "editorMode": "vim",
   "terminalProgressBarEnabled": true,
   "remoteControlAtStartup": false,
   "agentPushNotifEnabled": false,
-  "skipAutoPermissionPrompt": true,
-  "skipWorkflowUsageWarning": true
+  "skipAutoPermissionPrompt": true
 }

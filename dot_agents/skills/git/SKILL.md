@@ -1,12 +1,13 @@
 ---
 name: git
-description: Git conventions for all repos — bare-repo worktrees via worktrunk, Conventional Branches, atomic Conventional Commits, daily rebase onto origin/main, force-with-lease pushes, no LLM attribution. Load for any git work, committing, branching, or history editing. For MR/PR authoring and review, see change-request.
+description: Git conventions for all repos — bare-repo worktrees via worktrunk, Conventional Branches, atomic Conventional Commits, daily rebase onto origin/main, force-with-lease pushes, no LLM attribution. Load for any git work, committing, branching, or history editing. For worktrees see worktrunk, for MR/PR authoring and review see change-request, and for end-to-end OpenSpec delivery see change-lifecycle.
 allowed-tools: Bash Read Edit Write Grep Glob Agent
 ---
 
 Git conventions. Apply to every repo unless the repo or user says otherwise.
 MR/PR authoring and review live in the change-request skill; worktree
-mechanics live in the worktrunk skill.
+mechanics live in the worktrunk skill. OpenSpec proposal, implementation,
+archive and PR lifecycle orchestration live in the change-lifecycle skill.
 
 # Workflow
 

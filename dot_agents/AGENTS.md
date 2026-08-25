@@ -7,6 +7,8 @@ told; matching the area means the skill applies.
 | --- | --- | --- |
 | no-bullshit | Always (style contract for all output) | `~/.agents/skills/no-bullshit/SKILL.md` |
 | git | Any git work: committing, branching, rebasing, history | `~/.agents/skills/git/SKILL.md` |
+| worktrunk | Creating, switching or removing Git worktrees with `wt` | `~/.agents/skills/worktrunk/SKILL.md` |
+| change-lifecycle | End-to-end repository delivery through OpenSpec, worktrees, Git and PRs/MRs | `~/.agents/skills/change-lifecycle/SKILL.md` |
 | change-request | Creating, updating, or reviewing an MR/PR | `~/.agents/skills/change-request/SKILL.md` |
 | fleet | Work spanning machines: SSH/tailscale, Sagan relay, GitLab CI/runners, Unreal, GPU, local models/ollama, "which machine" | `~/.agents/skills/fleet/SKILL.md` |
 | p4 | Any Perforce work: workspaces, changelists, syncs, submits | `~/.agents/skills/p4/SKILL.md` |

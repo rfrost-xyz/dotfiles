@@ -16,28 +16,55 @@ scope.
   and PR or MR by default.
 - Do not apply a programme or master OpenSpec change when its tasks require
   smaller follow-up changes.
+- A lifecycle request to start, work on, deliver or finish a change runs end
+  to end through a merge-ready PR or MR unless the user explicitly limits
+  the request to planning or another intermediate outcome.
+- Continue unaided through planning, implementation, verification, review
+  remediation, spec synchronisation, archive and publication. Pause only for
+  genuine ambiguity that materially changes intent, work outside the accepted
+  scope, missing authority or credentials, or an external blocker that cannot
+  be resolved safely.
+- Treat an explicit plan-only or proposal-only request as planning authority
+  only. Do not infer implementation authority from `openspec-propose` alone.
 - Create branches from `origin/main`, rebase onto `origin/main`, and never
   merge `main` into a feature branch.
 - Use rebase merge only when the user explicitly authorises merging.
 - Keep OpenSpec task checkboxes as verified implementation evidence, not as
   a substitute for commits or PR review.
-- Do not merge, archive with warnings, delete branches or remove worktrees
-  without explicit user authorisation for that action.
+- Never archive with warnings during end-to-end delivery. Resolve the warning
+  or stop at a genuine blocker.
+- Do not merge, delete branches or remove worktrees without explicit user
+  authorisation for that action.
 - Confirm the required tools before work begins: `git`, `wt`, the relevant
   forge CLI, and OpenSpec when the repository uses it. If an active host
   lacks one, use fleet to select an equipped host. Do not install tools as a
   workaround.
 
-## Start a new change
+## Select the delivery mode
+
+- **End-to-end:** Use by default for lifecycle requests. The terminal outcome
+  is a cleanly reviewed, synchronised, archived and published PR or MR ready
+  for human review.
+- **Plan-only:** Use only when the user explicitly asks to plan, propose or
+  stop before implementation. The terminal outcome is committed planning
+  artefacts; publish a draft PR or MR only when requested.
+- A user-specified intermediate outcome overrides these defaults. Stop at that
+  outcome without silently advancing further.
+
+## Start and plan a change
 
 1. Inspect repository state, worktrees, active OpenSpec changes and project
    instructions.
 2. Create a conventional branch and worktree with worktrunk.
 3. Use `openspec-propose` when a new OpenSpec change is needed.
-4. Stop after planning artefacts are complete. Proposal work authorises
-   planning only; wait for an explicit request before applying the change.
-5. Commit planning artefacts and create a draft PR or MR when the user asks
-   to publish the plan or the request covers end-to-end delivery.
+4. Review the proposal, delta specs, design and tasks together for scope,
+   acceptance coverage, dependency order and architectural coherence. Correct
+   planning defects before implementation.
+5. Commit planning artefacts. For end-to-end delivery, continue directly to
+   implementation and open a draft PR or MR once the branch has meaningful
+   work.
+6. For plan-only delivery, stop after the requested planning and publication
+   outcome.
 
 ## Apply a planned change
 
@@ -46,20 +73,49 @@ scope.
 3. Implement in task order unless the specification requires a different
    dependency order.
 4. Run each task's verification before marking its checkbox complete.
-5. Commit coherent completed work, rebase before pushing and update the
-   draft PR or MR.
-6. Stop and ask when a task is ambiguous, blocked or requires a design or
-   scope change. Use `openspec-update-change` for planning revisions.
+5. When implementation exposes an in-scope planning defect, use
+   `openspec-update-change`, reconcile every affected artefact and continue
+   implementation without asking the user.
+6. Commit coherent completed work, rebase before pushing and update the draft
+   PR or MR.
+7. Stop and ask only when a task is genuinely ambiguous, blocked or requires
+   a material expansion beyond the accepted intent.
 
-## Verify and archive
+## Verify, review and remediate
 
 1. Run the repository's required checks and strict OpenSpec validation.
-2. Confirm every task is complete and its acceptance evidence is available.
-3. Use `openspec-archive-change <change-name>`.
-4. Assess and, when selected, synchronise delta specs into canonical
-   `openspec/specs/` before archiving.
-5. Commit the synchronised specs and archive move, then mark the PR or MR
-   ready for review.
+2. Audit every completed task against the implementation, tests and recorded
+   evidence. Reopen any checkbox whose claimed behaviour is missing or
+   insufficiently tested.
+3. Run an independent final review against the proposal, delta specs, design,
+   task evidence, repository instructions and applicable architecture
+   documents. Review implementation conformance and missing negative paths,
+   not merely style or whether existing tests pass.
+4. Fix every in-scope finding, update planning artefacts when required, rerun
+   affected checks and repeat the independent review until it has no
+   actionable findings.
+5. Treat an implementation or planning edit after a clean review as
+   invalidating that review. Rerun the applicable checks and final review.
+6. Confirm every task is complete, every acceptance claim has evidence and
+   the final review is clean. This is the hold point before spec
+   synchronisation and archive.
+
+## Synchronise, archive and publish
+
+1. Use `openspec-archive-change <change-name>` and select spec
+   synchronisation when delta specs would change canonical `openspec/specs/`.
+2. Verify every delta requirement and scenario is present in the canonical
+   specs before archiving. Do not archive when synchronisation is incomplete
+   or inconsistent.
+3. Archive only with complete artefacts, complete tasks, passing gates and a
+   clean final review.
+4. Commit the synchronised specs and archive move.
+5. Rebase onto `origin/main`, rerun checks affected by the rebase, and push
+   with `--force-with-lease` when history changed.
+6. Update the PR or MR description and evidence, then mark it ready for
+   review.
+7. Do not treat creating or archiving an OpenSpec change as creating,
+   publishing or merging a PR or MR; verify each outcome separately.
 
 ## Merge and clean up
 
@@ -88,5 +144,6 @@ scope.
 
 ## Handoff
 
-Report the OpenSpec change, task progress, branch, worktree, PR or MR,
-verification, archive state and any managed configuration targets or hosts.
+Report the delivery mode, OpenSpec change, task progress, branch, worktree,
+independent-review result, verification, spec-sync state, archive state, PR or
+MR, and any managed configuration targets or hosts.

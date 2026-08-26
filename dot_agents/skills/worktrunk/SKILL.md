@@ -1,6 +1,6 @@
 ---
 name: worktrunk
-description: Manage Git worktrees with worktrunk (`wt`): create and switch branches, check out PRs or MRs, and remove merged worktrees safely. Use when a task creates, switches, inspects or cleans up a worktree.
+description: "Manage Git worktrees with worktrunk (`wt`): create and switch branches, check out PRs or MRs, and remove merged worktrees safely. Use when a task creates, switches, inspects or cleans up a worktree."
 allowed-tools: Bash Read Edit Write Grep Glob Agent
 ---
 

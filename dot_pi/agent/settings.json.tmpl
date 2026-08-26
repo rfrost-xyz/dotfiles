@@ -2,10 +2,10 @@
 on the desktop). Edit this file directly — never `chezmoi add`/`re-add` the
 live settings.json, that would strip the templating. */ -}}
 {
-  "lastChangelogVersion": "0.84.2",
+  "lastChangelogVersion": "0.84.3",
   "theme": {{ if eq (get . "role" | default "desktop") "headless" }}"dark"{{ else }}"omarchy"{{ end }},
   "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.6-terra",
+  "defaultModel": "gpt-5.6-luna",
   "defaultThinkingLevel": "high",
   "enabledModels": [
     "openai-codex/gpt-5.6-luna",
@@ -15,7 +15,6 @@ live settings.json, that would strip the templating. */ -}}
     "anthropic/claude-fable-5"
   ],
   "packages": [
-    "npm:pi-mcp-adapter",
     "npm:pi-rewind",
     "npm:pi-insights",
     "npm:@carter-mcalister/pi-worktrunk"
@@ -28,7 +27,7 @@ live settings.json, that would strip the templating. */ -}}
   "skills": [
     "~/.agents/skills"
   ],
-  "hideThinkingBlock": true,
+  "hideThinkingBlock": false,
   "autocompleteMaxVisible": 7,
   "doubleEscapeAction": "tree",
   "quietStartup": true,
@@ -39,5 +38,8 @@ live settings.json, that would strip the templating. */ -}}
   "images": {
     "blockImages": true
   },
-  "steeringMode": "one-at-a-time"
+  "steeringMode": "one-at-a-time",
+  "warnings": {
+    "anthropicExtraUsage": false
+  }
 }

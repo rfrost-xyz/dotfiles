@@ -1,4 +1,4 @@
-model = "gpt-5.6-terra"
+model = "gpt-5.6-luna"
 model_reasoning_effort = "medium"
 approvals_reviewer = "auto_review"
 personality = "pragmatic"
@@ -164,16 +164,10 @@ trust_level = "trusted"
 [projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Documents{{ .chezmoi.pathSeparator }}Work"]
 trust_level = "trusted"
 
-[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Projects{{ .chezmoi.pathSeparator }}UsageAllowance"]
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Documents{{ .chezmoi.pathSeparator }}Codex{{ .chezmoi.pathSeparator }}2026-08-21{{ .chezmoi.pathSeparator }}realtime-voice-chat"]
 trust_level = "trusted"
 
-[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}dflash-test{{ .chezmoi.pathSeparator }}sruns{{ .chezmoi.pathSeparator }}qwen3.6_27b-q4_K_M-s5"]
-trust_level = "trusted"
-
-[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}dflash-test{{ .chezmoi.pathSeparator }}sruns{{ .chezmoi.pathSeparator }}qwen3.6_27b-q4_K_M-s5b"]
-trust_level = "trusted"
-
-[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}dflash-test{{ .chezmoi.pathSeparator }}sruns{{ .chezmoi.pathSeparator }}qwen3.6_27b-q4_K_M-s5c"]
+[projects."{{ .chezmoi.destDir }}{{ .chezmoi.pathSeparator }}Projects{{ .chezmoi.pathSeparator }}wealth-engine"]
 trust_level = "trusted"
 
 [tui]
@@ -226,7 +220,9 @@ BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
 NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = "Control the in-app browser in conjunction with the Browser Plugin."
 NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME = "Control the Chrome browser in conjunction with the Chrome Plugin. Prefer this method of controlling Chrome over alternatives (such as Computer Use) unless the user explicitly mentions an alternative."
 BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "prod"
-BROWSER_USE_CODEX_APP_VERSION = "26.810.52044"
+BROWSER_USE_CODEX_APP_VERSION = "26.818.61809"
+NODE_REPL_TRUSTED_SERVICES = '{"browser":"{{ .chezmoi.homeDir }}/.codex/plugins/cache/openai-bundled/browser/26.818.61809/scripts/browser-service.mjs"}'
+BROWSER_USE_TINYSKY_ENABLED = "0"
 CODEX_CLI_PATH = "/usr/lib/chatgpt/resources/codex"
 
 [marketplaces.openai-bundled]
@@ -235,17 +231,20 @@ source_type = "local"
 source = "{{ .chezmoi.homeDir }}/.codex/.tmp/bundled-marketplaces/openai-bundled"
 
 [marketplaces.openai-primary-runtime]
-last_updated = "2026-08-15T22:40:19Z"
+last_updated = "2026-08-19T22:32:46Z"
 source_type = "local"
 source = "{{ .chezmoi.homeDir }}/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
 
 [marketplaces.claude-plugins-official]
-last_updated = "2026-08-18T09:24:21Z"
-last_revision = "3411fb9108778ca0e950db59c6511d2f7020cbc8"
+last_updated = "2026-08-21T18:46:44Z"
+last_revision = "340e33aef211d95769d252324854497af871dafe8"
 source_type = "git"
 source = "https://github.com/anthropics/claude-plugins-official.git"
 
 [plugins."sites@openai-bundled"]
+enabled = true
+
+[plugins."codex-app-tools@openai-bundled"]
 enabled = true
 
 [plugins."browser@openai-bundled"]
@@ -299,7 +298,7 @@ CLAUDE_CODE_NO_FLICKER = "1"
 
 [desktop]
 external-agent-import-sync-enabled = true
-conversationDetailMode = "STEPS_COMMANDS"
+conversationDetailMode = "STEPS_PROSE"
 ambient-suggestions-enabled = true
 defaultTerminalLocation = "right"
 preventSleepWhileRunning = false

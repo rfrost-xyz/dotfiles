@@ -12,6 +12,7 @@ told; matching the area means the skill applies.
 | change-request | Creating, updating, or reviewing an MR/PR | `~/.agents/skills/change-request/SKILL.md` |
 | fleet | Work spanning machines: SSH/tailscale, Sagan relay, GitLab CI/runners, Unreal, GPU, local models/ollama, "which machine" | `~/.agents/skills/fleet/SKILL.md` |
 | p4 | Any Perforce work: workspaces, changelists, syncs, submits | `~/.agents/skills/p4/SKILL.md` |
+| hey | Any HEY email, contact, calendar, todo, habit, time tracking or journal action | `~/.agents/skills/hey/SKILL.md` |
 | omarchy | Linux desktop/WM/system config: hypr, waybar, terminals, themes | `~/.agents/skills/omarchy/SKILL.md` |
 
 Keep this table in sync with the frontmatter `description` of each

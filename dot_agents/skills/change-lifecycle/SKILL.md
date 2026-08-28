@@ -51,34 +51,50 @@ scope.
 - A user-specified intermediate outcome overrides these defaults. Stop at that
   outcome without silently advancing further.
 
+## Programme task register
+
+When the repository has a master OpenSpec programme change, treat its task
+register as the authoritative delivery sequence. Each bounded follow-up
+change identifies the programme task IDs it implements and preserves that
+mapping through proposal, implementation, evidence, archive and publication.
+
+At lifecycle start, inspect programme status and reconcile task IDs already
+delivered by merged and archived changes. At lifecycle completion, mark the
+implemented programme tasks complete, record the matching change name, merge
+commit and verification evidence, then run programme status again. The final
+status shows delivered tasks complete and the next task as the next genuinely
+unfinished implementation unit.
+
 ## Start and plan a change
 
 1. Inspect repository state, worktrees, active OpenSpec changes and project
    instructions.
 2. Create a conventional branch and worktree with worktrunk.
 3. Use `openspec-propose` when a new OpenSpec change is needed.
-4. Review the proposal, delta specs, design and tasks together for scope,
+4. Map the follow-up change to its master programme task IDs.
+5. Review the proposal, delta specs, design and tasks together for scope,
    acceptance coverage, dependency order and architectural coherence. Correct
    planning defects before implementation.
-5. Commit planning artefacts. For end-to-end delivery, continue directly to
+6. Commit planning artefacts. For end-to-end delivery, continue directly to
    implementation and open a draft PR or MR once the branch has meaningful
    work.
-6. For plan-only delivery, stop after the requested planning and publication
+7. For plan-only delivery, stop after the requested planning and publication
    outcome.
 
 ## Apply a planned change
 
 1. Use `openspec-apply-change <change-name>`.
 2. Read every CLI-reported context artefact before implementation.
-3. Implement in task order unless the specification requires a different
+3. Confirm the mapped programme task IDs and their dependency order.
+4. Implement in task order unless the specification requires a different
    dependency order.
-4. Run each task's verification before marking its checkbox complete.
-5. When implementation exposes an in-scope planning defect, use
+5. Run each task's verification before marking its checkbox complete.
+6. When implementation exposes an in-scope planning defect, use
    `openspec-update-change`, reconcile every affected artefact and continue
    implementation without asking the user.
-6. Commit coherent completed work, rebase before pushing and update the draft
+7. Commit coherent completed work, rebase before pushing and update the draft
    PR or MR.
-7. Stop and ask only when a task is genuinely ambiguous, blocked or requires
+8. Stop and ask only when a task is genuinely ambiguous, blocked or requires
    a material expansion beyond the accepted intent.
 
 ## Verify, review and remediate
@@ -96,7 +112,8 @@ scope.
    actionable findings.
 5. Treat an implementation or planning edit after a clean review as
    invalidating that review. Rerun the applicable checks and final review.
-6. Confirm every task is complete, every acceptance claim has evidence and
+6. Reconcile the implemented programme task IDs with the master task register.
+7. Confirm every task is complete, every acceptance claim has evidence and
    the final review is clean. This is the hold point before spec
    synchronisation and archive.
 
@@ -105,17 +122,20 @@ scope.
 1. Use `openspec-archive-change <change-name>` and select spec
    synchronisation when delta specs would change canonical `openspec/specs/`.
 2. Verify every delta requirement and scenario is present in the canonical
-   specs before archiving. Do not archive when synchronisation is incomplete
-   or inconsistent.
+   specs before archiving.
 3. Archive only with complete artefacts, complete tasks, passing gates and a
    clean final review.
-4. Commit the synchronised specs and archive move.
-5. Rebase onto `origin/main`, rerun checks affected by the rebase, and push
+4. Commit the synchronised specs, archive move and reconciled programme task
+   register.
+5. Run `openspec instructions apply --change <programme-change> --json` and
+   verify the delivered task IDs are complete and the remaining count is
+   correct.
+6. Rebase onto `origin/main`, rerun checks affected by the rebase, and push
    with `--force-with-lease` when history changed.
-6. Update the PR or MR description and evidence, then mark it ready for
+7. Update the PR or MR description and evidence, then mark it ready for
    review.
-7. Do not treat creating or archiving an OpenSpec change as creating,
-   publishing or merging a PR or MR; verify each outcome separately.
+8. Verify the PR or MR, publication and merge state separately from the
+   OpenSpec archive state.
 
 ## Merge and clean up
 

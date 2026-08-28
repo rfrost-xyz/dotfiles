@@ -65,6 +65,11 @@ commit and verification evidence, then run programme status again. The final
 status shows delivered tasks complete and the next task as the next genuinely
 unfinished implementation unit.
 
+For every requirement and scenario, maintain a traceability record linking the
+specification to the implementation path, verification, evidence and commit.
+Use the change's evidence artefact or an equivalent project-approved record;
+keep the record concise and update it as implementation progresses.
+
 ## Start and plan a change
 
 1. Inspect repository state, worktrees, active OpenSpec changes and project
@@ -89,7 +94,8 @@ unfinished implementation unit.
 4. Implement in task order unless the specification requires a different
    dependency order.
 5. For each task, inspect the implementation diff, run its focused
-   verification, record the evidence and then mark its checkbox complete.
+   verification, record the requirement-to-evidence trace and then mark its
+   checkbox complete.
 6. When implementation exposes an in-scope planning defect, use
    `openspec-update-change`, reconcile every affected artefact and continue
    implementation without asking the user.
@@ -101,20 +107,22 @@ unfinished implementation unit.
 ## Verify, review and remediate
 
 1. Run `openspec status --change <change-name> --json` and inspect every task
-   against the implementation diff, focused tests and recorded evidence.
-2. Run the repository's required checks and strict OpenSpec validation.
-3. Delegate an independent adversarial review at the requested model
+   against the implementation diff, focused tests and traceability record.
+2. Check every requirement and scenario has an implementation path, a
+   verification result and recorded evidence.
+3. Run the repository's required checks and strict OpenSpec validation.
+4. Delegate an independent adversarial review at the requested model
    strength against the proposal, delta specs, design, task evidence,
    repository instructions and applicable architecture documents.
-4. Require the review to cover implementation conformance, task coverage,
+5. Require the review to cover implementation conformance, task coverage,
    missing failure paths, migration behaviour, data boundaries and tests.
-5. Fix every in-scope finding, update planning artefacts when required, rerun
+6. Fix every in-scope finding, update planning artefacts when required, rerun
    affected checks and repeat the independent review until it has no
    actionable findings.
-6. Treat an implementation, test or planning edit after a clean review as
+7. Treat an implementation, test or planning edit after a clean review as
    invalidating that review. Rerun the applicable checks and final review.
-7. Reconcile the implemented programme task IDs with the master task register.
-8. Confirm every task is complete, every acceptance claim has evidence and
+8. Reconcile the implemented programme task IDs with the master task register.
+9. Confirm every task is complete, every acceptance claim has evidence and
    the final review is clean. This is the hold point before spec
    synchronisation and archive.
 
@@ -124,9 +132,9 @@ unfinished implementation unit.
    synchronisation when delta specs would change canonical `openspec/specs/`.
 2. Verify every delta requirement and scenario is present in the canonical
    specs before archiving.
-3. Archive only after implementation, task evidence, repository gates,
-   strict validation, programme reconciliation and independent review are
-   complete.
+3. Archive only after implementation, task evidence, traceability, repository
+   gates, strict validation, programme reconciliation and independent review
+   are complete.
 4. Commit the synchronised specs, archive move and reconciled programme task
    register.
 5. Run `openspec instructions apply --change <programme-change> --json` and
@@ -145,8 +153,12 @@ unfinished implementation unit.
 2. Merge only with explicit current-session authorisation.
 3. Use the platform's rebase-merge mode.
 4. Rebase local `main` onto `origin/main`.
-5. Remove the merged worktree and branch through worktrunk.
-6. Confirm `main`, `origin/main`, worktrees, local branches and remote
+5. Run the programme status command against the merged target and confirm the
+   delivered task IDs are complete.
+6. Confirm the merge commit contains the implementation, synchronised specs,
+   archive and programme traceability record.
+7. Remove the merged worktree and branch through worktrunk.
+8. Confirm `main`, `origin/main`, worktrees, local branches and remote
    branches separately.
 
 ## Managed configuration and fleet changes

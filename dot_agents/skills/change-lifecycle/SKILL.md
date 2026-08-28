@@ -88,7 +88,8 @@ unfinished implementation unit.
 3. Confirm the mapped programme task IDs and their dependency order.
 4. Implement in task order unless the specification requires a different
    dependency order.
-5. Run each task's verification before marking its checkbox complete.
+5. For each task, inspect the implementation diff, run its focused
+   verification, record the evidence and then mark its checkbox complete.
 6. When implementation exposes an in-scope planning defect, use
    `openspec-update-change`, reconcile every affected artefact and continue
    implementation without asking the user.
@@ -99,21 +100,21 @@ unfinished implementation unit.
 
 ## Verify, review and remediate
 
-1. Run the repository's required checks and strict OpenSpec validation.
-2. Audit every completed task against the implementation, tests and recorded
-   evidence. Reopen any checkbox whose claimed behaviour is missing or
-   insufficiently tested.
-3. Run an independent final review against the proposal, delta specs, design,
-   task evidence, repository instructions and applicable architecture
-   documents. Review implementation conformance and missing negative paths,
-   not merely style or whether existing tests pass.
-4. Fix every in-scope finding, update planning artefacts when required, rerun
+1. Run `openspec status --change <change-name> --json` and inspect every task
+   against the implementation diff, focused tests and recorded evidence.
+2. Run the repository's required checks and strict OpenSpec validation.
+3. Delegate an independent adversarial review at the requested model
+   strength against the proposal, delta specs, design, task evidence,
+   repository instructions and applicable architecture documents.
+4. Require the review to cover implementation conformance, task coverage,
+   missing failure paths, migration behaviour, data boundaries and tests.
+5. Fix every in-scope finding, update planning artefacts when required, rerun
    affected checks and repeat the independent review until it has no
    actionable findings.
-5. Treat an implementation or planning edit after a clean review as
+6. Treat an implementation, test or planning edit after a clean review as
    invalidating that review. Rerun the applicable checks and final review.
-6. Reconcile the implemented programme task IDs with the master task register.
-7. Confirm every task is complete, every acceptance claim has evidence and
+7. Reconcile the implemented programme task IDs with the master task register.
+8. Confirm every task is complete, every acceptance claim has evidence and
    the final review is clean. This is the hold point before spec
    synchronisation and archive.
 
@@ -123,8 +124,9 @@ unfinished implementation unit.
    synchronisation when delta specs would change canonical `openspec/specs/`.
 2. Verify every delta requirement and scenario is present in the canonical
    specs before archiving.
-3. Archive only with complete artefacts, complete tasks, passing gates and a
-   clean final review.
+3. Archive only after implementation, task evidence, repository gates,
+   strict validation, programme reconciliation and independent review are
+   complete.
 4. Commit the synchronised specs, archive move and reconciled programme task
    register.
 5. Run `openspec instructions apply --change <programme-change> --json` and

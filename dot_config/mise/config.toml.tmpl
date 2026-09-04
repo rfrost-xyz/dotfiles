@@ -14,7 +14,10 @@ minimum_release_age_excludes = ["claude", "codex", "opencode", "pi"]
 # and none of them needs one. `mise up` is the update route; a tool's own
 # `update`/`upgrade` subcommand writes a second copy mise cannot see.
 claude = "latest"
-codex = "latest"
+# The registry installs only the primary Codex binary. Restore the companion
+# host and sandbox resources from the matching official package after every
+# install or upgrade.
+codex = { version = "latest", postinstall = "{{ .chezmoi.homeDir }}/.local/bin/codex-install-runtime" }
 opencode = "latest"
 pi = "latest"
 fnox = "latest"

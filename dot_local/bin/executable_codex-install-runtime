@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+version="${MISE_TOOL_VERSION:?MISE_TOOL_VERSION is required}"
+install_path="${MISE_TOOL_INSTALL_PATH:?MISE_TOOL_INSTALL_PATH is required}"
+
+case "$(uname -s):$(uname -m)" in
+  Linux:x86_64)
+    target="x86_64-unknown-linux-musl"
+    ;;
+  Linux:aarch64 | Linux:arm64)
+    target="aarch64-unknown-linux-musl"
+    ;;
+  Darwin:x86_64)
+    target="x86_64-apple-darwin"
+    ;;
+  Darwin:arm64 | Darwin:aarch64)
+    target="aarch64-apple-darwin"
+    ;;
+  *)
+    printf 'Unsupported Codex runtime platform: %s\n' "$(uname -s):$(uname -m)" >&2
+    exit 1
+    ;;
+esac
+
+archive="codex-package-${target}.tar.gz"
+release_url="https://github.com/openai/codex/releases/download/rust-v${version}/${archive}"
+checksums="codex-package_SHA256SUMS"
+checksums_url="https://github.com/openai/codex/releases/download/rust-v${version}/${checksums}"
+download_dir="$(mktemp -d)"
+trap 'rm -rf "$download_dir"' EXIT
+
+curl --fail --location --silent --show-error \
+  --output "${download_dir}/${archive}" \
+  "$release_url"
+curl --fail --location --silent --show-error \
+  --output "${download_dir}/${checksums}" \
+  "$checksums_url"
+
+expected_checksum="$(
+  awk -v archive="$archive" '$2 == archive { print $1 }' \
+    "${download_dir}/${checksums}"
+)"
+if [ -z "$expected_checksum" ]; then
+  printf 'No checksum published for %s\n' "$archive" >&2
+  exit 1
+fi
+
+if command -v sha256sum >/dev/null 2>&1; then
+  actual_checksum="$(sha256sum "${download_dir}/${archive}" | awk '{ print $1 }')"
+elif command -v shasum >/dev/null 2>&1; then
+  actual_checksum="$(shasum -a 256 "${download_dir}/${archive}" | awk '{ print $1 }')"
+else
+  printf 'A SHA-256 checksum tool is required\n' >&2
+  exit 1
+fi
+
+if [ "$actual_checksum" != "$expected_checksum" ]; then
+  printf 'Checksum verification failed for %s\n' "$archive" >&2
+  exit 1
+fi
+
+tar -xzf "${download_dir}/${archive}" -C "$download_dir"
+
+install -m 0755 \
+  "${download_dir}/bin/codex-code-mode-host" \
+  "${install_path}/codex-code-mode-host"
+install -D -m 0755 \
+  "${download_dir}/codex-path/rg" \
+  "${install_path}/codex-path/rg"
+install -D -m 0755 \
+  "${download_dir}/codex-resources/zsh/bin/zsh" \
+  "${install_path}/codex-resources/zsh/bin/zsh"
+
+if [ -f "${download_dir}/codex-resources/bwrap" ]; then
+  install -D -m 0755 \
+    "${download_dir}/codex-resources/bwrap" \
+    "${install_path}/codex-resources/bwrap"
+fi
+
+printf 'Installed Codex %s companion runtime for %s\n' "$version" "$target"

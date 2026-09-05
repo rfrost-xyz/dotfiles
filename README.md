@@ -74,7 +74,10 @@ Chezmoi links `~/.codex/packages/standalone/current` to
 This satisfies the fixed executable path required by `codex agents` without
 installing another copy or maintaining a second version. Install Codex through
 mise before using the link; the existing postinstall hook supplies its complete
-runtime. Non-default `MISE_DATA_DIR` or `CODEX_HOME` paths are not covered.
+runtime and a stable `bin/codex` entrypoint. For flat Aqua packages this is
+a symlink to the existing executable; packaged `bin/` layouts are unchanged.
+A chezmoi migration repairs existing installs without downloading binaries; the
+postinstall hook repeats the repair after every mise upgrade. Non-default `MISE_DATA_DIR` or `CODEX_HOME` paths are not covered.
 
 Verified with Codex 0.153.4 on iapetus (2026-09-05). `codex agents` starts the
 daemon without an updater. After `mise up codex`, run

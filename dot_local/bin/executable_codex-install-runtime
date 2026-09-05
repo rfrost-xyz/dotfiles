@@ -1,6 +1,35 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Keep the daemon path stable across the flat Aqua and packaged bin/ layouts.
+ensure_daemon_link() {
+  if [ -x "${install_path}/bin/codex" ]; then
+    return
+  fi
+  if [ -e "${install_path}/bin/codex" ] || [ -L "${install_path}/bin/codex" ]; then
+    printf 'Refusing to replace existing daemon entrypoint: %s/bin/codex\n' "$install_path" >&2
+    return 1
+  fi
+  if [ ! -x "${install_path}/codex" ]; then
+    printf 'No Codex executable in %s\n' "$install_path" >&2
+    return 1
+  fi
+  mkdir -p "${install_path}/bin"
+  ln -s ../codex "${install_path}/bin/codex"
+}
+
+if [ "${1:-}" = "--ensure-daemon-link" ]; then
+  install_path="${MISE_TOOL_INSTALL_PATH:-$HOME/.local/share/mise/installs/codex/latest}"
+  # Fresh hosts may not have installed Codex yet; postinstall handles them.
+  [ -d "$install_path" ] || exit 0
+  ensure_daemon_link
+  exit 0
+fi
+if [ "$#" -ne 0 ]; then
+  printf 'Usage: codex-install-runtime [--ensure-daemon-link]\n' >&2
+  exit 2
+fi
+
 version="${MISE_TOOL_VERSION:?MISE_TOOL_VERSION is required}"
 install_path="${MISE_TOOL_INSTALL_PATH:?MISE_TOOL_INSTALL_PATH is required}"
 
@@ -77,5 +106,7 @@ if [ -f "${download_dir}/codex-resources/bwrap" ]; then
     "${download_dir}/codex-resources/bwrap" \
     "${install_path}/codex-resources/bwrap"
 fi
+
+ensure_daemon_link
 
 printf 'Installed Codex %s companion runtime for %s\n' "$version" "$target"

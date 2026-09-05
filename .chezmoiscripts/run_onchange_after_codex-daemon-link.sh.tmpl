@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# Repair existing installations too; updating the postinstall hook is not retroactive.
+# {{ include "dot_local/bin/executable_codex-install-runtime" | sha256sum }}
+"{{ .chezmoi.homeDir }}/.local/bin/codex-install-runtime" --ensure-daemon-link

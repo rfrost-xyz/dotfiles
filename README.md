@@ -65,3 +65,25 @@ chezmoi apply
 
 exec bash -l
 ```
+
+## Codex daemon with mise
+
+Codex remains a single mise-managed installation on desktop and headless hosts.
+Chezmoi links `~/.codex/packages/standalone/current` to
+`~/.local/share/mise/installs/codex/latest/bin` using a home-relative symlink.
+This satisfies the fixed executable path required by `codex agents` without
+installing another copy or maintaining a second version. Install Codex through
+mise before using the link; the existing postinstall hook supplies its complete
+runtime. Non-default `MISE_DATA_DIR` or `CODEX_HOME` paths are not covered.
+
+Verified with Codex 0.153.4 on iapetus (2026-09-05). `codex agents` starts the
+daemon without an updater. After `mise up codex`, run
+`codex app-server daemon restart` when existing tasks can be interrupted, so the
+running server uses the updated executable.
+
+Do not run `codex app-server daemon bootstrap`, `codex remote-control`, or the
+standalone installer with this arrangement: they introduce a separate installer
+and update owner. This link is a compatibility workaround, not an upstream
+external-package-manager contract; recheck the daemon lifecycle when upgrading.
+
+Source: [Codex 0.153.4 daemon installation and update semantics](https://github.com/openai/codex/blob/rust-v0.153.4/codex-rs/app-server-daemon/README.md).

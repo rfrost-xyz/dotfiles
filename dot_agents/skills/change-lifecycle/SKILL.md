@@ -27,8 +27,11 @@ scope.
 - Treat an explicit plan-only or proposal-only request as planning authority
   only. Do not infer implementation authority from `openspec-propose` alone.
 - Create branches from `origin/main`, rebase onto `origin/main`, and never
-  merge `main` into a feature branch.
-- Use rebase merge only when the user explicitly authorises merging.
+  merge `main` into a feature branch. Keep independent features based on
+  `main`, not on another unmerged feature branch.
+- When merging is authorised, rebase the source branch onto the current
+  target, then create a merge commit preserving the individual branch commits.
+  Rebasing prepares the branch; it is not the merge method.
 - Keep OpenSpec task checkboxes as verified implementation evidence, not as
   a substitute for commits or PR review.
 - Never archive with warnings during end-to-end delivery. Resolve the warning
@@ -147,19 +150,72 @@ keep the record concise and update it as implementation progresses.
 8. Verify the PR or MR, publication and merge state separately from the
    OpenSpec archive state.
 
+## Merge topology and platform names
+
+Always preserve the individual branch commits under an explicit two-parent
+merge commit. Its first parent is the previous target tip and its second
+parent is the reviewed source tip. In Git terminology, the branch commits
+are ancestors of the merge commit, not its children.
+
+- **GitHub:** Choose **Create a merge commit**, or use
+  `gh pr merge <number> --merge --match-head-commit <reviewed-sha>`.
+  **Rebase and merge** creates no merge commit and is not this workflow.
+- **GitLab:** Choose **Merge commit with semi-linear history**, with
+  squashing disabled. This requires an up-to-date source branch and still
+  creates a merge commit. Ordinary **Merge commit** also produces the desired
+  topology when the source is manually rebased onto the current target first.
+- Do not use squash merging or fast-forward-only integration on either forge.
+- Inspect the repository's actual merge and squash settings. A GitHub
+  repository allowing merge commits but disabling rebase merging already
+  supports this preference; do not request a settings change for that case.
+  If settings force squash or fast-forward-only integration, report that
+  specific incompatibility rather than selecting a different topology.
+- Complete any rebase before final review and checks. If the target advances,
+  rebase again and repeat affected checks and review before merging. Do not
+  let a server-side rebase substitute an unreviewed head at merge time.
+
+Platform references: [GitHub pull request merges](https://docs.github.com/en/pull-requests/reference/pull-request-merges)
+and [GitLab merge methods](https://docs.gitlab.com/user/project/merge_requests/methods/).
+
+## Refresh remaining feature branches after integration
+
+After each integration, fetch the updated `origin/main` and rebase the other
+active feature branches in this delivery onto it. This keeps each feature
+based on current main and avoids accumulating a stack of feature branches.
+Start subsequent independent work from that updated `origin/main`.
+
+- Inventory branch ownership, worktree cleanliness and open PRs or MRs first.
+  Coordinate with active workers before rewriting their branches. Preserve
+  unrelated or dirty work; report any branch that cannot yet be refreshed.
+- For an independent branch, use `git rebase origin/main` in its worktree.
+  If a branch was stacked on another feature, identify and record the old
+  dependency tip, then use `git rebase --onto origin/main <old-dependency-tip>`
+  to replay only its own commits. Do not guess the boundary or replay changes
+  already integrated into main.
+- Resolve in-scope conflicts, verify the resulting diff contains only that
+  feature, rerun affected checks and renew review when the head changes.
+  Push rewritten published branches with `--force-with-lease` and ensure
+  their PRs or MRs target `main`.
+- Rebasing these branches is post-integration maintenance. It does not mean
+  selecting GitHub's **Rebase and merge** integration method.
+
 ## Merge and clean up
 
 1. Confirm review status, mergeability and required checks.
 2. Merge only with explicit current-session authorisation.
-3. Use the platform's rebase-merge mode.
+3. Use the platform-specific merge-commit method above, with squashing off.
 4. Rebase local `main` onto `origin/main`.
 5. Run the programme status command against the merged target and confirm the
    delivered task IDs are complete.
-6. Confirm the merge commit contains the implementation, synchronised specs,
+6. Verify the merge commit has exactly two parents: the previous target tip
+   and the reviewed source tip. Confirm the individual source commits remain
+   reachable and the merge contains the implementation, synchronised specs,
    archive and programme traceability record.
 7. Remove the merged worktree and branch through worktrunk.
-8. Confirm `main`, `origin/main`, worktrees, local branches and remote
-   branches separately.
+8. Refresh remaining active feature branches as described above.
+9. Confirm `main`, `origin/main`, worktrees, local branches and remote
+   branches separately, including any branch refresh deferred for ownership
+   or uncommitted-work reasons.
 
 ## Managed configuration and fleet changes
 

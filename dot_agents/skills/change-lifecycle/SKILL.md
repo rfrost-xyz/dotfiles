@@ -27,7 +27,8 @@ scope.
 - Treat an explicit plan-only or proposal-only request as planning authority
   only. Do not infer implementation authority from `openspec-propose` alone.
 - Create branches from `origin/main`, rebase onto `origin/main`, and never
-  merge `main` into a feature branch.
+  merge `main` into a feature branch. Keep independent features based on
+  `main`, not on another unmerged feature branch.
 - When merging is authorised, rebase the source branch onto the current
   target, then create a merge commit preserving the individual branch commits.
   Rebasing prepares the branch; it is not the merge method.
@@ -176,6 +177,28 @@ are ancestors of the merge commit, not its children.
 Platform references: [GitHub pull request merges](https://docs.github.com/en/pull-requests/reference/pull-request-merges)
 and [GitLab merge methods](https://docs.gitlab.com/user/project/merge_requests/methods/).
 
+## Refresh remaining feature branches after integration
+
+After each integration, fetch the updated `origin/main` and rebase the other
+active feature branches in this delivery onto it. This keeps each feature
+based on current main and avoids accumulating a stack of feature branches.
+Start subsequent independent work from that updated `origin/main`.
+
+- Inventory branch ownership, worktree cleanliness and open PRs or MRs first.
+  Coordinate with active workers before rewriting their branches. Preserve
+  unrelated or dirty work; report any branch that cannot yet be refreshed.
+- For an independent branch, use `git rebase origin/main` in its worktree.
+  If a branch was stacked on another feature, identify and record the old
+  dependency tip, then use `git rebase --onto origin/main <old-dependency-tip>`
+  to replay only its own commits. Do not guess the boundary or replay changes
+  already integrated into main.
+- Resolve in-scope conflicts, verify the resulting diff contains only that
+  feature, rerun affected checks and renew review when the head changes.
+  Push rewritten published branches with `--force-with-lease` and ensure
+  their PRs or MRs target `main`.
+- Rebasing these branches is post-integration maintenance. It does not mean
+  selecting GitHub's **Rebase and merge** integration method.
+
 ## Merge and clean up
 
 1. Confirm review status, mergeability and required checks.
@@ -189,8 +212,10 @@ and [GitLab merge methods](https://docs.gitlab.com/user/project/merge_requests/m
    reachable and the merge contains the implementation, synchronised specs,
    archive and programme traceability record.
 7. Remove the merged worktree and branch through worktrunk.
-8. Confirm `main`, `origin/main`, worktrees, local branches and remote
-   branches separately.
+8. Refresh remaining active feature branches as described above.
+9. Confirm `main`, `origin/main`, worktrees, local branches and remote
+   branches separately, including any branch refresh deferred for ownership
+   or uncommitted-work reasons.
 
 ## Managed configuration and fleet changes
 

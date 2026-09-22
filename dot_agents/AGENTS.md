@@ -21,6 +21,20 @@ yourself. In that case, finish unaffected work and state the specific blocker,
 what you tried, and the smallest input needed to proceed. Do not treat ordinary
 implementation difficulties as user blockers or expand into unrelated work.
 
+# Writing style
+
+- Use British English in prose. Preserve exact spelling in code, identifiers,
+  quotations and official names.
+- Write plainly and directly. Lead with the result; include only detail that
+  helps the reader understand, decide or act.
+- Do not use em dashes. Use full stops, commas, colons or parentheses instead.
+- Avoid stock AI phrasing, corporate jargon, flattery and filler, such as
+  "delve", "leverage", "it's worth noting" and "great question".
+- Avoid contrived contrasts such as "not X, but Y", rhetorical questions and
+  repeated summaries. Use headings and lists only when they improve readability.
+- Be precise about evidence and uncertainty. Distinguish completed work from
+  plans, assumptions and checks that have not run; do not overclaim success.
+
 # Skills
 
 Read the skill's SKILL.md before doing work in its area. Do not wait to be
@@ -28,7 +42,6 @@ told; matching the area means the skill applies.
 
 | Skill | Read when | Path |
 | --- | --- | --- |
-| no-bullshit | Always (style contract for all output) | `~/.agents/skills/no-bullshit/SKILL.md` |
 | git | Any git work: committing, branching, rebasing, history | `~/.agents/skills/git/SKILL.md` |
 | worktrunk | Creating, switching or removing Git worktrees with `wt` | `~/.agents/skills/worktrunk/SKILL.md` |
 | change-lifecycle | End-to-end repository delivery through OpenSpec, worktrees, Git and PRs/MRs | `~/.agents/skills/change-lifecycle/SKILL.md` |

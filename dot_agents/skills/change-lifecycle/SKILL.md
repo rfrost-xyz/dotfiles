@@ -5,7 +5,7 @@ allowed-tools: Bash Read Edit Write Grep Glob Agent
 ---
 
 Coordinate the lifecycle. Do not duplicate the specialist skills: load
-no-bullshit, git and worktrunk for every lifecycle; load change-request for
+git and worktrunk for every lifecycle; load change-request for
 PR or MR work; load the repository's OpenSpec skills when `openspec/` exists.
 Load fleet only when shared chezmoi configuration or a remote host is in
 scope.

@@ -7,8 +7,8 @@ allowed-tools: Bash Read Edit Write Grep Glob Agent
 Authoring and reviewing change requests. "CR" is the platform-neutral term
 covering GitLab merge requests and GitHub pull requests; in user-facing
 output use the platform term: "MR !1234" for GitLab, "PR #1234" for GitHub.
-Branch and commit conventions live in the git skill; prose style in
-no-bullshit.
+Branch and commit conventions live in the git skill; prose style in the user
+AGENTS.md.
 
 # Identifiers
 
@@ -252,7 +252,7 @@ reason).
 ## Suggested reply
 
 A drafted comment the user can paste verbatim into the MR or PR. Markdown,
-friendly, specific, references `path:line`, follows the no-bullshit prose
+friendly, specific, references `path:line`, follows the user AGENTS.md prose
 rules. Match the destination platform's conventions (`@username` mentions,
 `Closes #N`).
 ```

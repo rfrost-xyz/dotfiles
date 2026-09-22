@@ -1,0 +1,3 @@
+# Runs after the Codex tool postinstall has restored its companion runtime.
+[hooks]
+postinstall = "{{ .chezmoi.homeDir }}/.local/bin/codex-restart-after-mise"

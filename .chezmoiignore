@@ -32,6 +32,8 @@
 {{- if ne .chezmoi.hostname "ws-255" }}
 # Only ws-255 runs the mise-managed Codex daemon update hook.
 .local/bin/codex-restart-after-mise
+.config/mise/conf.d
+.config/mise/conf.d/**
 {{- end }}
 # pi-ux retired — fully replaced by piedpi, deleted on disk.
 .pi/agent/extensions/pi-ux

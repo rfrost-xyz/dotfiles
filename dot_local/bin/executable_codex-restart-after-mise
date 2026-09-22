@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# mise runs this hook for every install, including no-op installs.
+installed_tools="${MISE_INSTALLED_TOOLS:-[]}"
+codex_version="$(jq -r '[.[] | select(.name == "codex") | .version] | last // empty' <<<"$installed_tools")"
+[ -n "$codex_version" ] || exit 0
+
+managed_codex="$HOME/.codex/packages/standalone/current/codex"
+# Some fleet hosts have Codex installed but no local app-server daemon.
+if [ ! -e "$managed_codex" ] && [ ! -L "$managed_codex" ]; then
+  exit 0
+fi
+if [ ! -x "$managed_codex" ]; then
+  printf 'Codex daemon entrypoint is missing: %s\n' "$managed_codex" >&2
+  exit 1
+fi
+
+current_codex="$(readlink -f "$managed_codex")"
+case "$current_codex" in
+  "$HOME/.local/share/mise/installs/codex/$codex_version/"*) ;;
+  *)
+    printf 'Codex daemon entrypoint does not resolve to mise Codex %s: %s\n' \
+      "$codex_version" "$current_codex" >&2
+    exit 1
+    ;;
+esac
+
+daemon_json="$($managed_codex app-server daemon version)"
+daemon_status="$(jq -r '.status // empty' <<<"$daemon_json")"
+[ "$daemon_status" = running ] || exit 0
+
+running_version="$(jq -r '.appServerVersion // empty' <<<"$daemon_json")"
+[ "$running_version" = "$codex_version" ] && exit 0
+
+printf 'Restarting Codex app-server %s after mise installed %s\n' \
+  "$running_version" "$codex_version"
+if ! "$managed_codex" app-server daemon restart; then
+  # An old mise binary can survive as an orphan after its install is removed.
+  # Only signal the exact local app-server command, and only if its executable
+  # differs from the newly selected mise binary.
+  stale_pids=()
+  for proc in /proc/[0-9]*; do
+    [ -r "$proc/cmdline" ] || continue
+    [ "$(stat -c %u "$proc" 2>/dev/null || true)" = "$(id -u)" ] || continue
+    argv=()
+    mapfile -d '' -t argv < "$proc/cmdline" || continue
+    [ "${argv[0]:-}" = "$managed_codex" ] || continue
+    [ "${argv[1]:-}" = app-server ] || continue
+    [ "${argv[2]:-}" = --listen ] || continue
+    [ "${argv[3]:-}" = unix:// ] || continue
+    process_codex="$(readlink "$proc/exe" 2>/dev/null || true)"
+    [ -n "$process_codex" ] || continue
+    [ "$process_codex" != "$current_codex" ] || continue
+    stale_pids+=("${proc##*/}")
+  done
+
+  if [ "${#stale_pids[@]}" -ne 1 ]; then
+    printf 'Refusing to signal Codex: expected one stale app-server, found %s\n' \
+      "${#stale_pids[@]}" >&2
+    exit 1
+  fi
+
+  kill -TERM "${stale_pids[0]}"
+  for _ in {1..10}; do
+    kill -0 "${stale_pids[0]}" 2>/dev/null || break
+    process_state="$(ps -o stat= -p "${stale_pids[0]}" 2>/dev/null || true)"
+    [ "${process_state:0:1}" = Z ] && break
+    sleep 1
+  done
+  process_state="$(ps -o stat= -p "${stale_pids[0]}" 2>/dev/null || true)"
+  if kill -0 "${stale_pids[0]}" 2>/dev/null && [ "${process_state:0:1}" != Z ]; then
+    printf 'Codex app-server PID %s did not exit after SIGTERM; restart it manually\n' \
+      "${stale_pids[0]}" >&2
+    exit 1
+  fi
+  "$managed_codex" app-server daemon start
+fi
+
+daemon_json="$($managed_codex app-server daemon version)"
+actual_version="$(jq -r '.appServerVersion // empty' <<<"$daemon_json")"
+if [ "$actual_version" != "$codex_version" ]; then
+  printf 'Codex app-server is %s after mise installed %s\n' \
+    "$actual_version" "$codex_version" >&2
+  exit 1
+fi

@@ -33,3 +33,10 @@ git-lfs = "latest"
 glab = "1.108.0"
 worktrunk = "latest"
 {{- end }}
+
+{{- if eq .chezmoi.hostname "ws-255" }}
+# Tool postinstall restores the Codex runtime. This hook runs after the whole
+# installation so the latest symlink points at the new binary before restart.
+[hooks]
+postinstall = "{{ .chezmoi.homeDir }}/.local/bin/codex-restart-after-mise"
+{{- end }}

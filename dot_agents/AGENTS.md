@@ -44,6 +44,7 @@ told; matching the area means the skill applies.
 | --- | --- | --- |
 | git | Any git work: committing, branching, rebasing, history | `~/.agents/skills/git/SKILL.md` |
 | worktrunk | Creating, switching or removing Git worktrees with `wt` | `~/.agents/skills/worktrunk/SKILL.md` |
+| delegate | Coordinating bounded subagents for direct or OpenSpec work when explicitly invoked | `~/.agents/skills/delegate/SKILL.md` |
 | change-lifecycle | End-to-end repository delivery through OpenSpec, worktrees, Git and PRs/MRs | `~/.agents/skills/change-lifecycle/SKILL.md` |
 | change-request | Creating, updating, or reviewing an MR/PR | `~/.agents/skills/change-request/SKILL.md` |
 | fleet | Work spanning machines: SSH/tailscale, Sagan relay, GitLab CI/runners, Unreal, GPU, local models/ollama, "which machine" | `~/.agents/skills/fleet/SKILL.md` |

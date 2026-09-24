@@ -1,0 +1,38 @@
+{{- /* chezmoi:modify-template */ -}}
+{{- /* Preserve Codex's live settings and update only the navigation keys. */ -}}
+{{- $contents := .chezmoi.stdin -}}
+{{- if eq $contents "" -}}
+{{- $contents = includeTemplate "codex-config-initial.toml" . -}}
+{{- end -}}
+{{- $result := "" -}}
+{{- $section := "" -}}
+{{- $hasChat := false -}}
+{{- $hasList := false -}}
+{{- $lines := splitList "\n" $contents -}}
+{{- range $index, $line := $lines -}}
+  {{- $ending := "" -}}
+  {{- if lt $index (sub (len $lines) 1) -}}
+    {{- $ending = "\n" -}}
+  {{- end -}}
+  {{- if regexMatch `^\[[^]]+\]` $line -}}
+    {{- $section = $line -}}
+  {{- end -}}
+  {{- if eq $line "[tui.keymap.chat]" -}}
+    {{- $hasChat = true -}}
+    {{- $result = printf "%s%s\nedit_queued_message = \"alt-k\"\n" $result $line -}}
+  {{- else if eq $line "[tui.keymap.list]" -}}
+    {{- $hasList = true -}}
+    {{- $result = printf "%s%s\nmove_left = \"alt-h\"\nmove_right = \"alt-l\"\n" $result $line -}}
+  {{- else if and (eq $section "[tui.keymap.chat]") (regexMatch `^\s*edit_queued_message\s*=` $line) -}}
+  {{- else if and (eq $section "[tui.keymap.list]") (regexMatch `^\s*(move_left|move_right)\s*=` $line) -}}
+  {{- else -}}
+    {{- $result = printf "%s%s%s" $result $line $ending -}}
+  {{- end -}}
+{{- end -}}
+{{- if not $hasChat -}}
+  {{- $result = printf "%s\n[tui.keymap.chat]\nedit_queued_message = \"alt-k\"\n" $result -}}
+{{- end -}}
+{{- if not $hasList -}}
+  {{- $result = printf "%s\n[tui.keymap.list]\nmove_left = \"alt-h\"\nmove_right = \"alt-l\"\n" $result -}}
+{{- end -}}
+{{- $result -}}
